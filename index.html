@@ -7,6 +7,62 @@
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
+
+
+    <style>
+        #container {
+            width: 700px;
+            height: 500px;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 7px;
+            touch-action: none;
+            position: relative;
+        }
+        .draggable {
+            width: 50px;
+            height: 50px;
+            background-color: rgb(245, 230, 99);
+            border: 10px solid rgba(136, 136, 136, .5);
+            border-radius: 50%;
+            touch-action: none;
+            user-select: none;
+        }
+        /*.draggable:active {*/
+        /*    background-color: rgba(168, 218, 220, 1.00);*/
+        /*}*/
+        .draggable:hover {
+            cursor: pointer;
+            background-color: rgba(168, 218, 220, 1.00);
+            /*border-width: 20px;*/
+        }
+
+        #box {
+            width: 700px;
+            height: 500px;
+        }
+
+        #bounding {
+            width: 100%;
+            height: 500px;
+            display: flex;
+            align-items: center;
+        }
+
+        #playarea {
+            width: 250px;
+            height: 150px;
+            transform: translate3d(-100px, -200px, 0px);
+            border-radius: 7px;
+            background-color: aquamarine;
+            touch-action: none;
+            user-select: none;
+        }
+    </style>
+
 </head>
 
 
@@ -14,9 +70,28 @@
 <!--We are using Node.js <span id="node-version"></span>,-->
 <!--Chromium <span id="chrome-version"></span>,-->
 <!--and Electron <span id="electron-version"></span>.-->
-<div id="box">
-<!--    <video id="video" src="videos/1624567955073.webm">-->
+<div id="bounding">
+    <div id="box">
+        <!--    <video id="video" src="videos/1624567955073.webm">-->
+    </div>
+
+    <div id="outerContainer">
+        <div id="container">
+            <div id="playarea" class="area">
+
+
+            </div>
+            <!--        <div id="item" class="draggable">-->
+
+            <!--        </div>-->
+            <!--        <div id="item2" class="draggable">-->
+
+            <!--        </div>-->
+        </div>
+    </div>
+
 </div>
+
 
 <!--    <source id="sourcediv" src="videos/example.webm" type="video/webm">-->
 
@@ -32,6 +107,9 @@
 <button id="clip" onclick="clip()">Clip</button>
 <button id="play-last-clip" onclick="playClipHelper()">Play Clip</button>
 <button id="save-clips" onclick="saveClips()">Save Clips</button>
+
+
+
 <script type = "text/javascript">
 
     var mediaPlayer;
@@ -118,6 +196,9 @@
         clips[id] = xclip;
         $("#list").append(new Option(name, id));
         $("#name").val("");
+
+        var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
+        $("#container").append(item);
     }
 
     function playClipHelper(){
@@ -201,9 +282,102 @@
         clips = window.api.loadClips();
         for(id in clips){
             $("#list").append(new Option(clips[id].name, id));
+            var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
+            $("#container").append(item);
         }
     })
     console.log(window.api.getfiles());
+
+
+
+    var dragItem = document.querySelector("#item");
+    var container = document.querySelector("#container");
+
+    var active = null;
+    var posInfo = {};
+    var currentX;
+    var currentY;
+    var initialX;
+    var initialY;
+    var xOffset = 0;
+    var yOffset = 0;
+
+    container.addEventListener("touchstart", dragStart, false);
+    container.addEventListener("touchend", dragEnd, false);
+    container.addEventListener("touchmove", drag, false);
+
+    container.addEventListener("mousedown", dragStart, false);
+    container.addEventListener("mouseup", dragEnd, false);
+    container.addEventListener("mousemove", drag, false);
+
+    function dragStart(e) {
+
+        // if (e.target === dragItem) {
+        //     active = true;
+        // }
+        if (e.target.classList.contains("draggable")){
+            active = e.target;
+            if(!(active.id in posInfo)){
+                posInfo[active.id] = {
+                    initialX: 0,
+                    initialY: 0,
+                    currentX: 0,
+                    currentY: 0,
+                    xOffset: 0,
+                    yOffset: 0
+                }
+            }
+
+            if (e.type === "touchstart") {
+                posInfo[active.id].initialX = e.touches[0].clientX - posInfo[active.id].xOffset;
+                posInfo[active.id].initialY = e.touches[0].clientY - posInfo[active.id].yOffset;
+            } else {
+                posInfo[active.id].initialX = e.clientX - posInfo[active.id].xOffset;
+                posInfo[active.id].initialY = e.clientY - posInfo[active.id].yOffset;
+            }
+
+
+        }
+    }
+
+    function dragEnd(e) {
+        if(active){
+            posInfo[active.id].initialX = posInfo[active.id].currentX;
+            posInfo[active.id].initialY = posInfo[active.id].currentY;
+            console.log("ID:" + active.id + " X: " + posInfo[active.id].currentX + " Y: " + posInfo[active.id].currentY)
+
+            if(posInfo[active.id].currentX < -100 && posInfo[active.id].currentY < -100){
+                playClip(active.id);
+            }
+        }
+
+
+        active = null;
+    }
+
+    function drag(e) {
+        if (!(active === null)) {
+            e.preventDefault();
+
+            if (e.type === "touchmove") {
+                posInfo[active.id].currentX = e.touches[0].clientX - posInfo[active.id].initialX;
+                posInfo[active.id].currentY = e.touches[0].clientY - posInfo[active.id].initialY;
+            } else {
+                posInfo[active.id].currentX = e.clientX - posInfo[active.id].initialX;
+                posInfo[active.id].currentY = e.clientY - posInfo[active.id].initialY;
+            }
+
+            posInfo[active.id].xOffset = posInfo[active.id].currentX;
+            posInfo[active.id].yOffset = posInfo[active.id].currentY;
+
+            setTranslate(posInfo[active.id].currentX, posInfo[active.id].currentY, active);
+        }
+    }
+
+    function setTranslate(xPos, yPos, el) {
+        el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    }
+
 
 
 

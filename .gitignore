@@ -77,3 +77,6 @@ typings/
 
 # Video folder
 videos/
+
+#data storage
+saved_recordings/
