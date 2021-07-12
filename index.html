@@ -7,14 +7,25 @@
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 
 
     <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        #chart {
+            max-width: 600px;
+            max-height: 400px;
+        }
+
+
         #container {
             width: 700px;
             height: 500px;
             background-color: #333;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: center;
             overflow: hidden;
@@ -25,6 +36,7 @@
         .draggable {
             width: 50px;
             height: 50px;
+            flex: 0 0 auto;
             background-color: rgb(245, 230, 99);
             border: 10px solid rgba(136, 136, 136, .5);
             border-radius: 50%;
@@ -52,15 +64,39 @@
             align-items: center;
         }
 
+        #box3 {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+        #display {
+            max-height: 400px;
+            overflow-x: auto;
+        }
+
         #playarea {
             width: 250px;
             height: 150px;
-            transform: translate3d(-100px, -200px, 0px);
+            flex: 0 0 auto;
+            position: absolute;
+            transform: translate3d(-230px, -180px, 0px);
             border-radius: 7px;
             background-color: aquamarine;
             touch-action: none;
             user-select: none;
         }
+
+
+        .screenshot {
+            width: 60px;
+            height: 40px;
+        }
+
+        /*video {*/
+        /*    -webkit-transform: scaleX(-1);*/
+        /*    transform: scaleX(-1);*/
+        /*}*/
+
     </style>
 
 </head>
@@ -74,21 +110,27 @@
     <div id="box">
         <!--    <video id="video" src="videos/1624567955073.webm">-->
     </div>
-
-    <div id="outerContainer">
-        <div id="container">
-            <div id="playarea" class="area">
-
-
-            </div>
-            <!--        <div id="item" class="draggable">-->
-
-            <!--        </div>-->
-            <!--        <div id="item2" class="draggable">-->
-
-            <!--        </div>-->
-        </div>
+    <div id="box2">
+        <video id="video" autoplay style="display:none;"></video>
+        <canvas id="canvas" style="width:640px; height:480px;"></canvas>
     </div>
+
+
+
+<!--    <div id="outerContainer">-->
+<!--        <div id="container">-->
+<!--            <div id="playarea" class="area">-->
+
+
+<!--            </div>-->
+<!--            &lt;!&ndash;        <div id="item" class="draggable">&ndash;&gt;-->
+
+<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
+<!--            &lt;!&ndash;        <div id="item2" class="draggable">&ndash;&gt;-->
+
+<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
 
 </div>
 
@@ -96,6 +138,17 @@
 <!--    <source id="sourcediv" src="videos/example.webm" type="video/webm">-->
 
 </video>
+
+<!--<div id="line0">1 2 3 <br></div>-->
+<!--<div id="line1">1 2 3</div>-->
+<!--<div id="line2">1 2 3</div>-->
+<div id="box3">
+    <div id="chart"></div>
+    <pre id="display"></pre>
+
+</div>
+
+
 
 <button id="recording" onclick="toggleRecording()">Record</button>
 
@@ -107,12 +160,13 @@
 <button id="clip" onclick="clip()">Clip</button>
 <button id="play-last-clip" onclick="playClipHelper()">Play Clip</button>
 <button id="save-clips" onclick="saveClips()">Save Clips</button>
+<button id="take-photo" onclick="takePhoto()">Take Photo</button>
 
 
-
+<script src="modules/script.js"></script>
 <script type = "text/javascript">
 
-    var mediaPlayer;
+    var mediaPlayer = null;
 
     var recording = false;
     var progressBar;
@@ -121,6 +175,7 @@
     var videoclip;
     var clips = {};
     var clipindex = 0;
+    var playspeed = 1.0;
 
 
     function errorCallback(e) {
@@ -129,33 +184,15 @@
 
     function loadVideo(source){
         var path = "./videos/" + source + ".mp4";
-        var video = '<video id="video" src="'+ path + '" autoplay></video>';
+        var video = '<video id="playvideo" src="'+ path + '" autoplay></video>';
         console.log(video);
         // mediaPlayer.remove();
         $("#box").empty();
         $("#box").append(video);
         var video1 = $(document).find("#video")[0]
         video1.load();
-        initPlayer();
+        mediaPlayer = document.getElementById('playvideo');
 
-
-
-
-    }
-
-    function initPlayer(){
-        mediaPlayer = document.getElementById('video');
-        // mediaPlayer.addEventListener("ended", function () {
-        //     loadVideo("videos/1624568538346.webm");
-
-            // var box = document.getElementById("box");
-            // box.appendChild(video);
-            // document.getElementById("video").load();
-            // initPlayer();
-            // vid.remove();
-            // mediaPlayer.appendChild(video);
-            // mediaPlayer.play();
-        // })
     }
 
     function toggleVideo(){
@@ -195,10 +232,10 @@
         var id = window.api.getNewID();
         clips[id] = xclip;
         $("#list").append(new Option(name, id));
-        $("#name").val("");
-
-        var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
-        $("#container").append(item);
+        // $("#name").val("");
+        //
+        // var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
+        // $("#container").append(item);
     }
 
     function playClipHelper(){
@@ -207,8 +244,10 @@
         playClip(clip);
     }
 
-    function playClip(clip){
+    var playingclip = null;
 
+    function playClip(clip){
+        playingclip = clip;
         if(!(clip in clips)){
             return;
         }
@@ -217,6 +256,9 @@
                 clips[clip].available = true;
             }
             else{
+                setTimeout(() => {
+                    playClipWaiting(clip);
+                }, 1000)
                 return;
             }
         }
@@ -228,6 +270,7 @@
         })
         mediaPlayer.pause();
         mediaPlayer.currentTime = (videoclip.files[clipindex].start)/1000;
+        mediaPlayer.playbackRate = playspeed;
         mediaPlayer.play();
 
     }
@@ -241,6 +284,7 @@
             })
             mediaPlayer.pause();
             mediaPlayer.currentTime = (videoclip.files[clipindex].start)/1000;
+            mediaPlayer.playbackRate = playspeed;
             mediaPlayer.play();
         }
         else{
@@ -248,8 +292,34 @@
         }
     }
 
+    function playClipWaiting(clip){
+        if(clip !== playingclip){
+            return;
+        }
+        playClip(clip);
+    }
+
+    function changespeed(){
+        if(mediaPlayer !== null){
+            mediaPlayer.playbackRate = playspeed;
+        }
+    }
+
     function saveClips(){
         window.api.saveClips(clips);
+    }
+
+    function handleQueue(){
+        var queueclips = window.api.getClipQueue();
+        for(var id in queueclips){
+            clips[id] = queueclips[id];
+            $("#list").append(new Option("Generated", id));
+        }
+        var pending = window.api.getCliptoPlay();
+        if(pending !== null){
+            playClip(pending);
+        }
+
     }
 
     // document.addEventListener('DOMContentLoaded', function () {
@@ -279,103 +349,173 @@
 
 
     window.addEventListener("load", () => {
-        clips = window.api.loadClips();
-        for(id in clips){
-            $("#list").append(new Option(clips[id].name, id));
-            var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
-            $("#container").append(item);
-        }
+        // clips = window.api.loadClips();
+        // for(id in clips){
+        //     $("#list").append(new Option(clips[id].name, id));
+        //     var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
+        //     $("#container").append(item);
+        // }
     })
     console.log(window.api.getfiles());
+    setInterval(handleQueue, 500);
 
+    var lineArr = [];
+    var MAX_LENGTH = 100;
+    var duration = 500;
+    var chart = realTimeLineChart();
 
-
-    var dragItem = document.querySelector("#item");
-    var container = document.querySelector("#container");
-
-    var active = null;
-    var posInfo = {};
-    var currentX;
-    var currentY;
-    var initialX;
-    var initialY;
-    var xOffset = 0;
-    var yOffset = 0;
-
-    container.addEventListener("touchstart", dragStart, false);
-    container.addEventListener("touchend", dragEnd, false);
-    container.addEventListener("touchmove", drag, false);
-
-    container.addEventListener("mousedown", dragStart, false);
-    container.addEventListener("mouseup", dragEnd, false);
-    container.addEventListener("mousemove", drag, false);
-
-    function dragStart(e) {
-
-        // if (e.target === dragItem) {
-        //     active = true;
-        // }
-        if (e.target.classList.contains("draggable")){
-            active = e.target;
-            if(!(active.id in posInfo)){
-                posInfo[active.id] = {
-                    initialX: 0,
-                    initialY: 0,
-                    currentX: 0,
-                    currentY: 0,
-                    xOffset: 0,
-                    yOffset: 0
-                }
-            }
-
-            if (e.type === "touchstart") {
-                posInfo[active.id].initialX = e.touches[0].clientX - posInfo[active.id].xOffset;
-                posInfo[active.id].initialY = e.touches[0].clientY - posInfo[active.id].yOffset;
-            } else {
-                posInfo[active.id].initialX = e.clientX - posInfo[active.id].xOffset;
-                posInfo[active.id].initialY = e.clientY - posInfo[active.id].yOffset;
-            }
-
-
-        }
+    function randomNumberBounds(min, max) {
+        return Math.floor(Math.random() * max) + min;
     }
 
-    function dragEnd(e) {
-        if(active){
-            posInfo[active.id].initialX = posInfo[active.id].currentX;
-            posInfo[active.id].initialY = posInfo[active.id].currentY;
-            console.log("ID:" + active.id + " X: " + posInfo[active.id].currentX + " Y: " + posInfo[active.id].currentY)
+    function seedData() {
+        var now = new Date();
+        for (var i = 0; i < MAX_LENGTH; ++i) {
+            lineArr.push({
+                time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
+                x: 0,
+                // y: randomNumberBounds(0, 2.5),
+                // z: randomNumberBounds(0, 10)
+            });
+        }
+    }
+    var lastvalue = 0;
 
-            if(posInfo[active.id].currentX < -100 && posInfo[active.id].currentY < -100){
-                playClip(active.id);
+    function updateData() {
+
+        var data = window.api.pollSerial();
+        if(data.length > 0){
+            var clunk = data.pop();
+            lastvalue = clunk.x;
+            lineArr.push(clunk);
+            if(lineArr.length > 100){
+                lineArr.shift();
+            }
+        }
+        else{
+            var now = new Date();
+
+            var lineData = {
+                time: now,
+                x: lastvalue
+            };
+            lineArr.push(lineData);
+
+            if (lineArr.length > 100) {
+                lineArr.shift();
             }
         }
 
-
-        active = null;
+        d3.select("#chart").datum(lineArr).call(chart);
     }
 
-    function drag(e) {
-        if (!(active === null)) {
-            e.preventDefault();
-
-            if (e.type === "touchmove") {
-                posInfo[active.id].currentX = e.touches[0].clientX - posInfo[active.id].initialX;
-                posInfo[active.id].currentY = e.touches[0].clientY - posInfo[active.id].initialY;
-            } else {
-                posInfo[active.id].currentX = e.clientX - posInfo[active.id].initialX;
-                posInfo[active.id].currentY = e.clientY - posInfo[active.id].initialY;
-            }
-
-            posInfo[active.id].xOffset = posInfo[active.id].currentX;
-            posInfo[active.id].yOffset = posInfo[active.id].currentY;
-
-            setTranslate(posInfo[active.id].currentX, posInfo[active.id].currentY, active);
+    function resize() {
+        if (d3.select("#chart svg").empty()) {
+            return;
         }
+        chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
+        d3.select("#chart").call(chart);
     }
 
-    function setTranslate(xPos, yPos, el) {
-        el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    document.addEventListener("DOMContentLoaded", function() {
+        seedData();
+        window.setInterval(updateData, 100);
+        d3.select("#chart").datum(lineArr).call(chart);
+        d3.select(window).on('resize', resize);
+    });
+
+
+
+    // var dragItem = document.querySelector("#item");
+    // var container = document.querySelector("#container");
+    //
+    // var active = null;
+    // var posInfo = {};
+    // var currentX;
+    // var currentY;
+    // var initialX;
+    // var initialY;
+    // var xOffset = 0;
+    // var yOffset = 0;
+    //
+    // container.addEventListener("touchstart", dragStart, false);
+    // container.addEventListener("touchend", dragEnd, false);
+    // container.addEventListener("touchmove", drag, false);
+    //
+    // container.addEventListener("mousedown", dragStart, false);
+    // container.addEventListener("mouseup", dragEnd, false);
+    // container.addEventListener("mousemove", drag, false);
+    //
+    // function dragStart(e) {
+    //
+    //     // if (e.target === dragItem) {
+    //     //     active = true;
+    //     // }
+    //     if (e.target.classList.contains("draggable")){
+    //         active = e.target;
+    //         if(!(active.id in posInfo)){
+    //             posInfo[active.id] = {
+    //                 initialX: 0,
+    //                 initialY: 0,
+    //                 currentX: 0,
+    //                 currentY: 0,
+    //                 xOffset: 0,
+    //                 yOffset: 0
+    //             }
+    //         }
+    //
+    //         if (e.type === "touchstart") {
+    //             posInfo[active.id].initialX = e.touches[0].clientX - posInfo[active.id].xOffset;
+    //             posInfo[active.id].initialY = e.touches[0].clientY - posInfo[active.id].yOffset;
+    //         } else {
+    //             posInfo[active.id].initialX = e.clientX - posInfo[active.id].xOffset;
+    //             posInfo[active.id].initialY = e.clientY - posInfo[active.id].yOffset;
+    //         }
+    //
+    //
+    //     }
+    // }
+    //
+    // function dragEnd(e) {
+    //     if(active){
+    //         posInfo[active.id].initialX = posInfo[active.id].currentX;
+    //         posInfo[active.id].initialY = posInfo[active.id].currentY;
+    //         console.log("ID:" + active.id + " X: " + posInfo[active.id].currentX + " Y: " + posInfo[active.id].currentY)
+    //
+    //         if(posInfo[active.id].currentX < -100 && posInfo[active.id].currentY < -100){
+    //             playClip(active.id);
+    //         }
+    //     }
+    //
+    //
+    //     active = null;
+    // }
+    //
+    // function drag(e) {
+    //     if (!(active === null)) {
+    //         e.preventDefault();
+    //
+    //         if (e.type === "touchmove") {
+    //             posInfo[active.id].currentX = e.touches[0].clientX - posInfo[active.id].initialX;
+    //             posInfo[active.id].currentY = e.touches[0].clientY - posInfo[active.id].initialY;
+    //         } else {
+    //             posInfo[active.id].currentX = e.clientX - posInfo[active.id].initialX;
+    //             posInfo[active.id].currentY = e.clientY - posInfo[active.id].initialY;
+    //         }
+    //
+    //         posInfo[active.id].xOffset = posInfo[active.id].currentX;
+    //         posInfo[active.id].yOffset = posInfo[active.id].currentY;
+    //
+    //         setTranslate(posInfo[active.id].currentX, posInfo[active.id].currentY, active);
+    //     }
+    // }
+    //
+    // function setTranslate(xPos, yPos, el) {
+    //     el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    // }
+
+    function takePhoto(){
+        window.api.takePhoto();
     }
 
 
