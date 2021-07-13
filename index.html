@@ -17,12 +17,27 @@
         #chart {
             max-width: 600px;
             max-height: 400px;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            background: white;
+            opacity: 1;
+        }
+
+        #topbar {
+            width: 1440px;
+            height: 100px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background: aquamarine;
+            z-index: 0;
         }
 
 
         #container {
-            width: 700px;
-            height: 500px;
+            width: 1080px;
+            height: 720px;
             background-color: #333;
             display: flex;
             flex-wrap: wrap;
@@ -32,6 +47,7 @@
             border-radius: 7px;
             touch-action: none;
             position: relative;
+            opacity: 0;
         }
         .draggable {
             width: 50px;
@@ -55,6 +71,7 @@
         #box {
             width: 700px;
             height: 500px;
+            position: absolute;
         }
 
         #bounding {
@@ -70,13 +87,19 @@
             align-items: center;
         }
         #display {
-            max-height: 400px;
+            height: 800px;
+            width: 400px;
             overflow-x: auto;
+            position: absolute;
+            top: 500px;
+            left: 500px;
+            background: white;
+            opacity: 1;
         }
 
         #playarea {
-            width: 250px;
-            height: 150px;
+            width: 1080px;
+            height: 720px;
             flex: 0 0 auto;
             position: absolute;
             transform: translate3d(-230px, -180px, 0px);
@@ -97,6 +120,16 @@
         /*    transform: scaleX(-1);*/
         /*}*/
 
+        #mainbox {
+            height: 950px;
+            width: 1440px;
+            background-color: grey;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            opacity: 1;
+        }
+
     </style>
 
 </head>
@@ -106,10 +139,35 @@
 <!--We are using Node.js <span id="node-version"></span>,-->
 <!--Chromium <span id="chrome-version"></span>,-->
 <!--and Electron <span id="electron-version"></span>.-->
-<div id="bounding">
+<div id="mainbox">
+    <div id="topbar"></div>
+    <div id="chart"></div>
+    <pre id="display"></pre>
     <div id="box">
         <!--    <video id="video" src="videos/1624567955073.webm">-->
     </div>
+
+
+</div>
+
+<div id="outerContainer">
+    <div id="container">
+<!--        <div id="playarea" class="area">-->
+
+
+<!--        </div>-->
+                <div id="item" class="draggable">
+
+                </div>
+        <!--        <div id="item2" class="draggable">-->
+
+        <!--        </div>-->
+    </div>
+</div>
+
+
+<div id="bounding">
+
     <div id="box2">
         <video id="video" autoplay style="display:none;"></video>
         <canvas id="canvas" style="width:640px; height:480px;"></canvas>
@@ -117,20 +175,7 @@
 
 
 
-<!--    <div id="outerContainer">-->
-<!--        <div id="container">-->
-<!--            <div id="playarea" class="area">-->
 
-
-<!--            </div>-->
-<!--            &lt;!&ndash;        <div id="item" class="draggable">&ndash;&gt;-->
-
-<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
-<!--            &lt;!&ndash;        <div id="item2" class="draggable">&ndash;&gt;-->
-
-<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
-<!--        </div>-->
-<!--    </div>-->
 
 </div>
 
@@ -143,8 +188,8 @@
 <!--<div id="line1">1 2 3</div>-->
 <!--<div id="line2">1 2 3</div>-->
 <div id="box3">
-    <div id="chart"></div>
-    <pre id="display"></pre>
+
+
 
 </div>
 
@@ -153,59 +198,65 @@
 <button id="recording" onclick="toggleRecording()">Record</button>
 
 
-<label for="list">Clip List</label>
-<select id="list" name="list"></select>
-<label for="name">Clip Name:</label>
-<input type="text" id="name" placeholder="Enter Clip Name">
-<button id="clip" onclick="clip()">Clip</button>
-<button id="play-last-clip" onclick="playClipHelper()">Play Clip</button>
-<button id="save-clips" onclick="saveClips()">Save Clips</button>
-<button id="take-photo" onclick="takePhoto()">Take Photo</button>
+<!--<label for="list">Clip List</label>-->
+<!--<select id="list" name="list"></select>-->
+<!--<label for="name">Clip Name:</label>-->
+<!--<input type="text" id="name" placeholder="Enter Clip Name">-->
+<!--<button id="clip" onclick="clip()">Clip</button>-->
+<!--<button id="play-last-clip" onclick="playClipHelper()">Play Clip</button>-->
+<!--<button id="save-clips" onclick="saveClips()">Save Clips</button>-->
+<!--<button id="take-photo" onclick="takePhoto()">Take Photo</button>-->
 
 
 <script src="modules/script.js"></script>
 <script type = "text/javascript">
 
-    var mediaPlayer = null;
+//    var mediaPlayer = null;
 
     var recording = false;
     var progressBar;
     // var video = '<video id="video" src="videos/example2.webm" autoplay></video>';
 
-    var videoclip;
+    // var videoclip;
     var clips = {};
-    var clipindex = 0;
+    // var clipindex = 0;
     var playspeed = 1.0;
+    var clipindexes = {};
+    var playingclips = {};
+
 
 
     function errorCallback(e) {
         console.log('Error', e)
     }
 
-    function loadVideo(source){
+    function loadVideo(source, id){
         var path = "./videos/" + source + ".mp4";
-        var video = '<video id="playvideo" src="'+ path + '" autoplay></video>';
+        var vidooid = window.api.getNewID() + "";
+        var video = '<video id=\"' + vidooid + '\" src="'+ path + '\" autoplay></video>';
         console.log(video);
         // mediaPlayer.remove();
-        $("#box").empty();
-        $("#box").append(video);
-        var video1 = $(document).find("#video")[0]
+        var idstring = "#" + id;
+        $(idstring).empty();
+        $(idstring).append(video);
+        var video1 = $(document).find(vidooid)[0]
         video1.load();
-        mediaPlayer = document.getElementById('playvideo');
+        var media = document.getElementById(vidooid);
+        return media
 
     }
 
-    function toggleVideo(){
-        var btn = document.getElementById('play-pause')
-        if (mediaPlayer.paused || mediaPlayer.ended){
-            btn.innerHTML = "Pause Video";
-            mediaPlayer.play();
-        }
-        else{
-            btn.innerHTML = "Play Video";
-            mediaPlayer.pause();
-        }
-    }
+    // function toggleVideo(){
+    //     var btn = document.getElementById('play-pause')
+    //     if (mediaPlayer.paused || mediaPlayer.ended){
+    //         btn.innerHTML = "Pause Video";
+    //         mediaPlayer.play();
+    //     }
+    //     else{
+    //         btn.innerHTML = "Play Video";
+    //         mediaPlayer.pause();
+    //     }
+    // }
 
     function toggleRecording(){
         if(recording){
@@ -237,17 +288,17 @@
         // var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
         // $("#container").append(item);
     }
-
-    function playClipHelper(){
-        var list = $("#list");
-        var clip = list.val();
-        playClip(clip);
-    }
+    //
+    // function playClipHelper(){
+    //     var list = $("#list");
+    //     var clip = list.val();
+    //     playClip(clip);
+    // }
 
     var playingclip = null;
 
-    function playClip(clip){
-        playingclip = clip;
+    function playClip(clip, id){
+        playingclips[id] = clip;
         if(!(clip in clips)){
             return;
         }
@@ -257,53 +308,55 @@
             }
             else{
                 setTimeout(() => {
-                    playClipWaiting(clip);
+                    playClipWaiting(clip, id);
                 }, 1000)
                 return;
             }
         }
-        videoclip = clips[clip];
-        clipindex = 0;
-        loadVideo(videoclip.files[clipindex].file);
-        mediaPlayer.addEventListener("ended", function () {
-            playNextFile();
+        playingclips[id] = clips[clip];
+        clipindexes[id] = 0;
+        // videoclip = clips[clip];
+        // clipindex = 0;
+        var media = loadVideo(playingclips[id].files[clipindexes[id]].file, id);
+        media.addEventListener("ended", function () {
+            playNextFile(media, id);
         })
-        mediaPlayer.pause();
-        mediaPlayer.currentTime = (videoclip.files[clipindex].start)/1000;
-        mediaPlayer.playbackRate = playspeed;
-        mediaPlayer.play();
+        media.pause();
+        media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+        // media.playbackRate = playspeed;
+        media.play();
 
     }
 
-    function playNextFile(){
-        clipindex++;
-        if(clipindex < videoclip.files.length){
-            loadVideo(videoclip.files[clipindex].file);
-            mediaPlayer.addEventListener("ended", function () {
+    function playNextFile(media, id){
+        clipindexes[id]++;
+        if(clipindexes[id] < playingclips[id].files.length){
+            loadVideo(playingclips[id].files[clipindexes[id]].file);
+            media.addEventListener("ended", function () {
                 playNextFile();
             })
-            mediaPlayer.pause();
-            mediaPlayer.currentTime = (videoclip.files[clipindex].start)/1000;
-            mediaPlayer.playbackRate = playspeed;
-            mediaPlayer.play();
+            media.pause();
+            media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+            // media.playbackRate = playspeed;
+            media.play();
         }
         else{
-            clipindex = 0;
+            clipindexes[id] = 0;
         }
     }
 
-    function playClipWaiting(clip){
+    function playClipWaiting(clip, id){
         if(clip !== playingclip){
             return;
         }
-        playClip(clip);
+        playClip(clip, id);
     }
 
-    function changespeed(){
-        if(mediaPlayer !== null){
-            mediaPlayer.playbackRate = playspeed;
-        }
-    }
+    // function changespeed(){
+    //     if(mediaPlayer !== null){
+    //         mediaPlayer.playbackRate = playspeed;
+    //     }
+    // }
 
     function saveClips(){
         window.api.saveClips(clips);
@@ -316,8 +369,8 @@
             $("#list").append(new Option("Generated", id));
         }
         var pending = window.api.getCliptoPlay();
-        if(pending !== null){
-            playClip(pending);
+        if(pending[0] !== null){
+            playClip(pending[0], pending[1]);
         }
 
     }
@@ -358,6 +411,8 @@
     })
     console.log(window.api.getfiles());
     setInterval(handleQueue, 500);
+
+
 
     var lineArr = [];
     var MAX_LENGTH = 100;
@@ -482,9 +537,9 @@
     //         posInfo[active.id].initialY = posInfo[active.id].currentY;
     //         console.log("ID:" + active.id + " X: " + posInfo[active.id].currentX + " Y: " + posInfo[active.id].currentY)
     //
-    //         if(posInfo[active.id].currentX < -100 && posInfo[active.id].currentY < -100){
-    //             playClip(active.id);
-    //         }
+    //         // if(posInfo[active.id].currentX < -100 && posInfo[active.id].currentY < -100){
+    //         //     playClip(active.id);
+    //         // }
     //     }
     //
     //
@@ -509,10 +564,10 @@
     //         setTranslate(posInfo[active.id].currentX, posInfo[active.id].currentY, active);
     //     }
     // }
-    //
-    // function setTranslate(xPos, yPos, el) {
-    //     el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
-    // }
+
+    function setTranslate(xPos, yPos, el) {
+        el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    }
 
     function takePhoto(){
         window.api.takePhoto();

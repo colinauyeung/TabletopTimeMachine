@@ -47,8 +47,21 @@ CD.startup = function(){
                 return
             }
             CD.last = data;
+            const display = document.getElementById('display'),
+                fragment = document.createDocumentFragment();
+
+            display.innerHTML = "";
+            display.innerText = "";
+
+            span = document.createElement('span');
+            span.appendChild(document
+                .createTextNode(CD.last));
+            span.style.color = "grey";
+            fragment.appendChild(span);
+            display.appendChild(fragment);
             CD.startpolling();
         })
+
 
 
 

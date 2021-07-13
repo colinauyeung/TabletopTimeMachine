@@ -171,4 +171,24 @@ VI.getrotation = function(canvas, unadjusted_corners){
 
 }
 
+VI.getRealPos = function(corners, point){
+
+    // var srcCorners = [158, 64, 494, 69, 495, 404, 158, 404];
+    // var dstCorners = [100, 500, 152, 564, 148, 604, 100, 560];
+    // var perspT = PerspT(srcCorners, dstCorners);
+    // var srcPt = [250, 120];
+    // var dstPt = perspT.transform(srcPt[0], srcPt[1]);
+    // console.log(srcCorners);
+    // return dstPt;
+
+    var source = [corners[0].x, corners[0].y,corners[1].x, corners[1].y,corners[2].x, corners[2].y,corners[3].x, corners[3].y];
+    var des = [0, 0, 1440, 0, 1440, 950, 0, 950];
+    console.log(source);
+    console.log(point);
+    var perspT = PerspT(source, des);
+    // var srcPt = [250, 120];
+    return dstPt = perspT.transform(point.x, point.y);
+    // return [0-dstPt[0], 0-dstPt[1]];
+}
+
 
