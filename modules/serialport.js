@@ -6,6 +6,7 @@ const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
 SP.ardata = [];
 SP.currentardata = [];
+SP.visdata = [];
 
 SP.openserial = function(){
     SP.port = new SerialPort('COM5', {
@@ -24,8 +25,8 @@ SP.openserial = function(){
         var now = new Date();
         var clunk = {
             time: now,
-            timecode: Date.now(),
-            x: parseInt(data).valueOf()
+            x: Date.now(),
+            y: parseInt(data).valueOf()
         }
         // console.log(typeof now);
         SP.ardata.push(clunk);

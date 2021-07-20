@@ -7,7 +7,11 @@
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+<!--    <script src="https://d3js.org/d3.v7.min.js"></script>-->
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
 
 
     <style>
@@ -88,6 +92,16 @@
         }
         #display {
             height: 800px;
+            width: 400px;
+            overflow-x: auto;
+            position: absolute;
+            top: 500px;
+            left: 500px;
+            background: white;
+            opacity: 1;
+        }
+        .code {
+            height: 400px;
             width: 400px;
             overflow-x: auto;
             position: absolute;
@@ -196,6 +210,8 @@
 
 
 <button id="recording" onclick="toggleRecording()">Record</button>
+<button id="s-start" onclick="window.api.openSerial()">Start Serial</button>
+<button id="s-stop" onclick="window.api.closeSerial()">Stop Serial</button>
 
 
 <!--<label for="list">Clip List</label>-->
@@ -223,12 +239,17 @@
     var playspeed = 1.0;
     var clipindexes = {};
     var playingclips = {};
+    var playingclipsv2 = {};
 
 
 
     function errorCallback(e) {
         console.log('Error', e)
     }
+
+
+
+
 
     function loadVideo(source, id){
         var path = "./videos/" + source + ".mp4";
@@ -239,9 +260,10 @@
         var idstring = "#" + id;
         $(idstring).empty();
         $(idstring).append(video);
-        var video1 = $(document).find(vidooid)[0]
-        video1.load();
+        // var video1 = $(document).find(vidooid)[0]
+        // video1.load();
         var media = document.getElementById(vidooid);
+        media.load();
         return media
 
     }
@@ -313,7 +335,11 @@
                 return;
             }
         }
+
+
+
         playingclips[id] = clips[clip];
+        console.log(playingclips[id]);
         clipindexes[id] = 0;
         // videoclip = clips[clip];
         // clipindex = 0;
@@ -323,7 +349,7 @@
         })
         media.pause();
         media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-        // media.playbackRate = playspeed;
+        media.playbackRate = playspeed;
         media.play();
 
     }
@@ -331,25 +357,210 @@
     function playNextFile(media, id){
         clipindexes[id]++;
         if(clipindexes[id] < playingclips[id].files.length){
-            loadVideo(playingclips[id].files[clipindexes[id]].file);
+            loadVideo(playingclips[id].files[clipindexes[id]].file, id);
             media.addEventListener("ended", function () {
-                playNextFile();
+                playNextFile(media, id);
             })
-            media.pause();
-            media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+            // media.pause();
+            // media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
             // media.playbackRate = playspeed;
-            media.play();
+            // media.play();
         }
         else{
             clipindexes[id] = 0;
+            loadVideo(playingclips[id].files[clipindexes[id]].file, id);
+            media.addEventListener("ended", function () {
+                playNextFile(media, id);
+            })
+            media.pause();
+            media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+            media.playbackRate = playspeed;
+            media.play();
+
         }
     }
 
     function playClipWaiting(clip, id){
-        if(clip !== playingclip){
+        if(clip !== playingclips[id]){
             return;
         }
         playClip(clip, id);
+    }
+
+    function playClipWaitingv2(clip, id){
+        // if(clip !== playingclips[id]){
+        //     return;
+        // }
+        playClipv2(clip, id);
+    }
+
+    //https://stackoverflow.com/questions/52514522/html5-video-how-to-seamlessly-play-several-videos-and-then-loop-the-sequence
+    function playClipv2(clip, id){
+        if(!(clip in clips)){
+            return;
+        }
+        if(!(clips[clip].available)){
+            if(window.api.checkAva(clips[clip])){
+                clips[clip].available = true;
+            }
+            else{
+                setTimeout(() => {
+                    playClipWaitingv2(clip, id);
+                }, 1000)
+                return;
+            }
+        }
+        console.log("Playing Clip "+ clip);
+
+        var clipobject = clips[clip];
+        var clunk = {
+            nextVideo: null,
+            videoObjects: [
+                document.createElement('video'),
+                document.createElement('video')
+            ],
+            clip: clipobject,
+            nextActiveVideo: 0,
+            reset: false
+
+        }
+        var idstring = "#" + id;
+        $(idstring).empty();
+        var container = document.getElementById(id + "");
+        container.style.width = "800px";
+        var videoContainer = document.createElement('div');
+        videoContainer.id = "videocontainer" + id;
+        videoContainer.style.float = "left";
+
+        container.appendChild(videoContainer);
+        var chart = document.createElement("div");
+        var chartid = "chart" + id;
+        chart.id = chartid;
+        chart.style.float = "left";
+
+        container.appendChild(chart);
+        var diff = document.createElement("pre");
+        var diffid = "diff" + id;
+        diff.id = diffid;
+        diff.className = "code";
+        container.appendChild(diff);
+        window.api.testdiff("./codeversions/" + clunk.clip.codefiles[0].file + ".txt",
+            "./codeversions/" + clunk.clip.codefiles[clunk.clip.codefiles.length-1].file + ".txt",
+            diffid);
+
+
+
+
+
+
+            //
+            // nextVideo,
+            // videoObjects =
+            //     [
+            //         document.createElement('video'),
+            //         document.createElement('video')
+            //     ],
+            // vidSources =
+            //     [
+            //         "http://www.w3schools.com/html/mov_bbb.mp4",
+            //         "http://www.w3schools.com/html/movie.mp4",
+            //         "http://www.w3schools.com/html/mov_bbb.mp4",
+            //         "http://www.w3schools.com/html/movie.mp4",
+            //         "http://www.w3schools.com/html/mov_bbb.mp4",
+            //         "http://www.w3schools.com/html/movie.mp4"
+            //         //this list could be additionally filled without any other changing from code
+            //     ],
+            // //random starting point
+            // nextActiveVideo = Math.floor((Math.random() * vidSources.length));
+
+        clunk.videoObjects[0].inx = 0; //set index
+        clunk.videoObjects[1].inx = 1;
+
+        initVideoElement(clunk.videoObjects[0], clunk);
+        initVideoElement(clunk.videoObjects[1], clunk);
+
+        clunk.videoObjects[0].autoplay = true;
+
+        clunk.videoObjects[0].src = "./videos/" + clunk.clip.files[clunk.nextActiveVideo].file + ".mp4";
+        // clunk.videoObjects[0].currentTime = (clunk.clip.files[clunk.nextActiveVideo].start)/1000;
+        //
+
+
+        videoContainer.appendChild(clunk.videoObjects[0]);
+        //
+        // videoContainer.appendChild(clunk.videoObjects[0]);
+
+        clunk.videoObjects[1].style.display = 'none';
+        videoContainer.appendChild(clunk.videoObjects[1]);
+        // videoContainer.appendChild(videoObjects[1]);
+        console.log( clunk.clip.serialdata);
+        var vlSpec2 = {
+            $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+            data: {values: clunk.clip.serialdata},
+            width: 400,
+            mark: 'line',
+            encoding: {
+                x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+                y: {field: 'y', type: 'quantitative'},
+                color: {field: 'category', type: 'nominal'}
+            }
+        };
+
+        vegaEmbed("#" + chartid, vlSpec2);
+
+        //     .then(function (res) {
+        //     var currentindex = 0;
+        //     var currenttime = 0;
+        //     function nextdata (){
+        //         currenttime = clunk.clip.serialdata[currentindex].x;
+        //         var changeSet = vega
+        //             .changeset()
+        //             .remove(function (t) {
+        //                 return currentindex === 0;
+        //             })
+        //             .insert(clunk.clip.serialdata[currentindex]);
+        //         res.view.change('table', changeSet).run();
+        //         currentindex++;
+        //         if(currentindex >= clunk.clip.serialdata.length){
+        //             currentindex = 0;
+        //         }
+        //         window.setTimeout(nextdata, clunk.clip.serialdata[currentindex].x - currenttime);
+        //     }
+        //
+        //     window.setTimeout(nextdata, clunk.clip.serialdata[currentindex].x - currenttime);
+        // });
+
+        function initVideoElement(video, clunk)
+        {
+            video.playsinline = true;
+            video.muted = false;
+            video.preload = 'auto'; //but do not set autoplay, because it deletes preload
+
+            //loadedmetadata is wrong because if we use it then we get endless loop
+            video.onplaying = function(e)
+            {
+
+                //select next index. If is equal vidSources.length then it is 0
+                clunk.nextActiveVideo = ++clunk.nextActiveVideo % clunk.clip.files.length;
+
+                //replace the video elements against each other:
+                if(this.inx === 0)
+                    clunk.nextVideo = clunk.videoObjects[1];
+                else
+                    clunk.nextVideo = clunk.videoObjects[0];
+
+                clunk.nextVideo.src = "./videos/" + clunk.clip.files[clunk.nextActiveVideo].file + ".mp4";
+                // clunk.nextVideo.currentTime = (clunk.clip.files[clunk.nextActiveVideo].start)/1000;
+                clunk.nextVideo.pause();
+            };
+
+            video.onended = function(e)
+            {
+                this.style.display = 'none';
+                clunk.nextVideo.style.display = 'block';
+                clunk.nextVideo.play();
+            };
+        }
     }
 
     // function changespeed(){
@@ -370,7 +581,8 @@
         }
         var pending = window.api.getCliptoPlay();
         if(pending[0] !== null){
-            playClip(pending[0], pending[1]);
+            console.log(pending[0]);
+            playClipv2(pending[0], pending[1]);
         }
 
     }
@@ -414,69 +626,140 @@
 
 
 
-    var lineArr = [];
-    var MAX_LENGTH = 100;
-    var duration = 500;
-    var chart = realTimeLineChart();
+    // var lineArr = [];
+    // var MAX_LENGTH = 100;
+    // var duration = 500;
+    // var chart = realTimeLineChart();
+    //
+    // function randomNumberBounds(min, max) {
+    //     return Math.floor(Math.random() * max) + min;
+    // }
+    //
+    // function seedData() {
+    //     var now = new Date();
+    //     for (var i = 0; i < MAX_LENGTH; ++i) {
+    //         lineArr.push({
+    //             time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
+    //             x: 0,
+    //             // y: randomNumberBounds(0, 2.5),
+    //             // z: randomNumberBounds(0, 10)
+    //         });
+    //     }
+    // }
+    // var lastvalue = 0;
+    //
+    // function updateData() {
+    //
+    //     var data = window.api.pollSerial();
+    //     if(data.length > 0){
+    //         var clunk = data.pop();
+    //         lastvalue = clunk.x;
+    //         lineArr.push(clunk);
+    //         if(lineArr.length > 100){
+    //             lineArr.shift();
+    //         }
+    //     }
+    //     else{
+    //         var now = new Date();
+    //
+    //         var lineData = {
+    //             time: now,
+    //             x: lastvalue
+    //         };
+    //         lineArr.push(lineData);
+    //
+    //         if (lineArr.length > 100) {
+    //             lineArr.shift();
+    //         }
+    //     }
+    //
+    //     d3.select("#chart").datum(lineArr).call(chart);
+    // }
+    //
+    // function resize() {
+    //     if (d3.select("#chart svg").empty()) {
+    //         return;
+    //     }
+    //     chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
+    //     d3.select("#chart").call(chart);
+    // }
+    //
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     seedData();
+    //     window.setInterval(updateData, 100);
+    //     d3.select("#chart").datum(lineArr).call(chart);
+    //     d3.select(window).on('resize', resize);
+    // });
 
-    function randomNumberBounds(min, max) {
-        return Math.floor(Math.random() * max) + min;
-    }
-
-    function seedData() {
-        var now = new Date();
-        for (var i = 0; i < MAX_LENGTH; ++i) {
-            lineArr.push({
-                time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
-                x: 0,
-                // y: randomNumberBounds(0, 2.5),
-                // z: randomNumberBounds(0, 10)
-            });
+    var vlSpec = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+        data: {name: 'table'},
+        width: 400,
+        mark: 'line',
+        encoding: {
+            x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+            y: {field: 'y', type: 'quantitative'},
+            color: {field: 'category', type: 'nominal'}
         }
-    }
-    var lastvalue = 0;
+    };
+    vegaEmbed('#chart', vlSpec).then(function (res) {
+        /**
+         * Generates a new tuple with random walk.
+         */
+        // function newGenerator() {
+        //     var counter = -1;
+        //     var previousY = [5, 5, 5, 5];
+        //     return function () {
+        //         counter++;
+        //         var newVals = previousY.map(function (v, c) {
+        //             return {
+        //                 x: counter,
+        //                 y: Math.random(),
+        //                 // y: v + Math.round(Math.random() * 10 - c * 3),
+        //                 category: c
+        //             };
+        //         });
+        //         previousY = newVals.map(function (v) {
+        //             return v.y;
+        //         });
+        //         return newVals;
+        //     };
+        // }
+        var lastvalue = 0;
+        function fetchdata (){
+            var data = window.api.pollSerial();
+            var value;
+            if(data.length > 0){
+                var clunk = data.pop();
+                lastvalue = clunk.y;
+                value = {
+                    x: clunk.x,
+                    y: [clunk.y]
+                }
 
-    function updateData() {
-
-        var data = window.api.pollSerial();
-        if(data.length > 0){
-            var clunk = data.pop();
-            lastvalue = clunk.x;
-            lineArr.push(clunk);
-            if(lineArr.length > 100){
-                lineArr.shift();
             }
-        }
-        else{
-            var now = new Date();
-
-            var lineData = {
-                time: now,
-                x: lastvalue
-            };
-            lineArr.push(lineData);
-
-            if (lineArr.length > 100) {
-                lineArr.shift();
+            else{
+                value = {
+                    x: Date.now(),
+                    y: [lastvalue]
+                }
             }
+            window.api.addVisdata(value);
+            return value;
         }
 
-        d3.select("#chart").datum(lineArr).call(chart);
-    }
-
-    function resize() {
-        if (d3.select("#chart svg").empty()) {
-            return;
-        }
-        chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
-        d3.select("#chart").call(chart);
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        seedData();
-        window.setInterval(updateData, 100);
-        d3.select("#chart").datum(lineArr).call(chart);
-        d3.select(window).on('resize', resize);
+        // var valueGenerator = newGenerator();
+        var minimumX = Date.now()-10000;
+        window.setInterval(function () {
+            minimumX = minimumX + 100;
+            var changeSet = vega
+                .changeset()
+                .insert(fetchdata())
+                .remove(function (t) {
+                    return t.x < minimumX;
+                });
+            res.view.change('table', changeSet).run();
+        }, 100);
     });
 
 

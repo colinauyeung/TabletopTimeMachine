@@ -159,7 +159,7 @@ int duration, cm;
 
  
 void setup() {
-
+  //Serial Port begins
   Serial.begin (9600);
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
@@ -168,12 +168,17 @@ void setup() {
 }
 
 void loop() {
+//  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
+//  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
   digitalWrite(trigger, LOW);
   delayMicroseconds(5);
   digitalWrite(trigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
-
+// 
+//  // Read the signal from the sensor: a HIGH pulse whose
+//  // duration is the time (in microseconds) from the sending
+//  // of the ping to the reception of its echo off of an object.
   pinMode(echo, INPUT);
   duration = pulseIn(echo, HIGH);
   cm = (duration/2) / 29.1; 
@@ -183,7 +188,28 @@ void loop() {
   else{
     digitalWrite(led, LOW);
   }
+//
+//
 
-  Serial.println(cm);
+// 
+//  // Read the signal from the sensor: a HIGH pulse whose
+//  // duration is the time (in microseconds) from the sending
+//  // of the ping to the reception of its echo off of an object.
+//  pinMode(echoPin2, INPUT);
+//  duration2 = pulseIn(echoPin2, HIGH);
+//
+//    
+//    //  Serial.print(inches);
+//    //  Serial.print("in, ");
+    Serial.println(cm);
+//    //  Serial.print("cm");
+//    //  Serial.println();
+//  }
+//
+//
+// 
+//
+//
+//  
   delay(10);
 }

@@ -6,6 +6,7 @@ const Diff = require('diff');
 
 
 const inofile = 'sketch_jun16a/sketch_jun16a.ino';
+CD.files = []
 
 CD.fsWait = false;
 CD.last = '';
@@ -59,6 +60,12 @@ CD.startup = function(){
             span.style.color = "grey";
             fragment.appendChild(span);
             display.appendChild(fragment);
+            var filename = Date.now();
+            fs.writeFile("./codeversions/" + filename + ".txt", data, (err) => {
+                if (err) throw err;
+                CD.files.push(filename);
+                console.log('Data written to file');
+            })
             CD.startpolling();
         })
 
@@ -86,8 +93,9 @@ CD.testdiff = function(){
                 return
             }
             var filename = Date.now();
-            fs.writeFile(filename + ".txt", data, (err) => {
+            fs.writeFile("./codeversions/" + filename + ".txt", data, (err) => {
                 if (err) throw err;
+                CD.files.push(filename);
                 console.log('Data written to file');
             })
 
@@ -188,5 +196,101 @@ CD.testdiff = function(){
     })
 
 
+
+}
+
+CD.testdifffiles = function(file1, file2, selector) {
+    fs.access(file1, fs.F_OK, (err) => {
+        if (err) {
+            console.error(err)
+            setTimeout(() => {
+                CD.testdiff(file1, file2, selector)
+
+            }, 1000)
+            return
+        }
+        fs.access(file2, fs.F_OK, (err) => {
+            if (err) {
+                console.error(err)
+                setTimeout(() => {
+                    CD.testdiff(file1, file2, selector)
+
+                }, 1000)
+                return
+            }
+
+            fs.readFile(file1, 'utf8', (err, data1) => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                fs.readFile(file2, 'utf8', (err, data2) => {
+                    if (err) {
+                        console.error(err)
+                        return
+                    }
+                    var diff = Diff.diffLines(data1, data2);
+                    const display = document.getElementById(selector),
+                        fragment = document.createDocumentFragment();
+
+                    display.innerHTML = "";
+                    display.innerText = "";
+                    diff.forEach((part) => {
+                        // green for additions, red for deletions
+                        // grey for common parts
+                        var color;
+                        // = part.added ? 'green' :
+                        // part.removed ? 'red' : 'grey';
+                        let usealt = false;
+                        var newtext = "";
+                        if (part.added)
+                            color = 'green';
+                        else {
+                            if (part.removed) {
+                                color = 'red'
+                            } else {
+
+                                var lines = part.value.split('\n');
+                                if (lines.length > 10) {
+                                    usealt = true;
+                                    for (let i = 0; i < 5; i++) {
+                                        newtext = newtext + "\n" + lines.shift();
+                                    }
+                                    newtext = newtext + "\n ... \n";
+                                    // lines.reverse();
+                                    var endlines = [];
+                                    for (let i = 0; i < 5; i++) {
+                                        endlines.push(lines.pop());
+                                    }
+                                    endlines.reverse();
+                                    endlines.forEach((line) => {
+                                        newtext = newtext + "\n" + line;
+                                    });
+                                }
+
+
+                            }
+                        }
+                        span = document.createElement('span');
+                        span.style.color = color;
+                        if (usealt) {
+                            span.appendChild(document
+                                .createTextNode(newtext));
+                        } else {
+                            span.appendChild(document
+                                .createTextNode(part.value));
+                        }
+
+                        fragment.appendChild(span);
+                    });
+
+                    display.appendChild(fragment);
+
+                })
+
+            })
+
+        })
+    })
 
 }

@@ -32,8 +32,9 @@ var camera;
 var filename;
 var blobs = [];
 var looprecording = false;
-var recordingtime = 30000;
+var recordingtime = 10000;
 var lastchecked = 0;
+var tracktime = 300000;
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
@@ -116,20 +117,15 @@ function handleStream(stream) {
 
 
 
-
-
-
-
-
-
 var firstfind = false;
+var markerout = {};
 
 
 function tick(){
     requestAnimationFrame(tick);
     let currenttime = Date.now();
     var box = document.getElementById("mainbox");
-    if(currenttime - 6000 > lastchecked){
+    if((currenttime - (tracktime/10)) > lastchecked){
         if(camera !== null){
             console.log(camera);
             camera.takePhoto().then((blob) => {
@@ -140,8 +136,8 @@ function tick(){
                 x.id = (currenttime) + "";
                 x.style.position = "absolute";
                 x.style.top = "0px";
-                x.style.maxWidth = ((1440/60000) * 6000) + 2 + "px";
-                x.style.left = ((1440/60000) * (Date.now() - (currenttime))) -140+ "px";
+                x.style.maxWidth = ((1440/tracktime) * (tracktime/10) ) + 2 + "px";
+                x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
                 box.appendChild(x);
 
                 // console.log(blob)
@@ -173,11 +169,11 @@ function tick(){
         if(box.children[i].className === "tick"){
             var timestamp = box.children[i].id
             timestamp = parseInt(timestamp).valueOf();
-            if(timestamp < currenttime - (60000 + 6000)){
+            if(timestamp < currenttime - (tracktime + (tracktime/10))){
                 document.getElementById(box.children[i].id).remove();
             }
             else{
-                var pos = ((1440/60000) * (currenttime - timestamp))-140;
+                var pos = ((1440/tracktime) * (currenttime - timestamp))-140;
                 box.children[i].style.left = pos + "px";
             }
         }
@@ -187,6 +183,7 @@ function tick(){
         VI.snapshot(context);
 
         var markers = detector.detect(VI.imageData);
+        VI.drawCorners(context, markers);
         VI.findcorners(markers);
 
 
@@ -199,20 +196,23 @@ function tick(){
 
         if(VI.allcornersfound()){
             VI.findmainbox();
-            VI.findinterbox();
+            // VI.findinterbox();
             VI.drawId(context, markers);
             if(firstfind){
                 // console.log(VI.interactionbox);
                 markers.push(VI.workingbox);
-                markers.push(VI.interactionbox);
+                // markers.push(VI.interactionbox);
             }
 
 
             VI.drawCorners(context, markers);
             markers.forEach((marker) => {
                 if(marker.id > 5){
-
+                    if(!(marker.id in markerout)){
+                        markerout[marker.id] = 0;
+                    }
                     if(MP.in_box(marker.corners, VI.workingbox)){
+                        markerout[marker.id] = 0;
                         // let e = VI.getrotation(canvas, marker.corners);
                         // if(marker.id in VI.activeids){
                         //     VI.activeids[marker.id] = Date.now();
@@ -230,14 +230,14 @@ function tick(){
                         // document.getElementById("line1").innerHTML = e.y + "";
                         // document.getElementById("line2").innerHTML = e.z + "";
 
-                        if(marker.id === 6 && VI.allcornersfound()){
-                            console.log(marker.corners);
+                        if(marker.id === 887){
+                            // console.log(marker.corners);
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
                             let yPos = point[1];
                             document.getElementById("chart").style.top = yPos + "px"
                             document.getElementById("chart").style.left = xPos + "px"
-                            console.log(point);
+                            // console.log(point);
                             if(marker.id in VI.activeids){
                                 VI.activeids[marker.id] = Date.now();
                             }
@@ -248,14 +248,14 @@ function tick(){
                             }
 
                         }
-                        if(marker.id === 7 && VI.allcornersfound()){
-                            console.log(marker.corners);
+                        if(marker.id === 502){
+                            // console.log(marker.corners);
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
                             let yPos = point[1];
                             document.getElementById("display").style.top = yPos + "px"
                             document.getElementById("display").style.left = xPos + "px"
-                            console.log(point);
+                            // console.log(point);
                             if(marker.id in VI.activeids){
                                 VI.activeids[marker.id] = Date.now();
                             }
@@ -267,18 +267,23 @@ function tick(){
 
                         }
 
-                        if(marker.id > 7 && VI.allcornersfound()){
+                        if(marker.id < 500){
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
                             let yPos = point[1];
                             let id = marker.id + "";
                             if(yPos < 150){
-                                if(marker.id in VI.activeids){
-                                    VI.activeids[marker.id] = Date.now();
+                                markerout[marker.id]++;
+                                if(markerout[marker.id] > 100){
+
+                                }
+                                console.log("TOPBAR" + " " + marker.id);
+                                if(marker.id in VI.clippingid){
+                                    VI.clippingid[marker.id] = Date.now();
                                 }
                                 else{
-                                    var backcalc = yPos + 140;
-                                    backcalc = backcalc / (1440/60000);
+                                    var backcalc = xPos + 140;
+                                    backcalc = backcalc / (1440/tracktime);
                                     backcalc = Date.now() - backcalc;
                                     var box = document.getElementById("mainbox");
                                     var currentheightest = Infinity;
@@ -292,23 +297,54 @@ function tick(){
                                         }
                                     }
                                     addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", marker.id)
-                                    VI.activeids[marker.id] = Date.now()
+                                    VI.clippingid[marker.id] = Date.now()
                                 }
+                                if(marker.id in VI.videoid){
+                                    delete VI.videoid[marker.id];
+                                    if(document.getElementById(id) !== null) {
+                                        console.log("in top bar" + " " + marker.id)
+                                        document.getElementById(id).style.opacity = "0";
+                                    }
+
+                                }
+
 
                             }
                             else{
-                                if(marker.id in VI.activeids){
-                                    VI.activeids[marker.id] = Date.now();
-                                    document.getElementById(id).style.top = yPos + "px"
-                                    document.getElementById(id).style.left = xPos + "px"
+                                if(marker.id in VI.videoid){
+                                    VI.videoid[marker.id] = Date.now();
+                                    if(document.getElementById(id) !== null){
+                                        document.getElementById(id).style.top = yPos + "px"
+                                        document.getElementById(id).style.left = xPos + "px"
+                                    }
+                                    else{
+                                        console.log("attempting playback" + " " + marker.id);
+                                        playclip(marker.id);
+                                        if(document.getElementById(id) !== null){
+                                            document.getElementById(id).style.opacity = "1";
+                                            document.getElementById(id).style.top = yPos + "px"
+                                            document.getElementById(id).style.left = xPos + "px"
+                                        }
+                                    }
+
+
                                 }
                                 else{
                                     //CLIP
                                     // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
+
+                                    console.log("attempting playback" + " " + marker.id);
                                     playclip(marker.id);
-                                    document.getElementById(id).style.top = yPos + "px"
-                                    document.getElementById(id).style.left = xPos + "px"
-                                    VI.activeids[marker.id] = Date.now()
+                                    if(document.getElementById(id) !== null){
+                                        document.getElementById(id).style.opacity = "1";
+                                        document.getElementById(id).style.top = yPos + "px"
+                                        document.getElementById(id).style.left = xPos + "px"
+                                    }
+
+                                    VI.videoid[marker.id] = Date.now()
+                                }
+                                if(marker.id in VI.clippingid){
+                                    delete VI.clippingid[marker.id];
                                 }
                             }
                         }
@@ -319,35 +355,50 @@ function tick(){
                         if(marker.id in VI.activeids){
                             delete VI.activeids[marker.id];
                         }
+                        if(marker.id in VI.videoid){
+                            console.log("out of box"  + " " + marker.id)
+                            markerout[marker.id]++;
+                            if(markerout[marker.id] > 100){
+                                delete VI.videoid[marker.id];
+                                if(document.getElementById(marker.id + "") !== null) {
+                                    document.getElementById(marker.id + "").style.opacity = "0";
+                                }
+                            }
+
+
+                        }
+                        if(marker.id in VI.clippingid){
+                            delete VI.clippingid[marker.id];
+                        }
                     }
 
 
-                    if(MP.in_box(marker.corners, VI.interactionbox)){
-                        let e = VI.getrotation(canvas, marker.corners);
-                        console.log(e.z);
-                        if(marker.id in VI.interids){
-                            VI.interids[marker.id] = Date.now();
-                        }
-                        else{
-                            //CLIP
-                            playclip(marker.id);
-                            VI.interids[marker.id] = Date.now()
-                        }
-                        // console.log("Marker in box!: ", marker.id);
-
-                        // var e = VI.getrotation(canvas, marker.corners);
-                    }
-                    else{
-                        if(marker.id in VI.interids){
-                            delete VI.interids[marker.id];
-                        }
-                    }
+                    // if(MP.in_box(marker.corners, VI.interactionbox)){
+                    //     let e = VI.getrotation(canvas, marker.corners);
+                    //     // console.log(e.z);
+                    //     if(marker.id in VI.interids){
+                    //         VI.interids[marker.id] = Date.now();
+                    //     }
+                    //     else{
+                    //         //CLIP
+                    //         playclip(marker.id);
+                    //         VI.interids[marker.id] = Date.now()
+                    //     }
+                    //     // console.log("Marker in box!: ", marker.id);
+                    //
+                    //     // var e = VI.getrotation(canvas, marker.corners);
+                    // }
+                    // else{
+                    //     if(marker.id in VI.interids){
+                    //         delete VI.interids[marker.id];
+                    //     }
+                    // }
 
 
                 }
             })
             var idDelete = [];
-            for(var id in VI.activeids){
+            for(let id in VI.activeids){
                 if(VI.activeids[id] < Date.now()-10000){
                     idDelete.push(id);
                 }
@@ -355,14 +406,38 @@ function tick(){
             idDelete.forEach((id) => {
                 delete VI.activeids[id];
             })
-            for(var id2 in VI.interids){
-                if(VI.interids[id2] < Date.now()-10000){
-                    idDelete.push(id2);
+
+            // for(let id in VI.videoid){
+            //     if(VI.videoid[id] < Date.now()-10000){
+            //         let sid = id+"";
+            //         console.log("timeout")
+            //         if(document.getElementById(sid) !== null) {
+            //             document.getElementById(sid).style.opacity = "0";
+            //         }
+            //         idDelete.push(id);
+            //     }
+            // }
+            // idDelete.forEach((id) => {
+            //     delete VI.videoid[id];
+            // })
+
+            for(let id in VI.clippingid){
+                if(VI.clippingid[id] < Date.now()-10000){
+                    idDelete.push(id);
                 }
             }
             idDelete.forEach((id) => {
-                delete VI.interids[id];
+                delete VI.clippingid[id];
             })
+
+            // for(var id2 in VI.interids){
+            //     if(VI.interids[id2] < Date.now()-10000){
+            //         idDelete.push(id2);
+            //     }
+            // }
+            // idDelete.forEach((id) => {
+            //     delete VI.interids[id];
+            // })
 
         }
 
@@ -438,14 +513,18 @@ function playclip(arucoid){
 
     if(arucoid in clipbinding){
         clipPlayID = arucoid;
-        var box = document.createElement("div");
-        box.id = arucoid;
-        box.style.maxWidth = "600px";
-        box.style.maxHeight = "400px";
-        box.style.position = "absolute";
-        box.style.top = "0px";
-        box.style.left = "0px";
+        if(document.getElementById(arucoid + "") === null){
+            var box = document.createElement("div");
+            box.id = arucoid;
+            box.style.maxWidth = "600px";
+            box.style.maxHeight = "400px";
+            box.style.position = "absolute";
+            box.style.top = "0px";
+            box.style.left = "0px";
+            document.getElementById("mainbox").appendChild(box);
+        }
         clipToPlay = clipbinding[arucoid];
+        console.log(clipToPlay);
     }
 }
 
@@ -471,6 +550,8 @@ function toBuffer(ab) {
 }
 
 function clip(start, length, name){
+    console.log(start);
+    console.log(length);
     var ava = true;
     if(start + length >= filename){
         ava = false;
@@ -478,7 +559,10 @@ function clip(start, length, name){
     var clip = {
         name: name,
         available: ava,
-        files: []
+        length: length,
+        files: [],
+        serialdata: [],
+        codefiles: []
     }
     var temp = []
     videos.forEach(file => {
@@ -518,7 +602,41 @@ function clip(start, length, name){
             end: end
         })
     }
+    var actualstart = clip.files[0].file;
+    var actualend = clip.files[clip.files.length -1].file + recordingtime
 
+
+        let data = []
+    SP.visdata.forEach((clunk) => {
+        if(clunk.x > actualstart && clunk.x < actualend){
+            data.push(clunk);
+        }
+    })
+    for(let i = 0; i<data.length; i++){
+        data[i].x = data[i].x - actualstart;
+    }
+    data.sort((a,b) => a.x - b.x);
+    data.forEach((clunk) => {
+        clip.serialdata.push(clunk);
+    })
+    let code = []
+    let highest=0;
+    CD.files.forEach((file) => {
+        if(file > actualstart && file < actualend){
+            code.push(file);
+        }
+        else{
+            if(file > highest && file<actualstart){
+                highest = file;
+            }
+        }
+    })
+    code.sort((a,b) => a - b);
+    code.forEach((file) => {
+        clip.codefiles.push({time: file-actualstart,file:file});
+    })
+    clip.codefiles.unshift({time: 0,file:highest})
+    console.log(clip);
     return clip;
 }
 
@@ -546,7 +664,7 @@ function autorecord(){
 
 
 
-SP.openserial();
+// SP.openserial();
 
 
 
@@ -679,6 +797,14 @@ contextBridge.exposeInMainWorld(
             var temp = SP.currentardata;
             SP.currentardata = [];
             return temp;
+        },
+
+        addVisdata: (clunk) => {
+          SP.visdata.push(clunk);
+        },
+
+        testdiff: (file1, file2, selector) => {
+            CD.testdifffiles(file1, file2, selector);
         }
 
 

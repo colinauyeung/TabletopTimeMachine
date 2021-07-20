@@ -7,6 +7,8 @@ var PerspT = require('perspective-transform');
 
 VI.imageData = null;
 VI.activeids = {};
+VI.clippingid = {};
+VI.videoid = {};
 VI.interids = {};
 
 VI.boundingmarkers = {
@@ -21,17 +23,18 @@ VI.boundingmarkers = {
 VI.workingbox = {
     corners: []
 }
-
-VI.interactionbox = {
-    corners: []
-}
+//
+// VI.interactionbox = {
+//     corners: []
+// }
 
 
 VI.allcornersfound = function(){
-    if(VI.boundingmarkers.topright === null ||
+    if(
+        // VI.boundingmarkers.topright === null ||
         VI.boundingmarkers.bottomleft === null ||
         VI.boundingmarkers.bottommid === null ||
-        VI.boundingmarkers.bottomright === null ||
+        // VI.boundingmarkers.bottomright === null ||
         VI.boundingmarkers.topleft === null ||
         VI.boundingmarkers.topmid === null
     ){
@@ -43,24 +46,24 @@ VI.allcornersfound = function(){
 VI.findcorners = function (markers){
     markers.forEach((marker) => {
         switch (marker.id) {
-            case 0:
+            case 816:
                 VI.boundingmarkers.topleft = marker;
                 break;
-            case 1:
+            case 603:
                 VI.boundingmarkers.bottomleft = marker;
                 break;
-            case 2:
+            case 912:
                 VI.boundingmarkers.topmid = marker;
                 break;
-            case 3:
+            case 722:
                 VI.boundingmarkers.bottommid = marker;
                 break;
-            case 4:
-                VI.boundingmarkers.topright = marker;
-                break;
-            case 5:
-                VI.boundingmarkers.bottomright = marker;
-                break;
+            // case 4:
+            //     VI.boundingmarkers.topright = marker;
+            //     break;
+            // case 5:
+            //     VI.boundingmarkers.bottomright = marker;
+            //     break;
         }
     })
 }
@@ -74,14 +77,14 @@ VI.findmainbox = function() {
     }
 }
 
-VI.findinterbox = function() {
-    if(VI.allcornersfound()){
-        VI.interactionbox.corners[0] = VI.boundingmarkers.topmid.corners[1];
-        VI.interactionbox.corners[1] = VI.boundingmarkers.topright.corners[1];
-        VI.interactionbox.corners[2] = VI.boundingmarkers.bottomright.corners[2];
-        VI.interactionbox.corners[3] = VI.boundingmarkers.bottommid.corners[2];
-    }
-}
+// VI.findinterbox = function() {
+//     if(VI.allcornersfound()){
+//         VI.interactionbox.corners[0] = VI.boundingmarkers.topmid.corners[1];
+//         VI.interactionbox.corners[1] = VI.boundingmarkers.topright.corners[1];
+//         VI.interactionbox.corners[2] = VI.boundingmarkers.bottomright.corners[2];
+//         VI.interactionbox.corners[3] = VI.boundingmarkers.bottommid.corners[2];
+//     }
+// }
 
 
 VI.snapshot= function (context){
@@ -183,8 +186,8 @@ VI.getRealPos = function(corners, point){
 
     var source = [corners[0].x, corners[0].y,corners[1].x, corners[1].y,corners[2].x, corners[2].y,corners[3].x, corners[3].y];
     var des = [0, 0, 1440, 0, 1440, 950, 0, 950];
-    console.log(source);
-    console.log(point);
+    // console.log(source);
+    // console.log(point);
     var perspT = PerspT(source, des);
     // var srcPt = [250, 120];
     return dstPt = perspT.transform(point.x, point.y);

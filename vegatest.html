@@ -1,0 +1,141 @@
+<html>
+<head>
+    <title>Vega-Lite Bar Chart</title>
+    <meta charset="utf-8" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+
+<!--    <style media="screen">-->
+<!--        /* Add space between Vega-Embed links  */-->
+<!--        .vega-actions a {-->
+<!--            margin-right: 5px;-->
+<!--        }-->
+<!--    </style>-->
+</head>
+<body>
+<h1>Template for Embedding Vega-Lite Visualization</h1>
+<!-- Container for the visualization -->
+<div id="videoContainer" style="display:inline-block"></div>
+<b id="output" style="vertical-align:top"></b>
+<div id="chart"></div>
+
+<script>
+    var videoContainer = document.getElementById('videoContainer'),
+        output = document.getElementById('output'),
+        nextVideo,
+        videoObjects =
+            [
+                document.createElement('video'),
+                document.createElement('video')
+            ],
+        vidSources =
+            [
+                "http://www.w3schools.com/html/mov_bbb.mp4",
+                "http://www.w3schools.com/html/movie.mp4",
+                "http://www.w3schools.com/html/mov_bbb.mp4",
+                "http://www.w3schools.com/html/movie.mp4",
+                "http://www.w3schools.com/html/mov_bbb.mp4",
+                "http://www.w3schools.com/html/movie.mp4"
+                //this list could be additionally filled without any other changing from code
+            ],
+        //random starting point
+        nextActiveVideo = Math.floor((Math.random() * vidSources.length));
+
+    videoObjects[0].inx = 0; //set index
+    videoObjects[1].inx = 1;
+
+    initVideoElement(videoObjects[0]);
+    initVideoElement(videoObjects[1]);
+
+    videoObjects[0].autoplay = true;
+    videoObjects[0].src = vidSources[nextActiveVideo];
+    videoContainer.appendChild(videoObjects[0]);
+
+    videoObjects[1].style.display = 'none';
+    videoContainer.appendChild(videoObjects[1]);
+
+    function initVideoElement(video)
+    {
+        video.playsinline = true;
+        video.muted = false;
+        video.preload = 'auto'; //but do not set autoplay, because it deletes preload
+
+        //loadedmetadata is wrong because if we use it then we get endless loop
+        video.onplaying = function(e)
+        {
+            output.innerHTML = 'Current video source index: ' + nextActiveVideo;
+
+            //select next index. If is equal vidSources.length then it is 0
+            nextActiveVideo = ++nextActiveVideo % vidSources.length;
+
+            //replace the video elements against each other:
+            if(this.inx == 0)
+                nextVideo = videoObjects[1];
+            else
+                nextVideo = videoObjects[0];
+
+            nextVideo.src = vidSources[nextActiveVideo];
+            nextVideo.pause();
+        };
+
+        video.onended = function(e)
+        {
+            this.style.display = 'none';
+            nextVideo.style.display = 'block';
+            nextVideo.play();
+        };
+    }
+
+    // var vlSpec = {
+    //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    //     data: {name: 'table'},
+    //     width: 400,
+    //     mark: 'line',
+    //     encoding: {
+    //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+    //         y: {field: 'y', type: 'quantitative'},
+    //         color: {field: 'category', type: 'nominal'}
+    //     }
+    // };
+    // vegaEmbed('#chart', vlSpec).then(function (res) {
+    //     /**
+    //      * Generates a new tuple with random walk.
+    //      */
+    //     function newGenerator() {
+    //         var counter = -1;
+    //         var previousY = [5, 5, 5, 5];
+    //         return function () {
+    //             counter++;
+    //             var newVals = previousY.map(function (v, c) {
+    //                 return {
+    //                     x: counter,
+    //                     y: Math.random(),
+    //                     // y: v + Math.round(Math.random() * 10 - c * 3),
+    //                     category: c
+    //                 };
+    //             });
+    //             previousY = newVals.map(function (v) {
+    //                 return v.y;
+    //             });
+    //             return newVals;
+    //         };
+    //     }
+    //
+    //     var valueGenerator = newGenerator();
+    //     var minimumX = -100;
+    //     window.setInterval(function () {
+    //         minimumX++;
+    //         var changeSet = vega
+    //             .changeset()
+    //             .insert(valueGenerator())
+    //             .remove(function (t) {
+    //                 return t.x < minimumX;
+    //             });
+    //         res.view.change('table', changeSet).run();
+    //     }, 100);
+    // });
+</script>
+</body>
+</html>
