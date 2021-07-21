@@ -144,6 +144,34 @@
             opacity: 1;
         }
 
+        .markers {
+            position: absolute;
+            z-index: 3;
+            width: 100px;
+            height: 100px;
+        }
+
+        #tl {
+            left: 0px;
+            top: 0px;
+        }
+
+        #tr {
+            left: 1340px;
+            top: 0px;
+        }
+
+        #bl {
+            left: 0px;
+            top: 850px;
+        }
+
+        #br {
+            left: 1340px;
+            top: 850px;
+        }
+
+
     </style>
 
 </head>
@@ -160,6 +188,10 @@
     <div id="box">
         <!--    <video id="video" src="videos/1624567955073.webm">-->
     </div>
+    <img src="markers/ARUCO_ID816.svg" class="markers" id="tl">;
+    <img src="markers/ARUCO_ID912.svg" class="markers" id="tr">;
+    <img src="markers/ARUCO_ID603.svg" class="markers" id="bl">;
+    <img src="markers/ARUCO_ID722.svg" class="markers" id="br">;
 
 
 </div>

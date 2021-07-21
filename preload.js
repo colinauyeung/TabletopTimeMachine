@@ -79,7 +79,9 @@ function startRecording() {
         audio: false,
         video: {
             mandatory: {
-                chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
+                // width: { min: 1024, ideal: 1280, max: 1920 },
+                // height: { min: 576, ideal: 720, max: 1080 },
+                chromeMediaSourceId: '0ee15b383e6c866f0f37d10628fa1f3caa3661f80abac85bd4f07a552ecdac81',
             }
         }},
         (localMediaStream) => {
