@@ -674,6 +674,7 @@ window.setInterval(pollserial, 100);
 windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldValue){
     if(newValue["changed"] === false && oldValue["changed"] === true){
         SP.visdata.push(newValue["data"]);
+        console.log(SP.visdata);
     }
 });
 
