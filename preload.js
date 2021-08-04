@@ -18,6 +18,8 @@ var CD = require("./modules/codediff").CD;
 var SP = require("./modules/serialport").SP;
 var MP = require("./modules/pointmath").MP;
 var VI = require("./modules/vision").VI;
+const remote = require('electron').remote;
+const windowManager = remote.require('electron-window-manager');
 
 
 var videodir = "./videos/";
@@ -651,6 +653,30 @@ function autorecord(){
         }
     }, recordingtime);
 }
+
+function pollserial(){
+    if(SP.currentardata.length > 0){
+        var clunk = data.pop();
+        lastvalue = clunk.y;
+        value = {
+            x: clunk.x,
+            y: [clunk.y]
+        }
+        windowManager.sharedData.set("serial", {"data": value, "changed": true});
+
+    }
+
+    SP.currentardata = [];
+}
+window.setInterval(pollserial, 100);
+
+// windowManager.sharedData.watch("serial", )
+windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldValue){
+    if(newValue["changed"] === false && oldValue["changed"] === true){
+        SP.visdata.push(newValue["data"]);
+    }
+});
+
 
 // var clip = {
 //     name: "Hello",

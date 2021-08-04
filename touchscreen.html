@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+</head>
+<body>
+<div id="chart"></div>
+
+<script>
+    var vlSpec = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+        data: {name: 'table'},
+        width: 400,
+        mark: 'line',
+        encoding: {
+            x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+            y: {field: 'y', type: 'quantitative'},
+            color: {field: 'category', type: 'nominal'}
+        }
+    };
+    vegaEmbed('#chart', vlSpec).then(function (res) {
+        var lastvalue = 0;
+        function fetchdata (){
+            var data = window.api.fetchserial();
+            var value;
+            if(data["changed"] === true){
+                var clunk = data.pop();
+                lastvalue = clunk.y;
+                value = {
+                    x: clunk.x,
+                    y: [clunk.y]
+                }
+
+            }
+            else{
+                value = {
+                    x: Date.now(),
+                    y: [lastvalue]
+                }
+            }
+            window.api.setserialfalse();
+            // window.api.addVisdata(value);
+            return value;
+        }
+
+        // var valueGenerator = newGenerator();
+        var minimumX = Date.now()-10000;
+        window.setInterval(function () {
+            minimumX = minimumX + 100;
+            var changeSet = vega
+                .changeset()
+                .insert(fetchdata())
+                .remove(function (t) {
+                    return t.x < minimumX;
+                });
+            res.view.change('table', changeSet).run();
+        }, 100);
+    });
+
+
+</script>
+</body>
+</html>

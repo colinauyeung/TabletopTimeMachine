@@ -722,80 +722,80 @@
     //     d3.select("#chart").datum(lineArr).call(chart);
     //     d3.select(window).on('resize', resize);
     // });
-
-    var vlSpec = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-        data: {name: 'table'},
-        width: 400,
-        mark: 'line',
-        encoding: {
-            x: {field: 'x', type: 'quantitative', scale: {zero: false}},
-            y: {field: 'y', type: 'quantitative'},
-            color: {field: 'category', type: 'nominal'}
-        }
-    };
-    vegaEmbed('#chart', vlSpec).then(function (res) {
-        /**
-         * Generates a new tuple with random walk.
-         */
-        // function newGenerator() {
-        //     var counter = -1;
-        //     var previousY = [5, 5, 5, 5];
-        //     return function () {
-        //         counter++;
-        //         var newVals = previousY.map(function (v, c) {
-        //             return {
-        //                 x: counter,
-        //                 y: Math.random(),
-        //                 // y: v + Math.round(Math.random() * 10 - c * 3),
-        //                 category: c
-        //             };
-        //         });
-        //         previousY = newVals.map(function (v) {
-        //             return v.y;
-        //         });
-        //         return newVals;
-        //     };
-        // }
-        var lastvalue = 0;
-        function fetchdata (){
-            var data = window.api.pollSerial();
-            var value;
-            if(data.length > 0){
-                var clunk = data.pop();
-                lastvalue = clunk.y;
-                value = {
-                    x: clunk.x,
-                    y: [clunk.y]
-                }
-
-            }
-            else{
-                value = {
-                    x: Date.now(),
-                    y: [lastvalue]
-                }
-            }
-            window.api.addVisdata(value);
-            return value;
-        }
-
-        // var valueGenerator = newGenerator();
-        var minimumX = Date.now()-10000;
-        window.setInterval(function () {
-            minimumX = minimumX + 100;
-            var changeSet = vega
-                .changeset()
-                .insert(fetchdata())
-                .remove(function (t) {
-                    return t.x < minimumX;
-                });
-            res.view.change('table', changeSet).run();
-        }, 100);
-    });
-
-
-
+    //
+    // var vlSpec = {
+    //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    //     data: {name: 'table'},
+    //     width: 400,
+    //     mark: 'line',
+    //     encoding: {
+    //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+    //         y: {field: 'y', type: 'quantitative'},
+    //         color: {field: 'category', type: 'nominal'}
+    //     }
+    // };
+    // vegaEmbed('#chart', vlSpec).then(function (res) {
+    //     /**
+    //      * Generates a new tuple with random walk.
+    //      */
+    //     // function newGenerator() {
+    //     //     var counter = -1;
+    //     //     var previousY = [5, 5, 5, 5];
+    //     //     return function () {
+    //     //         counter++;
+    //     //         var newVals = previousY.map(function (v, c) {
+    //     //             return {
+    //     //                 x: counter,
+    //     //                 y: Math.random(),
+    //     //                 // y: v + Math.round(Math.random() * 10 - c * 3),
+    //     //                 category: c
+    //     //             };
+    //     //         });
+    //     //         previousY = newVals.map(function (v) {
+    //     //             return v.y;
+    //     //         });
+    //     //         return newVals;
+    //     //     };
+    //     // }
+    //     var lastvalue = 0;
+    //     function fetchdata (){
+    //         var data = window.api.pollSerial();
+    //         var value;
+    //         if(data.length > 0){
+    //             var clunk = data.pop();
+    //             lastvalue = clunk.y;
+    //             value = {
+    //                 x: clunk.x,
+    //                 y: [clunk.y]
+    //             }
+    //
+    //         }
+    //         else{
+    //             value = {
+    //                 x: Date.now(),
+    //                 y: [lastvalue]
+    //             }
+    //         }
+    //         window.api.addVisdata(value);
+    //         return value;
+    //     }
+    //
+    //     // var valueGenerator = newGenerator();
+    //     var minimumX = Date.now()-10000;
+    //     window.setInterval(function () {
+    //         minimumX = minimumX + 100;
+    //         var changeSet = vega
+    //             .changeset()
+    //             .insert(fetchdata())
+    //             .remove(function (t) {
+    //                 return t.x < minimumX;
+    //             });
+    //         res.view.change('table', changeSet).run();
+    //     }, 100);
+    // });
+    //
+    //
+    //
     // var dragItem = document.querySelector("#item");
     // var container = document.querySelector("#container");
     //
@@ -879,6 +879,7 @@
     //         setTranslate(posInfo[active.id].currentX, posInfo[active.id].currentY, active);
     //     }
     // }
+
 
     function setTranslate(xPos, yPos, el) {
         el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
