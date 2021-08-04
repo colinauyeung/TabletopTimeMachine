@@ -81,7 +81,7 @@ function startRecording() {
             mandatory: {
                 // width: { min: 1024, ideal: 1280, max: 1920 },
                 // height: { min: 576, ideal: 720, max: 1080 },
-                chromeMediaSourceId: '0ee15b383e6c866f0f37d10628fa1f3caa3661f80abac85bd4f07a552ecdac81',
+                chromeMediaSourceId: '7f2a6c7f39d79fe06f15fc4da4acaa546d51e1cf5c8684e52055be4f2eb589cf',
             }
         }},
         (localMediaStream) => {

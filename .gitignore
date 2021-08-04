@@ -80,3 +80,4 @@ videos/
 
 #data storage
 saved_recordings/
+.idea/modules.xml
