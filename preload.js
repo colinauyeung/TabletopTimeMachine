@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
-    CD.startup();
+    // CD.startup();
     lastchecked = Date.now();
 })
 
@@ -625,7 +625,8 @@ function clip(start, length, name){
     })
     let code = []
     let highest=0;
-    CD.files.forEach((file) => {
+    let codefiles = windowManager.sharedData.fetch("codefiles")
+    codefiles.forEach((file) => {
         if(file > actualstart && file < actualend){
             code.push(file);
         }
@@ -677,6 +678,10 @@ windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldVa
         console.log(SP.visdata);
     }
 });
+
+// windowManager.sharedData.watch("codefiles", function(prop, action, newValue, oldValue) {
+//     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+// });
 
 
 // var clip = {

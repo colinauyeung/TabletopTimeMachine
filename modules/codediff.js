@@ -3,6 +3,9 @@ this.CD = CD;
 var fs = require('fs');
 require('colors');
 const Diff = require('diff');
+const remote = require('electron').remote;
+var electron = require('electron');
+const windowManager = remote.require('electron-window-manager');
 
 
 const inofile = 'sketch_jun16a/sketch_jun16a.ino';
@@ -64,6 +67,7 @@ CD.startup = function(){
             fs.writeFile("./codeversions/" + filename + ".txt", data, (err) => {
                 if (err) throw err;
                 CD.files.push(filename);
+                windowManager.sharedData.set("codefiles", CD.files);
                 console.log('Data written to file');
             })
             CD.startpolling();
@@ -96,6 +100,7 @@ CD.testdiff = function(){
             fs.writeFile("./codeversions/" + filename + ".txt", data, (err) => {
                 if (err) throw err;
                 CD.files.push(filename);
+                windowManager.sharedData.set("codefiles", CD.files);
                 console.log('Data written to file');
             })
 

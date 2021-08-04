@@ -6,9 +6,52 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+    <style>
+        .column {
+            float: left;
+            height: 800px;
+        }
+
+        #left, #right {
+            width: 10%;
+            background-color: #333333;
+        }
+
+        #middle {
+            width: 80%;
+        }
+
+        #display {
+            height: 800px;
+            width: 400px;
+            overflow-x: auto;
+            position: absolute;
+            top: 0px;
+            left: 700px;
+            background: white;
+            opacity: 1;
+        }
+
+
+
+    </style>
 </head>
 <body>
-<div id="chart"></div>
+<div class="row">
+    <div class="column" id="left"></div>
+    <div class="column" id="middle">
+        <div id="tab1">
+            <div id="chart"></div>
+        </div>
+        <div id="tab2">
+            <pre id="display"></pre>
+        </div>
+    </div>
+    <div class="column" id="right"></div>
+</div>
+
+
+
 
 <script>
     var vlSpec = {

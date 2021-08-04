@@ -38,6 +38,7 @@ app.whenReady().then(() => {
     });
 
     windowManager.sharedData.set("serial", {"data": 0, "changed": false});
+    windowManager.sharedData.set("codefiles", []);
     var win = windowManager.createNew("Main", "Tabletop Time Machine", 'file://' + __dirname + '/index.html', false, {
         'width': 1400,
         'height': 800,

@@ -152,7 +152,7 @@
 //  delay(10);
 //}
 //Testing
-//Tested
+//Test
 
 int echo = 8;
 int trigger = 9;
