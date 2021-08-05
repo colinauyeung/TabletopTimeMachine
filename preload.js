@@ -581,7 +581,7 @@ function playclips(idarr){
             contain2.style.width = "50%";
             contain2.style.height = "100%";
             contain2.style.float = "left";
-            contain2.appendChild(contain2);
+            box.appendChild(contain2);
             clipsToPlay.push([idarr[1], clipbinding[idarr[1]]])
         }
         // }
