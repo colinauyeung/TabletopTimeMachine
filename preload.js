@@ -548,6 +548,8 @@ function playclip(arucoid){
 
 
 function playclips(idarr){
+    console.log("Play Clips")
+    console.log(idarr);
     clipsToPlay = [];
     let  box = document.getElementById("box")
         box.innerHTML = "";
@@ -584,6 +586,7 @@ function playclips(idarr){
         }
         // }
     }
+    console.log(clipsToPlay);
 }
 
 function queuespeed(speed){
