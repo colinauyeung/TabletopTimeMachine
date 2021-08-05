@@ -524,9 +524,9 @@
         if(pending.length > 0){
             console.log("pending queue");
             console.log(pending);
-            for(let pend in pending){
-                console.log("pending " + pend[1]);
-                playClipv2(pend[1], pend[0]);
+            for(let i = 0; i< pending.length; i++){
+                console.log("pending " + pending[i][0]);
+                playClipv2(pending[i][1], pending[i][0])
             }
         }
         // if(pending[0] !== null){
