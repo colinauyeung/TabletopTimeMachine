@@ -84,7 +84,7 @@ function startRecording() {
             mandatory: {
                 // width: { min: 1024, ideal: 1280, max: 1920 },
                 // height: { min: 576, ideal: 720, max: 1080 },
-                chromeMediaSourceId: '7f2a6c7f39d79fe06f15fc4da4acaa546d51e1cf5c8684e52055be4f2eb589cf',
+                chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
             }
         }},
         (localMediaStream) => {
@@ -284,6 +284,7 @@ function tick(){
 
                             else{
                                 if(yPos < 200){
+                                    console.log("in play bar" + " " + marker.id)
                                     if(marker.id in VI.clippingid){
                                         delete VI.clippingid[marker.id];
                                     }
@@ -377,12 +378,23 @@ function tick(){
                         same = false;
                     }
                 }
+
                 if(!same){
+                    console.log("not same: previous was:" );
+                    console.log(previousplay)
+                    console.log(idarr)
                     playclips(idarr);
-                    previousplay = idarr;
+                    
                 }
             }
-
+            else{
+                console.log("not same: previous was:" );
+                console.log(previousplay)
+                console.log(idarr)
+                playclips(idarr);
+                
+            }
+            previousplay = idarr;
 
 
 
@@ -506,6 +518,7 @@ function playclips(idarr){
         box.innerHTML = "";
     if(idarr.length === 1){
         if(idarr[0] in clipbinding) {
+            console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
             contain1.id = idarr[0];
             contain1.style.width = "100%";
