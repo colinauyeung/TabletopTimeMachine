@@ -18,15 +18,6 @@
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
-        #chart {
-            max-width: 600px;
-            max-height: 400px;
-            position: absolute;
-            top: 100px;
-            left: 100px;
-            background: white;
-            opacity: 1;
-        }
 
         #topbar {
             width: 1440px;
@@ -35,6 +26,16 @@
             top: 0px;
             left: 0px;
             background: aquamarine;
+            z-index: 0;
+        }
+
+        #bar {
+            width: 1440px;
+            height: 100px;
+            position: absolute;
+            top: 100px;
+            left: 0px;
+            background: indianred;
             z-index: 0;
         }
 
@@ -73,9 +74,10 @@
         }
 
         #box {
-            width: 700px;
-            height: 500px;
+            width: 1440px;
+            height: 750px;
             position: absolute;
+            top: 200px;
         }
 
         #bounding {
@@ -89,44 +91,6 @@
             width: 100%;
             display: flex;
             align-items: center;
-        }
-        #display {
-            height: 800px;
-            width: 400px;
-            overflow-x: auto;
-            position: absolute;
-            top: 500px;
-            left: 500px;
-            background: white;
-            opacity: 1;
-        }
-        .code {
-            height: 400px;
-            width: 400px;
-            overflow-x: auto;
-            position: absolute;
-            top: 500px;
-            left: 500px;
-            background: white;
-            opacity: 1;
-        }
-
-        #playarea {
-            width: 1080px;
-            height: 720px;
-            flex: 0 0 auto;
-            position: absolute;
-            transform: translate3d(-230px, -180px, 0px);
-            border-radius: 7px;
-            background-color: aquamarine;
-            touch-action: none;
-            user-select: none;
-        }
-
-
-        .screenshot {
-            width: 60px;
-            height: 40px;
         }
 
         /*video {*/
@@ -144,32 +108,6 @@
             opacity: 1;
         }
 
-        .markers {
-            position: absolute;
-            z-index: 3;
-            width: 100px;
-            height: 100px;
-        }
-
-        #tl {
-            left: 0px;
-            top: 0px;
-        }
-
-        #tr {
-            left: 1340px;
-            top: 0px;
-        }
-
-        #bl {
-            left: 0px;
-            top: 850px;
-        }
-
-        #br {
-            left: 1340px;
-            top: 850px;
-        }
 
 
     </style>
@@ -183,15 +121,13 @@
 <!--and Electron <span id="electron-version"></span>.-->
 <div id="mainbox">
     <div id="topbar"></div>
-    <div id="chart"></div>
-    <pre id="display"></pre>
+    <div id="bar"></div>
     <div id="box">
+<!--        <div style="width: 50%; height: 100%; background-color: aliceblue; float: left"></div>-->
+<!--        <div style="width: 50%; height: 100%; background-color: indianred; float: left"></div>-->
         <!--    <video id="video" src="videos/1624567955073.webm">-->
     </div>
-    <img src="markers/ARUCO_ID816.svg" class="markers" id="tl">;
-    <img src="markers/ARUCO_ID912.svg" class="markers" id="tr">;
-    <img src="markers/ARUCO_ID603.svg" class="markers" id="bl">;
-    <img src="markers/ARUCO_ID722.svg" class="markers" id="br">;
+
 
 
 </div>
@@ -349,75 +285,75 @@
     //     playClip(clip);
     // }
 
-    var playingclip = null;
+    // var playingclip = null;
 
-    function playClip(clip, id){
-        playingclips[id] = clip;
-        if(!(clip in clips)){
-            return;
-        }
-        if(!(clips[clip].available)){
-            if(window.api.checkAva(clips[clip])){
-                clips[clip].available = true;
-            }
-            else{
-                setTimeout(() => {
-                    playClipWaiting(clip, id);
-                }, 1000)
-                return;
-            }
-        }
+    // function playClip(clip, id){
+    //     playingclips[id] = clip;
+    //     if(!(clip in clips)){
+    //         return;
+    //     }
+    //     if(!(clips[clip].available)){
+    //         if(window.api.checkAva(clips[clip])){
+    //             clips[clip].available = true;
+    //         }
+    //         else{
+    //             setTimeout(() => {
+    //                 playClipWaiting(clip, id);
+    //             }, 1000)
+    //             return;
+    //         }
+    //     }
+    //
+    //
+    //
+    //     playingclips[id] = clips[clip];
+    //     console.log(playingclips[id]);
+    //     clipindexes[id] = 0;
+    //     // videoclip = clips[clip];
+    //     // clipindex = 0;
+    //     var media = loadVideo(playingclips[id].files[clipindexes[id]].file, id);
+    //     media.addEventListener("ended", function () {
+    //         playNextFile(media, id);
+    //     })
+    //     media.pause();
+    //     media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+    //     media.playbackRate = playspeed;
+    //     media.play();
+    //
+    // }
+    //
+    // function playNextFile(media, id){
+    //     clipindexes[id]++;
+    //     if(clipindexes[id] < playingclips[id].files.length){
+    //         loadVideo(playingclips[id].files[clipindexes[id]].file, id);
+    //         media.addEventListener("ended", function () {
+    //             playNextFile(media, id);
+    //         })
+    //         // media.pause();
+    //         // media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+    //         // media.playbackRate = playspeed;
+    //         // media.play();
+    //     }
+    //     else{
+    //         clipindexes[id] = 0;
+    //         loadVideo(playingclips[id].files[clipindexes[id]].file, id);
+    //         media.addEventListener("ended", function () {
+    //             playNextFile(media, id);
+    //         })
+    //         media.pause();
+    //         media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
+    //         media.playbackRate = playspeed;
+    //         media.play();
+    //
+    //     }
+    // }
 
-
-
-        playingclips[id] = clips[clip];
-        console.log(playingclips[id]);
-        clipindexes[id] = 0;
-        // videoclip = clips[clip];
-        // clipindex = 0;
-        var media = loadVideo(playingclips[id].files[clipindexes[id]].file, id);
-        media.addEventListener("ended", function () {
-            playNextFile(media, id);
-        })
-        media.pause();
-        media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-        media.playbackRate = playspeed;
-        media.play();
-
-    }
-
-    function playNextFile(media, id){
-        clipindexes[id]++;
-        if(clipindexes[id] < playingclips[id].files.length){
-            loadVideo(playingclips[id].files[clipindexes[id]].file, id);
-            media.addEventListener("ended", function () {
-                playNextFile(media, id);
-            })
-            // media.pause();
-            // media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-            // media.playbackRate = playspeed;
-            // media.play();
-        }
-        else{
-            clipindexes[id] = 0;
-            loadVideo(playingclips[id].files[clipindexes[id]].file, id);
-            media.addEventListener("ended", function () {
-                playNextFile(media, id);
-            })
-            media.pause();
-            media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-            media.playbackRate = playspeed;
-            media.play();
-
-        }
-    }
-
-    function playClipWaiting(clip, id){
-        if(clip !== playingclips[id]){
-            return;
-        }
-        playClip(clip, id);
-    }
+    // function playClipWaiting(clip, id){
+    //     if(clip !== playingclips[id]){
+    //         return;
+    //     }
+    //     playClip(clip, id);
+    // }
 
     function playClipWaitingv2(clip, id){
         // if(clip !== playingclips[id]){
@@ -465,48 +401,31 @@
         videoContainer.style.float = "left";
 
         container.appendChild(videoContainer);
-        var chart = document.createElement("div");
-        var chartid = "chart" + id;
-        chart.id = chartid;
-        chart.style.float = "left";
 
-        container.appendChild(chart);
-        var diff = document.createElement("pre");
-        var diffid = "diff" + id;
-        diff.id = diffid;
-        diff.className = "code";
-        container.appendChild(diff);
-        window.api.testdiff("./codeversions/" + clunk.clip.codefiles[0].file + ".txt",
-            "./codeversions/" + clunk.clip.codefiles[clunk.clip.codefiles.length-1].file + ".txt",
-            diffid);
-
-
-
+        // var chart = document.createElement("div");
+        // var chartid = "chart" + id;
+        // chart.id = chartid;
+        // chart.style.float = "left";
+        //
+        // container.appendChild(chart);
+        // var diff = document.createElement("pre");
+        // var diffid = "diff" + id;
+        // diff.id = diffid;
+        // diff.className = "code";
+        // container.appendChild(diff);
+        // window.api.testdiff("./codeversions/" + clunk.clip.codefiles[0].file + ".txt",
+        //     "./codeversions/" + clunk.clip.codefiles[clunk.clip.codefiles.length-1].file + ".txt",
+        //     diffid);
 
 
-
-            //
-            // nextVideo,
-            // videoObjects =
-            //     [
-            //         document.createElement('video'),
-            //         document.createElement('video')
-            //     ],
-            // vidSources =
-            //     [
-            //         "http://www.w3schools.com/html/mov_bbb.mp4",
-            //         "http://www.w3schools.com/html/movie.mp4",
-            //         "http://www.w3schools.com/html/mov_bbb.mp4",
-            //         "http://www.w3schools.com/html/movie.mp4",
-            //         "http://www.w3schools.com/html/mov_bbb.mp4",
-            //         "http://www.w3schools.com/html/movie.mp4"
-            //         //this list could be additionally filled without any other changing from code
-            //     ],
-            // //random starting point
-            // nextActiveVideo = Math.floor((Math.random() * vidSources.length));
 
         clunk.videoObjects[0].inx = 0; //set index
         clunk.videoObjects[1].inx = 1;
+
+        clunk.videoObjects[0].stime = 0; //set index
+        clunk.videoObjects[1].stime = 0;
+
+
 
         initVideoElement(clunk.videoObjects[0], clunk);
         initVideoElement(clunk.videoObjects[1], clunk);
@@ -514,6 +433,7 @@
         clunk.videoObjects[0].autoplay = true;
 
         clunk.videoObjects[0].src = "./videos/" + clunk.clip.files[clunk.nextActiveVideo].file + ".mp4";
+        clunk.videoObjects[0].stime = clunk.clip.files[clunk.nextActiveVideo].file;
         // clunk.videoObjects[0].currentTime = (clunk.clip.files[clunk.nextActiveVideo].start)/1000;
         //
 
@@ -526,41 +446,21 @@
         videoContainer.appendChild(clunk.videoObjects[1]);
         // videoContainer.appendChild(videoObjects[1]);
         console.log( clunk.clip.serialdata);
-        var vlSpec2 = {
-            $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-            data: {values: clunk.clip.serialdata},
-            width: 400,
-            mark: 'line',
-            encoding: {
-                x: {field: 'x', type: 'quantitative', scale: {zero: false}},
-                y: {field: 'y', type: 'quantitative'},
-                color: {field: 'category', type: 'nominal'}
-            }
-        };
 
-        vegaEmbed("#" + chartid, vlSpec2);
 
-        //     .then(function (res) {
-        //     var currentindex = 0;
-        //     var currenttime = 0;
-        //     function nextdata (){
-        //         currenttime = clunk.clip.serialdata[currentindex].x;
-        //         var changeSet = vega
-        //             .changeset()
-        //             .remove(function (t) {
-        //                 return currentindex === 0;
-        //             })
-        //             .insert(clunk.clip.serialdata[currentindex]);
-        //         res.view.change('table', changeSet).run();
-        //         currentindex++;
-        //         if(currentindex >= clunk.clip.serialdata.length){
-        //             currentindex = 0;
-        //         }
-        //         window.setTimeout(nextdata, clunk.clip.serialdata[currentindex].x - currenttime);
+        // var vlSpec2 = {
+        //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+        //     data: {values: clunk.clip.serialdata},
+        //     width: 400,
+        //     mark: 'line',
+        //     encoding: {
+        //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+        //         y: {field: 'y', type: 'quantitative'},
+        //         color: {field: 'category', type: 'nominal'}
         //     }
+        // };
         //
-        //     window.setTimeout(nextdata, clunk.clip.serialdata[currentindex].x - currenttime);
-        // });
+        // vegaEmbed("#" + chartid, vlSpec2);
 
         function initVideoElement(video, clunk)
         {
@@ -582,6 +482,7 @@
                     clunk.nextVideo = clunk.videoObjects[0];
 
                 clunk.nextVideo.src = "./videos/" + clunk.clip.files[clunk.nextActiveVideo].file + ".mp4";
+                clunk.nextVideo.stime = clunk.clip.files[clunk.nextActiveVideo].file;
                 // clunk.nextVideo.currentTime = (clunk.clip.files[clunk.nextActiveVideo].start)/1000;
                 clunk.nextVideo.pause();
             };
@@ -591,6 +492,14 @@
                 this.style.display = 'none';
                 clunk.nextVideo.style.display = 'block';
                 clunk.nextVideo.play();
+            };
+
+            video.ontimeupdate = function(e){
+              let time = this.currentTime;
+              let rtime = this.stime + (time *1000);
+              console.log(rtime);
+              // let data = clunk.clip.serialdata;
+
             };
         }
     }
@@ -611,11 +520,16 @@
             clips[id] = queueclips[id];
             $("#list").append(new Option("Generated", id));
         }
-        var pending = window.api.getCliptoPlay();
-        if(pending[0] !== null){
-            console.log(pending[0]);
-            playClipv2(pending[0], pending[1]);
+        var pending = window.api.getClipstoPlay();
+        if(pending.length > 0){
+            for(let pend in pending){
+                playClipv2(pend[1], pend[0]);
+            }
         }
+        // if(pending[0] !== null){
+        //     console.log(pending[0]);
+        //     playClipv2(pending[0], pending[1]);
+        // }
 
     }
 
@@ -656,229 +570,6 @@
     console.log(window.api.getfiles());
     setInterval(handleQueue, 500);
 
-
-
-    // var lineArr = [];
-    // var MAX_LENGTH = 100;
-    // var duration = 500;
-    // var chart = realTimeLineChart();
-    //
-    // function randomNumberBounds(min, max) {
-    //     return Math.floor(Math.random() * max) + min;
-    // }
-    //
-    // function seedData() {
-    //     var now = new Date();
-    //     for (var i = 0; i < MAX_LENGTH; ++i) {
-    //         lineArr.push({
-    //             time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
-    //             x: 0,
-    //             // y: randomNumberBounds(0, 2.5),
-    //             // z: randomNumberBounds(0, 10)
-    //         });
-    //     }
-    // }
-    // var lastvalue = 0;
-    //
-    // function updateData() {
-    //
-    //     var data = window.api.pollSerial();
-    //     if(data.length > 0){
-    //         var clunk = data.pop();
-    //         lastvalue = clunk.x;
-    //         lineArr.push(clunk);
-    //         if(lineArr.length > 100){
-    //             lineArr.shift();
-    //         }
-    //     }
-    //     else{
-    //         var now = new Date();
-    //
-    //         var lineData = {
-    //             time: now,
-    //             x: lastvalue
-    //         };
-    //         lineArr.push(lineData);
-    //
-    //         if (lineArr.length > 100) {
-    //             lineArr.shift();
-    //         }
-    //     }
-    //
-    //     d3.select("#chart").datum(lineArr).call(chart);
-    // }
-    //
-    // function resize() {
-    //     if (d3.select("#chart svg").empty()) {
-    //         return;
-    //     }
-    //     chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
-    //     d3.select("#chart").call(chart);
-    // }
-    //
-    // document.addEventListener("DOMContentLoaded", function() {
-    //     seedData();
-    //     window.setInterval(updateData, 100);
-    //     d3.select("#chart").datum(lineArr).call(chart);
-    //     d3.select(window).on('resize', resize);
-    // });
-    //
-    // var vlSpec = {
-    //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-    //     data: {name: 'table'},
-    //     width: 400,
-    //     mark: 'line',
-    //     encoding: {
-    //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
-    //         y: {field: 'y', type: 'quantitative'},
-    //         color: {field: 'category', type: 'nominal'}
-    //     }
-    // };
-    // vegaEmbed('#chart', vlSpec).then(function (res) {
-    //     /**
-    //      * Generates a new tuple with random walk.
-    //      */
-    //     // function newGenerator() {
-    //     //     var counter = -1;
-    //     //     var previousY = [5, 5, 5, 5];
-    //     //     return function () {
-    //     //         counter++;
-    //     //         var newVals = previousY.map(function (v, c) {
-    //     //             return {
-    //     //                 x: counter,
-    //     //                 y: Math.random(),
-    //     //                 // y: v + Math.round(Math.random() * 10 - c * 3),
-    //     //                 category: c
-    //     //             };
-    //     //         });
-    //     //         previousY = newVals.map(function (v) {
-    //     //             return v.y;
-    //     //         });
-    //     //         return newVals;
-    //     //     };
-    //     // }
-    //     var lastvalue = 0;
-    //     function fetchdata (){
-    //         var data = window.api.pollSerial();
-    //         var value;
-    //         if(data.length > 0){
-    //             var clunk = data.pop();
-    //             lastvalue = clunk.y;
-    //             value = {
-    //                 x: clunk.x,
-    //                 y: [clunk.y]
-    //             }
-    //
-    //         }
-    //         else{
-    //             value = {
-    //                 x: Date.now(),
-    //                 y: [lastvalue]
-    //             }
-    //         }
-    //         window.api.addVisdata(value);
-    //         return value;
-    //     }
-    //
-    //     // var valueGenerator = newGenerator();
-    //     var minimumX = Date.now()-10000;
-    //     window.setInterval(function () {
-    //         minimumX = minimumX + 100;
-    //         var changeSet = vega
-    //             .changeset()
-    //             .insert(fetchdata())
-    //             .remove(function (t) {
-    //                 return t.x < minimumX;
-    //             });
-    //         res.view.change('table', changeSet).run();
-    //     }, 100);
-    // });
-    //
-    //
-    //
-    // var dragItem = document.querySelector("#item");
-    // var container = document.querySelector("#container");
-    //
-    // var active = null;
-    // var posInfo = {};
-    // var currentX;
-    // var currentY;
-    // var initialX;
-    // var initialY;
-    // var xOffset = 0;
-    // var yOffset = 0;
-    //
-    // container.addEventListener("touchstart", dragStart, false);
-    // container.addEventListener("touchend", dragEnd, false);
-    // container.addEventListener("touchmove", drag, false);
-    //
-    // container.addEventListener("mousedown", dragStart, false);
-    // container.addEventListener("mouseup", dragEnd, false);
-    // container.addEventListener("mousemove", drag, false);
-    //
-    // function dragStart(e) {
-    //
-    //     // if (e.target === dragItem) {
-    //     //     active = true;
-    //     // }
-    //     if (e.target.classList.contains("draggable")){
-    //         active = e.target;
-    //         if(!(active.id in posInfo)){
-    //             posInfo[active.id] = {
-    //                 initialX: 0,
-    //                 initialY: 0,
-    //                 currentX: 0,
-    //                 currentY: 0,
-    //                 xOffset: 0,
-    //                 yOffset: 0
-    //             }
-    //         }
-    //
-    //         if (e.type === "touchstart") {
-    //             posInfo[active.id].initialX = e.touches[0].clientX - posInfo[active.id].xOffset;
-    //             posInfo[active.id].initialY = e.touches[0].clientY - posInfo[active.id].yOffset;
-    //         } else {
-    //             posInfo[active.id].initialX = e.clientX - posInfo[active.id].xOffset;
-    //             posInfo[active.id].initialY = e.clientY - posInfo[active.id].yOffset;
-    //         }
-    //
-    //
-    //     }
-    // }
-    //
-    // function dragEnd(e) {
-    //     if(active){
-    //         posInfo[active.id].initialX = posInfo[active.id].currentX;
-    //         posInfo[active.id].initialY = posInfo[active.id].currentY;
-    //         console.log("ID:" + active.id + " X: " + posInfo[active.id].currentX + " Y: " + posInfo[active.id].currentY)
-    //
-    //         // if(posInfo[active.id].currentX < -100 && posInfo[active.id].currentY < -100){
-    //         //     playClip(active.id);
-    //         // }
-    //     }
-    //
-    //
-    //     active = null;
-    // }
-    //
-    // function drag(e) {
-    //     if (!(active === null)) {
-    //         e.preventDefault();
-    //
-    //         if (e.type === "touchmove") {
-    //             posInfo[active.id].currentX = e.touches[0].clientX - posInfo[active.id].initialX;
-    //             posInfo[active.id].currentY = e.touches[0].clientY - posInfo[active.id].initialY;
-    //         } else {
-    //             posInfo[active.id].currentX = e.clientX - posInfo[active.id].initialX;
-    //             posInfo[active.id].currentY = e.clientY - posInfo[active.id].initialY;
-    //         }
-    //
-    //         posInfo[active.id].xOffset = posInfo[active.id].currentX;
-    //         posInfo[active.id].yOffset = posInfo[active.id].currentY;
-    //
-    //         setTranslate(posInfo[active.id].currentX, posInfo[active.id].currentY, active);
-    //     }
-    // }
 
 
     function setTranslate(xPos, yPos, el) {

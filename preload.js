@@ -34,9 +34,10 @@ var camera;
 var filename;
 var blobs = [];
 var looprecording = false;
-var recordingtime = 10000;
+var recordingtime = 30000;
 var lastchecked = 0;
 var tracktime = 300000;
+var previousplay = [];
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
@@ -144,28 +145,9 @@ function tick(){
                 x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
                 box.appendChild(x);
 
-                // console.log(blob)
-
-                // var imageBuffer = blob.arrayBuffer;
-                // var imageName = 'out.png';
-                //
-                // fs.createWriteStream(imageName).write(imageBuffer);
-
-                // var item = "<img src=\"" + src + "\">"
-                // $("#container").append(item);
             })
         }
-        // var mark = document.createElement("div");
-        // mark.style.position = "absolute";
-        // mark.style.top = "0px";
-        // mark.style.left = "0px";
-        // mark.style.height = "25px";
-        // mark.style.width = "10px";
-        // mark.style.background = "black";
-        // mark.id = currenttime + "";
-        // mark.className = "tick";
-        //
-        // box.appendChild(mark);
+
         lastchecked = currenttime
 
     }
@@ -210,30 +192,15 @@ function tick(){
 
 
             VI.drawCorners(context, markers);
+            var playarr = [];
             markers.forEach((marker) => {
+
                 if(marker.id > 5){
                     if(!(marker.id in markerout)){
                         markerout[marker.id] = 0;
                     }
                     if(MP.in_box(marker.corners, VI.workingbox)){
                         markerout[marker.id] = 0;
-                        // let e = VI.getrotation(canvas, marker.corners);
-                        // if(marker.id in VI.activeids){
-                        //     VI.activeids[marker.id] = Date.now();
-                        // }
-                        // else{
-                        //     //CLIP
-                        //     // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
-                        //     VI.activeids[marker.id] = Date.now()
-                        // }
-                        // console.log("Marker in box!: ", marker.id);
-
-
-
-                        // document.getElementById("line0").innerHTML = e.x + "";
-                        // document.getElementById("line1").innerHTML = e.y + "";
-                        // document.getElementById("line2").innerHTML = e.z + "";
-
                         if(marker.id === 887){
                             // console.log(marker.corners);
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
@@ -276,7 +243,7 @@ function tick(){
                             let xPos = point[0];
                             let yPos = point[1];
                             let id = marker.id + "";
-                            if(yPos < 150){
+                            if(yPos < 100){
                                 markerout[marker.id]++;
                                 if(markerout[marker.id] > 100){
 
@@ -314,43 +281,52 @@ function tick(){
 
 
                             }
+
                             else{
-                                if(marker.id in VI.videoid){
-                                    VI.videoid[marker.id] = Date.now();
-                                    if(document.getElementById(id) !== null){
-                                        document.getElementById(id).style.top = yPos + "px"
-                                        document.getElementById(id).style.left = xPos + "px"
+                                if(yPos < 200){
+                                    if(marker.id in VI.clippingid){
+                                        delete VI.clippingid[marker.id];
                                     }
-                                    else{
-                                        console.log("attempting playback" + " " + marker.id);
-                                        playclip(marker.id);
-                                        if(document.getElementById(id) !== null){
-                                            document.getElementById(id).style.opacity = "1";
-                                            document.getElementById(id).style.top = yPos + "px"
-                                            document.getElementById(id).style.left = xPos + "px"
-                                        }
-                                    }
-
-
-                                }
-                                else{
-                                    //CLIP
-                                    // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
-
-                                    console.log("attempting playback" + " " + marker.id);
-                                    playclip(marker.id);
-                                    if(document.getElementById(id) !== null){
-                                        document.getElementById(id).style.opacity = "1";
-                                        document.getElementById(id).style.top = yPos + "px"
-                                        document.getElementById(id).style.left = xPos + "px"
-                                    }
-
-                                    VI.videoid[marker.id] = Date.now()
-                                }
-                                if(marker.id in VI.clippingid){
-                                    delete VI.clippingid[marker.id];
+                                    playarr.push([xPos, marker.id]);
                                 }
                             }
+
+
+                            // else{
+                            //     if(marker.id in VI.videoid){
+                            //         VI.videoid[marker.id] = Date.now();
+                            //         if(document.getElementById(id) !== null){
+                            //             document.getElementById(id).style.top = yPos + "px"
+                            //             document.getElementById(id).style.left = xPos + "px"
+                            //         }
+                            //         else{
+                            //             console.log("attempting playback" + " " + marker.id);
+                            //             playclip(marker.id);
+                            //             if(document.getElementById(id) !== null){
+                            //                 document.getElementById(id).style.opacity = "1";
+                            //                 document.getElementById(id).style.top = yPos + "px"
+                            //                 document.getElementById(id).style.left = xPos + "px"
+                            //             }
+                            //         }
+                            //
+                            //
+                            //     }
+                            //     else{
+                            //         //CLIP
+                            //         // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
+                            //
+                            //         console.log("attempting playback" + " " + marker.id);
+                            //         playclip(marker.id);
+                            //         if(document.getElementById(id) !== null){
+                            //             document.getElementById(id).style.opacity = "1";
+                            //             document.getElementById(id).style.top = yPos + "px"
+                            //             document.getElementById(id).style.left = xPos + "px"
+                            //         }
+                            //
+                            //         VI.videoid[marker.id] = Date.now()
+                            //     }
+
+                            // }
                         }
 
 
@@ -377,30 +353,41 @@ function tick(){
                     }
 
 
-                    // if(MP.in_box(marker.corners, VI.interactionbox)){
-                    //     let e = VI.getrotation(canvas, marker.corners);
-                    //     // console.log(e.z);
-                    //     if(marker.id in VI.interids){
-                    //         VI.interids[marker.id] = Date.now();
-                    //     }
-                    //     else{
-                    //         //CLIP
-                    //         playclip(marker.id);
-                    //         VI.interids[marker.id] = Date.now()
-                    //     }
-                    //     // console.log("Marker in box!: ", marker.id);
-                    //
-                    //     // var e = VI.getrotation(canvas, marker.corners);
-                    // }
-                    // else{
-                    //     if(marker.id in VI.interids){
-                    //         delete VI.interids[marker.id];
-                    //     }
-                    // }
-
-
                 }
-            })
+            });
+
+            playarr.sort(function (a,b) {
+               return a[0] - b[0];
+            });
+            let newid = false;
+            let idarr = []
+            for(let i = 0; i < 2 && i<playarr.length; i++){
+                marker = playarr[i][1];
+                VI.videoid[marker] = Date.now()
+                if(!(marker in VI.videoid)) {
+                    newid = true;
+                }
+                idarr.push(marker);
+
+            }
+            if(idarr.length === previousplay.length){
+                let same = true;
+                for(let i = 0; i < idarr.length; i++){
+                    if(idarr[i] !== previousplay[i]){
+                        same = false;
+                    }
+                }
+                if(!same){
+                    playclips(idarr);
+                    previousplay = idarr;
+                }
+            }
+
+
+
+
+
+
             var idDelete = [];
             for(let id in VI.activeids){
                 if(VI.activeids[id] < Date.now()-10000){
@@ -411,19 +398,6 @@ function tick(){
                 delete VI.activeids[id];
             })
 
-            // for(let id in VI.videoid){
-            //     if(VI.videoid[id] < Date.now()-10000){
-            //         let sid = id+"";
-            //         console.log("timeout")
-            //         if(document.getElementById(sid) !== null) {
-            //             document.getElementById(sid).style.opacity = "0";
-            //         }
-            //         idDelete.push(id);
-            //     }
-            // }
-            // idDelete.forEach((id) => {
-            //     delete VI.videoid[id];
-            // })
 
             for(let id in VI.clippingid){
                 if(VI.clippingid[id] < Date.now()-10000){
@@ -433,15 +407,6 @@ function tick(){
             idDelete.forEach((id) => {
                 delete VI.clippingid[id];
             })
-
-            // for(var id2 in VI.interids){
-            //     if(VI.interids[id2] < Date.now()-10000){
-            //         idDelete.push(id2);
-            //     }
-            // }
-            // idDelete.forEach((id) => {
-            //     delete VI.interids[id];
-            // })
 
         }
 
@@ -513,6 +478,8 @@ function addCliptoQueue(start, length, name, arucoid){
 
 }
 
+var clipsToPlay = [];
+
 function playclip(arucoid){
 
     if(arucoid in clipbinding){
@@ -529,6 +496,45 @@ function playclip(arucoid){
         }
         clipToPlay = clipbinding[arucoid];
         console.log(clipToPlay);
+    }
+}
+
+
+function playclips(idarr){
+    clipsToPlay = [];
+    let  box = document.getElementById("box")
+        box.innerHTML = "";
+    if(idarr.length === 1){
+        if(idarr[0] in clipbinding) {
+            let contain1 = document.createElement("div");
+            contain1.id = idarr[0];
+            contain1.style.width = "100%";
+            contain1.style.height = "100%";
+            box.appendChild(contain1);
+            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]])
+        }
+    }
+    else{
+        // if(idarr.length === 2){
+        if(idarr[0] in clipbinding) {
+            let contain1 = document.createElement("div");
+            contain1.id = idarr[0];
+            contain1.style.width = "50%";
+            contain1.style.height = "100%";
+            contain1.style.float = "left";
+            box.appendChild(contain1);
+            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]])
+        }
+        if(idarr[1] in clipbinding) {
+            let contain2 = document.createElement("div");
+            contain2.id = idarr[1];
+            contain2.style.width = "50%";
+            contain2.style.height = "100%";
+            contain2.style.float = "left";
+            contain2.appendChild(contain2);
+            clipsToPlay.push([idarr[1], clipbinding[idarr[1]]])
+        }
+        // }
     }
 }
 
@@ -821,6 +827,12 @@ contextBridge.exposeInMainWorld(
             var temp2 = clipPlayID;
             clipPlayID = null;
             return [temp, temp2];
+        },
+
+        getClipstoPlay: () => {
+          let temp = clipsToPlay;
+          clipsToPlay = [];
+          return clipsToPlay
         },
 
         getPlaySpeed: () => {
