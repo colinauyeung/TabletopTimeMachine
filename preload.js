@@ -883,7 +883,7 @@ contextBridge.exposeInMainWorld(
         getClipstoPlay: () => {
           let temp = clipsToPlay;
           clipsToPlay = [];
-          return clipsToPlay
+          return temp;
         },
 
         getPlaySpeed: () => {
