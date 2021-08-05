@@ -37,7 +37,11 @@ var looprecording = false;
 var recordingtime = 30000;
 var lastchecked = 0;
 var tracktime = 300000;
+
 var previousplay = [];
+var playpolling = {"detect": 0};
+var polltime = 1000;
+var lastpolled = 0;
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
@@ -180,11 +184,11 @@ function tick(){
             }
         }
 
-        if(VI.allcornersfound()){
+        if(VI.allcornersfound()) {
             VI.findmainbox();
             // VI.findinterbox();
             VI.drawId(context, markers);
-            if(firstfind){
+            if (firstfind) {
                 // console.log(VI.interactionbox);
                 markers.push(VI.workingbox);
                 // markers.push(VI.interactionbox);
@@ -192,16 +196,17 @@ function tick(){
 
 
             VI.drawCorners(context, markers);
-            var playarr = [];
+            var playarr = {};
+            playpolling.detect++;
             markers.forEach((marker) => {
 
-                if(marker.id > 5){
-                    if(!(marker.id in markerout)){
+                if (marker.id > 5) {
+                    if (!(marker.id in markerout)) {
                         markerout[marker.id] = 0;
                     }
-                    if(MP.in_box(marker.corners, VI.workingbox)){
+                    if (MP.in_box(marker.corners, VI.workingbox)) {
                         markerout[marker.id] = 0;
-                        if(marker.id === 887){
+                        if (marker.id === 887) {
                             // console.log(marker.corners);
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
@@ -209,17 +214,16 @@ function tick(){
                             document.getElementById("chart").style.top = yPos + "px"
                             document.getElementById("chart").style.left = xPos + "px"
                             // console.log(point);
-                            if(marker.id in VI.activeids){
+                            if (marker.id in VI.activeids) {
                                 VI.activeids[marker.id] = Date.now();
-                            }
-                            else{
+                            } else {
                                 //CLIP
                                 // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
                                 VI.activeids[marker.id] = Date.now()
                             }
 
                         }
-                        if(marker.id === 502){
+                        if (marker.id === 502) {
                             // console.log(marker.corners);
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
@@ -227,10 +231,9 @@ function tick(){
                             document.getElementById("display").style.top = yPos + "px"
                             document.getElementById("display").style.left = xPos + "px"
                             // console.log(point);
-                            if(marker.id in VI.activeids){
+                            if (marker.id in VI.activeids) {
                                 VI.activeids[marker.id] = Date.now();
-                            }
-                            else{
+                            } else {
                                 //CLIP
                                 // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
                                 VI.activeids[marker.id] = Date.now()
@@ -238,31 +241,30 @@ function tick(){
 
                         }
 
-                        if(marker.id < 500){
+                        if (marker.id < 500) {
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
                             let yPos = point[1];
                             let id = marker.id + "";
-                            if(yPos < 100){
+                            if (yPos < 100) {
                                 markerout[marker.id]++;
-                                if(markerout[marker.id] > 100){
+                                if (markerout[marker.id] > 100) {
 
                                 }
                                 console.log("TOPBAR" + " " + marker.id);
-                                if(marker.id in VI.clippingid){
+                                if (marker.id in VI.clippingid) {
                                     VI.clippingid[marker.id] = Date.now();
-                                }
-                                else{
+                                } else {
                                     var backcalc = xPos + 140;
-                                    backcalc = backcalc / (1440/tracktime);
+                                    backcalc = backcalc / (1440 / tracktime);
                                     backcalc = Date.now() - backcalc;
                                     var box = document.getElementById("mainbox");
                                     var currentheightest = Infinity;
-                                    for(let i = 0; i < box.children.length; i++) {
-                                        if(box.children[i].className === "tick"){
+                                    for (let i = 0; i < box.children.length; i++) {
+                                        if (box.children[i].className === "tick") {
                                             var timestamp = box.children[i].id
                                             timestamp = parseInt(timestamp).valueOf();
-                                            if(timestamp > backcalc && timestamp < currentheightest){
+                                            if (timestamp > backcalc && timestamp < currentheightest) {
                                                 currentheightest = timestamp;
                                             }
                                         }
@@ -270,9 +272,9 @@ function tick(){
                                     addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", marker.id)
                                     VI.clippingid[marker.id] = Date.now()
                                 }
-                                if(marker.id in VI.videoid){
+                                if (marker.id in VI.videoid) {
                                     delete VI.videoid[marker.id];
-                                    if(document.getElementById(id) !== null) {
+                                    if (document.getElementById(id) !== null) {
                                         console.log("in top bar" + " " + marker.id)
                                         document.getElementById(id).style.opacity = "0";
                                     }
@@ -280,15 +282,24 @@ function tick(){
                                 }
 
 
-                            }
-
-                            else{
-                                if(yPos < 200){
+                            } else {
+                                if (yPos < 200) {
                                     console.log("in play bar" + " " + marker.id)
-                                    if(marker.id in VI.clippingid){
+                                    if (marker.id in VI.clippingid) {
                                         delete VI.clippingid[marker.id];
                                     }
-                                    playarr.push([xPos, marker.id]);
+                                    let str = marker.id + "";
+                                    if (str in playpolling) {
+                                        playpolling[str]["x"].push(xPos);
+                                    } else {
+                                        let val = {
+                                            "id": marker.id,
+                                            "x": [xPos]
+                                        };
+
+                                        playpolling[str] = val;
+                                    }
+                                    // playarr.push([xPos, marker.id]);
                                 }
                             }
 
@@ -331,24 +342,23 @@ function tick(){
                         }
 
 
-                    }
-                    else{
-                        if(marker.id in VI.activeids){
+                    } else {
+                        if (marker.id in VI.activeids) {
                             delete VI.activeids[marker.id];
                         }
-                        if(marker.id in VI.videoid){
-                            console.log("out of box"  + " " + marker.id)
+                        if (marker.id in VI.videoid) {
+                            console.log("out of box" + " " + marker.id)
                             markerout[marker.id]++;
-                            if(markerout[marker.id] > 100){
+                            if (markerout[marker.id] > 100) {
                                 delete VI.videoid[marker.id];
-                                if(document.getElementById(marker.id + "") !== null) {
+                                if (document.getElementById(marker.id + "") !== null) {
                                     document.getElementById(marker.id + "").style.opacity = "0";
                                 }
                             }
 
 
                         }
-                        if(marker.id in VI.clippingid){
+                        if (marker.id in VI.clippingid) {
                             delete VI.clippingid[marker.id];
                         }
                     }
@@ -357,44 +367,69 @@ function tick(){
                 }
             });
 
-            playarr.sort(function (a,b) {
-               return a[0] - b[0];
-            });
-            let newid = false;
-            let idarr = []
-            for(let i = 0; i < 2 && i<playarr.length; i++){
-                marker = playarr[i][1];
-                VI.videoid[marker] = Date.now()
-                if(!(marker in VI.videoid)) {
-                    newid = true;
-                }
-                idarr.push(marker);
 
+            if (lastpolled === 0) {
+                lastpolled = Date.now();
             }
-            if(idarr.length === previousplay.length){
-                let same = true;
-                for(let i = 0; i < idarr.length; i++){
-                    if(idarr[i] !== previousplay[i]){
-                        same = false;
+            playarr = [];
+            if (Date.now() > lastpolled + polltime) {
+                lastpolled = Date.now();
+                for(let id in playpolling){
+                    if(id !== "detect"){
+                        if(playpolling[id]["x"].length > (playpolling.detect /2)){
+                            let total = 0;
+                            let count = 0;
+                            for(let x in playpolling[id].x){
+                                count++;
+                                total = total + x;
+                            }
+                            total = total/count;
+                            playarr.push([total, playpolling[id]["id"]])
+                        }
                     }
                 }
+                playpolling = {"detect": 0};
+                playarr.sort((a,b) => {
+                   return a[0] - b[0];
+                });
 
-                if(!same){
+                let newid = false;
+                let idarr = []
+                for(let i = 0; i < 2 && i<playarr.length; i++){
+                    marker = playarr[i][1];
+                    VI.videoid[marker] = Date.now()
+                    if(!(marker in VI.videoid)) {
+                        newid = true;
+                    }
+                    idarr.push(marker);
+
+                }
+                if(idarr.length === previousplay.length){
+                    let same = true;
+                    for(let i = 0; i < idarr.length; i++){
+                        if(idarr[i] !== previousplay[i]){
+                            same = false;
+                        }
+                    }
+
+                    if(!same){
+                        console.log("not same: previous was:" );
+                        console.log(previousplay)
+                        console.log(idarr)
+                        playclips(idarr);
+
+                    }
+                }
+                else{
                     console.log("not same: previous was:" );
                     console.log(previousplay)
                     console.log(idarr)
                     playclips(idarr);
-                    
+
                 }
+                previousplay = idarr;
             }
-            else{
-                console.log("not same: previous was:" );
-                console.log(previousplay)
-                console.log(idarr)
-                playclips(idarr);
-                
-            }
-            previousplay = idarr;
+
 
 
 
