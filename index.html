@@ -523,6 +523,7 @@
         var pending = window.api.getClipstoPlay();
         if(pending.length > 0){
             console.log("pending queue");
+            console.log(pending);
             for(let pend in pending){
                 console.log("pending " + pend[1]);
                 playClipv2(pend[1], pend[0]);

@@ -40,7 +40,7 @@ var tracktime = 300000;
 
 var previousplay = [];
 var playpolling = {"detect": 0};
-var polltime = 1000;
+var polltime = 5000;
 var lastpolled = 0;
 
 // All of the Node.js APIs are available in the preload process.
@@ -376,7 +376,7 @@ function tick(){
                 lastpolled = Date.now();
                 for(let id in playpolling){
                     if(id !== "detect"){
-                        if(playpolling[id]["x"].length > (playpolling.detect /2)){
+                        if(playpolling[id]["x"].length > (playpolling.detect /3)){
                             let total = 0;
                             let count = 0;
                             for(let x in playpolling[id].x){
