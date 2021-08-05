@@ -9,7 +9,7 @@ SP.currentardata = [];
 SP.visdata = [];
 
 SP.openserial = function(){
-    SP.port = new SerialPort('COM5', {
+    SP.port = new SerialPort('COM3', {
             baudRate: 9600
         },
         (err) => {

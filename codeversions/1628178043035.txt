@@ -164,7 +164,6 @@ void setup() {
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
   pinMode(led, OUTPUT);
-  //test
    
 }
 
