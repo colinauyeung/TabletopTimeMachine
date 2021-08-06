@@ -71,7 +71,7 @@
             var data = window.api.fetchserial();
             var value;
             if(data["changed"] === true){
-                var clunk = data.pop();
+                var clunk = data["data"];
                 lastvalue = clunk.y;
                 value = {
                     x: clunk.x,
