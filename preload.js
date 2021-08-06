@@ -719,7 +719,7 @@ function autorecord(){
 
 function pollserial(){
     if(SP.currentardata.length > 0){
-        var clunk = data.pop();
+        var clunk = SP.currentardata.pop();
         lastvalue = clunk.y;
         value = {
             x: clunk.x,
