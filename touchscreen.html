@@ -117,10 +117,10 @@
                     }
                     var changeSet = vega
                         .changeset()
-                        .insert(value)
-                        .remove(function (t) {
-                            return t.x < minimumX;
-                        });
+                        .insert(value);
+                        // .remove(function (t) {
+                        //     return t.x < minimumX;
+                        // });
                     res.view.change('table', changeSet).run();
                     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
                 });
