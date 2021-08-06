@@ -501,15 +501,15 @@
               let time = this.currentTime;
               let rtime = this.stime + (time *1000);
               var last = 0;
-              for(let i = 0; i<clunk.clip.serialdata.length; i++){
+              for(let index = 0; index<clunk.clip.serialdata.length; index++){
                   if(clunk.clip.serialdata[i].x < rtime){
-                      last = i;
+                      last = index;
                   }
                   else{
                       break;
                   }
               }
-              window.api.emitData(this.aId + "", clunk.clip.serialdata[i]);
+              window.api.emitData(this.aId + "", clunk.clip.serialdata[last]);
               // console.log(rtime);
               // let data = clunk.clip.serialdata;
 

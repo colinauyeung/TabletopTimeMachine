@@ -12,11 +12,23 @@ window.addEventListener('DOMContentLoaded', () => {
     CD.startup();
 });
 
-var watching = [];
+
 
 windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+    for(let id in oldValue){
+        windowManager.sharedData.unwatch(id + "", function (e) {
+            return;
+        })
+    }
+    for(let id in newValue){
+        window.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+            console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+        });
+    }
 });
+
+
 
 contextBridge.exposeInMainWorld(
     "api", {
