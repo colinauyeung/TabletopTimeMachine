@@ -98,7 +98,7 @@
         for(let id in newValue){
             console.log("watching " + newValue[id]);
             let contain = document.createElement("div");
-            contain.id = id + "";
+            contain.id = oldValue[id] + "";
             contain.style.maxWidth = "700px";
             contain.style.width = "700px";
             contain.style.height = "100%";
