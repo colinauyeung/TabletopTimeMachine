@@ -40,7 +40,7 @@ var tracktime = 300000;
 
 var previousplay = [];
 var playpolling = {"detect": 0};
-var polltime = 10000;
+var polltime = 5000;
 var lastpolled = 0;
 
 // All of the Node.js APIs are available in the preload process.
@@ -251,7 +251,7 @@ function tick(){
                                 if (markerout[marker.id] > 100) {
 
                                 }
-                                console.log("TOPBAR" + " " + marker.id);
+                                // console.log("TOPBAR" + " " + marker.id);
                                 if (marker.id in VI.clippingid) {
                                     VI.clippingid[marker.id] = Date.now();
                                 } else {
@@ -275,7 +275,7 @@ function tick(){
                                 if (marker.id in VI.videoid) {
                                     delete VI.videoid[marker.id];
                                     if (document.getElementById(id) !== null) {
-                                        console.log("in top bar" + " " + marker.id)
+                                        // console.log("in top bar" + " " + marker.id)
                                         document.getElementById(id).style.opacity = "0";
                                     }
 
@@ -284,7 +284,7 @@ function tick(){
 
                             } else {
                                 if (yPos < 200) {
-                                    console.log("in play bar" + " " + marker.id)
+                                    // console.log("in play bar" + " " + marker.id)
                                     if (marker.id in VI.clippingid) {
                                         delete VI.clippingid[marker.id];
                                     }
@@ -373,10 +373,11 @@ function tick(){
             }
             playarr = [];
             if (Date.now() > lastpolled + polltime) {
+                console.log(playpolling);
                 lastpolled = Date.now();
                 for(let id in playpolling){
                     if(id !== "detect"){
-                        if(playpolling[id]["x"].length > (playpolling.detect /3)){
+                        if(playpolling[id]["x"].length > (playpolling.detect /5)){
                             let total = 0;
                             let count = 0;
                             for(let x in playpolling[id].x){
@@ -413,17 +414,17 @@ function tick(){
                     }
 
                     if(!same){
-                        console.log("not same: previous was:" );
-                        console.log(previousplay)
-                        console.log(idarr)
+                        console.log("not same" );
+                        // console.log(previousplay)
+                        // console.log(idarr)
                         playclips(idarr);
 
                     }
                 }
                 else{
-                    console.log("not same: previous was:" );
-                    console.log(previousplay)
-                    console.log(idarr)
+                    console.log("not same" );
+                    // console.log(previousplay)
+                    // console.log(idarr)
                     playclips(idarr);
 
                 }
