@@ -17,13 +17,13 @@ window.addEventListener('DOMContentLoaded', () => {
 windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
     for(let id in oldValue){
-        windowManager.sharedData.unwatch(id + "", function (e) {
+        windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
             return;
         })
     }
     for(let id in newValue){
-        console.log("watching " + id);
-        windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+        console.log("watching " + newValue[id]);
+        windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
             console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
         });
     }
