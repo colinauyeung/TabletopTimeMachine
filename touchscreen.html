@@ -145,28 +145,32 @@
     vegaEmbed('#chart', vlSpec).then(function (res) {
         var lastvalue = 0;
         function fetchdata (){
-            var data = windowManager.sharedData.fetch("serial");
-            var value;
-            if(data["changed"] === true){
-                var clunk = data["data"];
-                lastvalue = clunk.y;
-                value = {
-                    x: clunk.x,
-                    y: [clunk.y]
-                }
-                let data = windowManager.sharedData.fetch("serial");
-                windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
+            return windowManager.sharedData.fetch("serial").then(function(data){
 
-            }
-            else{
-                value = {
-                    x: Date.now(),
-                    y: [lastvalue]
-                }
-            }
 
-            // window.api.addVisdata(value);
-            return value;
+                var value;
+                if(data["changed"] === true){
+                    var clunk = data["data"];
+                    lastvalue = clunk.y;
+                    value = {
+                        x: clunk.x,
+                        y: [clunk.y]
+                    }
+                    let data = windowManager.sharedData.fetch("serial");
+                    windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
+
+                }
+                else{
+                    value = {
+                        x: Date.now(),
+                        y: [lastvalue]
+                    }
+                }
+
+                // window.api.addVisdata(value);
+                return value;
+            });
+
         }
 
 
