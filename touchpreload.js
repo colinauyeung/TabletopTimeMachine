@@ -22,6 +22,7 @@ windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue)
         })
     }
     for(let id in newValue){
+        console.log("watching " + id);
         windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
             console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
         });
