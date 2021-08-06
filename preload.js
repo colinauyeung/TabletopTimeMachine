@@ -682,7 +682,7 @@ function clip(start, length, name){
         }
     })
     for(let i = 0; i<data.length; i++){
-        data[i].x = data[i].x - actualstart;
+        // data[i].x = data[i].x - actualstart;
     }
     data.sort((a,b) => a.x - b.x);
     data.forEach((clunk) => {
