@@ -105,7 +105,7 @@
             contain.style.float = "left";
             box.appendChild(contain);
 
-            vegaEmbed('#' + id, vlSpec).then(function (res) {
+            vegaEmbed('#' + newValue[id], vlSpec).then(function (res) {
                 windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
                     var minimumX = Date.now()-10000;
 
