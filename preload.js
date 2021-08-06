@@ -579,7 +579,7 @@ function playclips(idarr){
         if(idarr[1] in clipbinding) {
             let contain2 = document.createElement("div");
             contain2.id = idarr[1];
-            contain1.style.maxWidth = "700px";
+            contain2.style.maxWidth = "700px";
             contain2.style.width = "700px";
             contain2.style.height = "100%";
             contain2.style.float = "left";
