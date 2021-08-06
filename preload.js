@@ -40,7 +40,7 @@ var tracktime = 300000;
 
 var previousplay = [];
 var playpolling = {"detect": 0};
-var polltime = 5000;
+var polltime = 10000;
 var lastpolled = 0;
 
 // All of the Node.js APIs are available in the preload process.
@@ -569,6 +569,7 @@ function playclips(idarr){
         if(idarr[0] in clipbinding) {
             let contain1 = document.createElement("div");
             contain1.id = idarr[0];
+            contain1.style.maxWidth = "700px";
             contain1.style.width = "700px";
             contain1.style.height = "100%";
             contain1.style.float = "left";
@@ -578,6 +579,7 @@ function playclips(idarr){
         if(idarr[1] in clipbinding) {
             let contain2 = document.createElement("div");
             contain2.id = idarr[1];
+            contain1.style.maxWidth = "700px";
             contain2.style.width = "700px";
             contain2.style.height = "100%";
             contain2.style.float = "left";
