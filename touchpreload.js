@@ -12,6 +12,12 @@ window.addEventListener('DOMContentLoaded', () => {
     CD.startup();
 });
 
+var watching = [];
+
+windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+    console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+});
+
 contextBridge.exposeInMainWorld(
     "api", {
         fetchserial: () => {

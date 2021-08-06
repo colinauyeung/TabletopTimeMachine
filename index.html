@@ -425,6 +425,9 @@
         clunk.videoObjects[0].stime = 0; //set index
         clunk.videoObjects[1].stime = 0;
 
+        clunk.videoObjects[0].aId = id; //set index
+        clunk.videoObjects[1].aId = id;
+
 
 
         initVideoElement(clunk.videoObjects[0], clunk);
@@ -497,6 +500,16 @@
             video.ontimeupdate = function(e){
               let time = this.currentTime;
               let rtime = this.stime + (time *1000);
+              var last = 0;
+              for(let i = 0; i<clunk.clip.serialdata.length; i++){
+                  if(clunk.clip.serialdata[i].x < rtime){
+                      last = i;
+                  }
+                  else{
+                      break;
+                  }
+              }
+              window.api.emitData(this.aId + "", clunk.clip.serialdata[i]);
               // console.log(rtime);
               // let data = clunk.clip.serialdata;
 

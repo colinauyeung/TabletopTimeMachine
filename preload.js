@@ -562,12 +562,13 @@ function playclips(idarr){
             contain1.style.width = "1420px";
             contain1.style.height = "100%";
             box.appendChild(contain1);
-            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]])
+            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]]);
+            windowManager.sharedData.set("viz", [idarr[0]]);
         }
     }
     else{
         // if(idarr.length === 2){
-        if(idarr[0] in clipbinding) {
+        if(idarr[0] in clipbinding && idarr[1] in clipbinding) {
             let contain1 = document.createElement("div");
             contain1.id = idarr[0];
             contain1.style.maxWidth = "700px";
@@ -575,9 +576,8 @@ function playclips(idarr){
             contain1.style.height = "100%";
             contain1.style.float = "left";
             box.appendChild(contain1);
-            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]])
-        }
-        if(idarr[1] in clipbinding) {
+            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]]);
+
             let contain2 = document.createElement("div");
             contain2.id = idarr[1];
             contain2.style.maxWidth = "700px";
@@ -585,7 +585,9 @@ function playclips(idarr){
             contain2.style.height = "100%";
             contain2.style.float = "left";
             box.appendChild(contain2);
-            clipsToPlay.push([idarr[1], clipbinding[idarr[1]]])
+            clipsToPlay.push([idarr[1], clipbinding[idarr[1]]]);
+            windowManager.sharedData.set("viz", [idarr[0], idarr[1]]);
+
         }
         // }
     }
@@ -905,6 +907,10 @@ contextBridge.exposeInMainWorld(
 
         testdiff: (file1, file2, selector) => {
             CD.testdifffiles(file1, file2, selector);
+        },
+
+        emitData: (id, data) => {
+            windowManager.sharedData.set(id, data);
         }
 
 
