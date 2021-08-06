@@ -564,6 +564,7 @@ function playclips(idarr){
             box.appendChild(contain1);
             clipsToPlay.push([idarr[0], clipbinding[idarr[0]]]);
             windowManager.sharedData.set("viz", [idarr[0]]);
+            windowManager.sharedData.set(idarr[0], [0,0]);
         }
     }
     else{
@@ -587,6 +588,8 @@ function playclips(idarr){
             box.appendChild(contain2);
             clipsToPlay.push([idarr[1], clipbinding[idarr[1]]]);
             windowManager.sharedData.set("viz", [idarr[0], idarr[1]]);
+            windowManager.sharedData.set(idarr[0], [0,0]);
+            windowManager.sharedData.set(idarr[1], [0,0]);
 
         }
         // }
