@@ -57,8 +57,8 @@ app.whenReady().then(() => {
         'height': 800,
         resizable: true,
         'webPreferences': {
-            // nodeIntegration: true,
-            // contextIsolation: false,
+            nodeIntegration: true,
+            contextIsolation: false,
             enableRemoteModule: true,
             preload:path.join(__dirname, 'touchpreload.js')
         }

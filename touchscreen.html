@@ -26,10 +26,23 @@
             width: 400px;
             overflow-x: auto;
             position: absolute;
-            top: 0px;
+            top: 400px;
             left: 700px;
             background: white;
             opacity: 1;
+        }
+
+        #chart {
+            position: absolute;
+            top: 400px;
+            left: 0px;
+        }
+        #clipviz {
+            width: 100%;
+            height: 50%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
         }
 
 
@@ -40,6 +53,9 @@
 <div class="row">
     <div class="column" id="left"></div>
     <div class="column" id="middle">
+        <div id="clipviz">
+
+        </div>
         <div id="tab1">
             <div id="chart"></div>
         </div>
@@ -54,6 +70,67 @@
 
 
 <script>
+
+    const {
+        contextBridge,
+        ipcRenderer
+    } = require("electron");
+    const remote = require('electron').remote;
+    var electron = require('electron');
+    const windowManager = remote.require('electron-window-manager');
+    var CD = require("./modules/codediff").CD;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        CD.startup();
+    });
+
+
+
+    windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+        console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+        let box = document.getElementById("clipviz");
+        box.innerHTML = "";
+        for(let id in oldValue){
+            windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
+                return;
+            })
+        }
+        for(let id in newValue){
+            console.log("watching " + newValue[id]);
+            let contain = document.createElement("div");
+            contain.id = id + "";
+            contain.style.maxWidth = "700px";
+            contain.style.width = "700px";
+            contain.style.height = "100%";
+            contain.style.float = "left";
+            box.appendChild(contain);
+
+            vegaEmbed('#' + id, vlSpec).then(function (res) {
+                windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
+                    var minimumX = Date.now()-10000;
+
+                    var value;
+                    value = {
+                        x: newValue.x,
+                        y: [newValue.y]
+                    }
+                    var changeSet = vega
+                        .changeset()
+                        .insert(value)
+                        .remove(function (t) {
+                            return t.x < minimumX;
+                        });
+                    res.view.change('table', changeSet).run();
+                    console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                });
+            });
+
+
+
+
+        }
+    });
+
     var vlSpec = {
         $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
         data: {name: 'table'},
@@ -68,7 +145,7 @@
     vegaEmbed('#chart', vlSpec).then(function (res) {
         var lastvalue = 0;
         function fetchdata (){
-            var data = window.api.fetchserial();
+            var data = windowManager.sharedData.fetch("serial");
             var value;
             if(data["changed"] === true){
                 var clunk = data["data"];
@@ -77,7 +154,8 @@
                     x: clunk.x,
                     y: [clunk.y]
                 }
-                window.api.setserialfalse();
+                let data = windowManager.sharedData.fetch("serial");
+                windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
 
             }
             else{
@@ -90,6 +168,7 @@
             // window.api.addVisdata(value);
             return value;
         }
+
 
         // var valueGenerator = newGenerator();
         var minimumX = Date.now()-10000;
@@ -104,6 +183,33 @@
             res.view.change('table', changeSet).run();
         }, 100);
     });
+
+    // vegaEmbed('#clipviz', vlSpec).then(function (res) {
+    //     var lastvalue = 0;
+    //     function fetchdata (){
+    //         var value;
+    //         value = {
+    //             x: Date.now(),
+    //             y: [lastvalue]
+    //         }
+    //
+    //         // window.api.addVisdata(value);
+    //         return value;
+    //     }
+    //
+    //     // var valueGenerator = newGenerator();
+    //     var minimumX = Date.now()-10000;
+    //     window.setInterval(function () {
+    //         minimumX = minimumX + 100;
+    //         var changeSet = vega
+    //             .changeset()
+    //             .insert(fetchdata())
+    //             .remove(function (t) {
+    //                 return t.x < minimumX;
+    //             });
+    //         res.view.change('table', changeSet).run();
+    //     }, 100);
+    // });
 
 
 </script>
