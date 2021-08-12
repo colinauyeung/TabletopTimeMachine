@@ -77,11 +77,13 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", 111)
-        VI.clippingid[111] = Date.now();
-        idarr = [];
-        idarr.push([111, 0]);
-        playclips(idarr);
+        if(Date.now() - currentheightest - 30000 > 1){
+            addCliptoQueue(currentheightest, Date.now() - currentheightest - 30000, "name", 111)
+            VI.clippingid[111] = Date.now();
+            idarr = [];
+            idarr.push([111, 0]);
+            playclips(idarr);
+        }
         console.log("x: " + e.x + " y: " + e.y);
     })
 })
@@ -110,7 +112,8 @@ function startRecording() {
             mandatory: {
                 // width: { min: 1024, ideal: 1280, max: 1920 },
                 // height: { min: 576, ideal: 720, max: 1080 },
-                chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                chromeMediaSourceId: 'a9a5941dca194c65010c55af6890de13d367371d675be7d62a6a03af7f555e42',
             }
         }},
         (localMediaStream) => {
