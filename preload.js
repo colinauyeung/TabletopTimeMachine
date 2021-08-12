@@ -62,6 +62,28 @@ window.addEventListener('DOMContentLoaded', () => {
     context = canvas.getContext("2d");
     // CD.startup();
     lastchecked = Date.now();
+    document.getElementById("topbar").addEventListener("click", function (e) {
+        var backcalc = e.x + 140;
+        backcalc = backcalc / (1440 / tracktime);
+        backcalc = Date.now() - backcalc;
+        var box = document.getElementById("mainbox");
+        var currentheightest = Infinity;
+        for (let i = 0; i < box.children.length; i++) {
+            if (box.children[i].className === "tick") {
+                var timestamp = box.children[i].id
+                timestamp = parseInt(timestamp).valueOf();
+                if (timestamp > backcalc && timestamp < currentheightest) {
+                    currentheightest = timestamp;
+                }
+            }
+        }
+        addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", 111)
+        VI.clippingid[111] = Date.now();
+        idarr = [];
+        idarr.push([111, 0]);
+        playclips(idarr);
+        console.log("x: " + e.x + " y: " + e.y);
+    })
 })
 
 
@@ -397,18 +419,19 @@ function tick(){
                 let newid = false;
                 let idarr = []
                 for(let i = 0; i < 2 && i<playarr.length; i++){
-                    marker = playarr[i][1];
+                    let marker = playarr[i][1];
+                    let x = playarr[i][0]
                     VI.videoid[marker] = Date.now()
                     if(!(marker in VI.videoid)) {
                         newid = true;
                     }
-                    idarr.push(marker);
+                    idarr.push(marker, x);
 
                 }
                 if(idarr.length === previousplay.length){
                     let same = true;
                     for(let i = 0; i < idarr.length; i++){
-                        if(idarr[i] !== previousplay[i]){
+                        if(idarr[i][0] !== previousplay[i][0]){
                             same = false;
                         }
                     }
@@ -447,14 +470,14 @@ function tick(){
             })
 
 
-            for(let id in VI.clippingid){
-                if(VI.clippingid[id] < Date.now()-10000){
-                    idDelete.push(id);
-                }
-            }
-            idDelete.forEach((id) => {
-                delete VI.clippingid[id];
-            })
+            // for(let id in VI.clippingid){
+            //     if(VI.clippingid[id] < Date.now()-10000){
+            //         idDelete.push(id);
+            //     }
+            // }
+            // idDelete.forEach((id) => {
+            //     delete VI.clippingid[id];
+            // })
 
         }
 
@@ -549,48 +572,48 @@ function playclip(arucoid){
 
 
 function playclips(idarr){
-    console.log("Play Clips")
+    console.log("Play Clips");
     console.log(idarr);
     clipsToPlay = [];
-    let  box = document.getElementById("box")
+    let  box = document.getElementById("box");
         box.innerHTML = "";
     if(idarr.length === 1){
-        if(idarr[0] in clipbinding) {
+        if(idarr[0][0] in clipbinding) {
+            let id = idarr[0][0];
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
-            contain1.id = idarr[0];
-            contain1.style.width = "1420px";
+            contain1.id = idarr[0][0];
+            contain1.style.width = "450x";
             contain1.style.height = "100%";
             box.appendChild(contain1);
-            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]]);
-            windowManager.sharedData.set("viz", [idarr[0]]);
-            windowManager.sharedData.set(idarr[0], [0,0]);
+            clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
+            windowManager.sharedData.set("viz", [idarr[0][0]]);
+            windowManager.sharedData.set(idarr[0][0], [0,0]);
         }
     }
     else{
         // if(idarr.length === 2){
-        if(idarr[0] in clipbinding && idarr[1] in clipbinding) {
+        if(idarr[0][0] in clipbinding && idarr[1][0] in clipbinding) {
             let contain1 = document.createElement("div");
-            contain1.id = idarr[0];
-            contain1.style.maxWidth = "700px";
-            contain1.style.width = "700px";
+            contain1.id = idarr[0][0];
+            contain1.style.maxWidth = "450px";
+            contain1.style.width = "450px";
             contain1.style.height = "100%";
             contain1.style.float = "left";
             box.appendChild(contain1);
-            clipsToPlay.push([idarr[0], clipbinding[idarr[0]]]);
+            clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
 
             let contain2 = document.createElement("div");
-            contain2.id = idarr[1];
-            contain2.style.maxWidth = "700px";
-            contain2.style.width = "700px";
+            contain2.id = idarr[1][0];
+            contain2.style.maxWidth = "450px";
+            contain2.style.width = "450px";
             contain2.style.height = "100%";
             contain2.style.float = "left";
             box.appendChild(contain2);
-            clipsToPlay.push([idarr[1], clipbinding[idarr[1]]]);
-            windowManager.sharedData.set("viz", [idarr[0], idarr[1]]);
-            windowManager.sharedData.set(idarr[0], [0,0]);
-            windowManager.sharedData.set(idarr[1], [0,0]);
-
+            clipsToPlay.push([idarr[1][0], clipbinding[idarr[1][0]]]);
+            windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
+            windowManager.sharedData.set(idarr[0][0], [0,0]);
+            windowManager.sharedData.set(idarr[1][0], [0,0]);
         }
         // }
     }
