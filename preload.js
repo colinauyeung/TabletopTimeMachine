@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', () => {
     context = canvas.getContext("2d");
     // CD.startup();
     lastchecked = Date.now();
-    document.getElementById("topbar").addEventListener("click", function (e) {
+    document.getElementById("topbar2").addEventListener("click", function (e) {
         var backcalc = e.x + 140;
         backcalc = backcalc / (1440 / tracktime);
         backcalc = Date.now() - backcalc;
