@@ -117,7 +117,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 .changeset()
                 .insert(value)
                 .remove(function (t) {
-                        return t.x < minimumX;
+                        return t.x < Date.now() - 30000;
                 });
             // .remove(function (t) {
             //     return t.x < minimumX;
@@ -197,7 +197,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
                     else{
                         // console.log(newValue);
-                        var minimumX = Date.now()-10000;
 
                         var value;
                         value = {
@@ -382,6 +381,7 @@ function tick(){
 
         if(VI.allcornersfound()) {
             VI.findmainbox();
+            VI.drawCorners(context, markers);
             // VI.findinterbox();
             VI.drawId(context, markers);
             if (firstfind) {
@@ -391,7 +391,7 @@ function tick(){
             }
 
 
-            VI.drawCorners(context, markers);
+
             var playarr = {};
             playpolling.detect++;
             markers.forEach((marker) => {
