@@ -817,9 +817,6 @@ function playclips(idarr){
             });
 
             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-                console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-                let box = document.getElementById("clipviz");
-                box.innerHTML = "";
                 for(let idz in newValue){
                     if(idz === id){
                         let left = document.getElementById("leftvid");
@@ -889,6 +886,7 @@ function playclips(idarr){
             let id = idarr[0][0];
 
             let chartleft = document.getElementById("leftviz");
+            chartleft.innerHTML = "";
 
             let chartid = "chart" + id
             let viz1 = document.createElement("div");
@@ -930,15 +928,13 @@ function playclips(idarr){
             });
 
             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-                console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-                let box = document.getElementById("clipviz");
-                box.innerHTML = "";
                 for(let idz in newValue){
                     if(idz === id){
                         let left = document.getElementById("leftvid");
                         left.innerHTML = "";
 
                         let chartleft = document.getElementById("leftviz");
+                        chartleft.innerHTML = "";
 
                         let chartid = "chart" + id
                         let viz = document.createElement("div");
@@ -998,6 +994,7 @@ function playclips(idarr){
             right.innerHTML = "";
 
             let chartright = document.getElementById("rightviz");
+            chartright.innerHTML = "";
             let id2 = idarr[1][0];
             let chartid2 = "chart" + id2
             let viz2 = document.createElement("div");
@@ -1040,15 +1037,14 @@ function playclips(idarr){
 
 
             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-                console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-                let box = document.getElementById("clipviz");
-                box.innerHTML = "";
                 for(let idz in newValue){
                     if(idz === id2){
                         let right = document.getElementById("rightvid");
                         right.innerHTML = "";
 
                         let chartright = document.getElementById("rightviz");
+                        chartright.innerHTML = "";
+
                         let chartid2 = "chart" + id2
                         let viz2 = document.createElement("div");
                         viz2.id = chartid2;
