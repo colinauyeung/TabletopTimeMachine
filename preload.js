@@ -1432,7 +1432,7 @@ contextBridge.exposeInMainWorld(
 
         emitData: (id, data) => {
             windowManager.sharedData.set(id, data);
-            console.log("emitting to " + id);
+            // console.log("emitting to " + id);
         }
 
 
