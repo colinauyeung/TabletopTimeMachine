@@ -777,8 +777,8 @@ function playclips(idarr){
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
-            // contain1.style.width = "450x";
-            // contain1.style.height = "100%";
+            contain1.style.width = "450x";
+            contain1.style.height = "100%";
             left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
             windowManager.sharedData.set("viz", [idarr[0][0]]);
@@ -795,8 +795,8 @@ function playclips(idarr){
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
             // contain1.style.maxWidth = "450px";
-            // contain1.style.width = "450px";
-            // contain1.style.height = "100%";
+            contain1.style.width = "450px";
+            contain1.style.height = "100%";
             // contain1.style.float = "left";
             left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
@@ -808,8 +808,8 @@ function playclips(idarr){
 
             contain2.id = idarr[1][0];
             // contain2.style.maxWidth = "450px";
-            // contain2.style.width = "450px";
-            // contain2.style.height = "100%";
+            contain2.style.width = "450px";
+            contain2.style.height = "100%";
             // contain2.style.float = "left";
             right.appendChild(contain2);
             clipsToPlay.push([idarr[1][0], clipbinding[idarr[1][0]]]);
