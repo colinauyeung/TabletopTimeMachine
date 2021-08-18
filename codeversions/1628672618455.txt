@@ -187,6 +187,6 @@ void loop() {
     digitalWrite(led, LOW);
   }
 
-  Serial.println(cm*10);
+  Serial.println(cm);
   delay(10);
 }
