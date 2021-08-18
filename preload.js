@@ -833,7 +833,7 @@ function playclips(idarr){
 
             let left = document.getElementById("leftvid");
             left.innerHTML = "";
-
+            let id = idarr[0][0];
 
             let chartleft = document.getElementById("leftviz");
 
@@ -892,8 +892,8 @@ function playclips(idarr){
             right.innerHTML = "";
 
             let chartright = document.getElementById("rightviz");
-
-            let chartid2 = "chart" + id
+            let id2 = idarr[1][0];
+            let chartid2 = "chart" + id2
             let viz2 = document.createElement("div");
             viz2.id = chartid2;
             // viz.style.maxWidth = "700px";
