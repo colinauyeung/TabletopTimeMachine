@@ -185,7 +185,7 @@ VI.getRealPos = function(corners, point){
     // return dstPt;
 
     var source = [corners[0].x, corners[0].y,corners[1].x, corners[1].y,corners[2].x, corners[2].y,corners[3].x, corners[3].y];
-    var des = [0, 0, 1440, 0, 1440, 950, 0, 950];
+    var des = [0, 0, 1250, 0, 1250, 700, 0, 700];
     // console.log(source);
     // console.log(point);
     var perspT = PerspT(source, des);

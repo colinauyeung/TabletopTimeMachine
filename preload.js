@@ -31,6 +31,8 @@ var videos = [];
 var vidstream;
 var canvas, context, detector;
 
+var winwidth = 1250;
+
 // var SECRET_KEY = 'Magnemite';
 
 var recorder;
@@ -244,10 +246,12 @@ windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue
     VI.clippingid[111] = Date.now();
     addCliptoQueue(newValue.start, newValue.length, "name", 112);
     VI.clippingid[112] = Date.now();
-    let idarr = [];
-    idarr.push([111, 0]);
-    idarr.push([112, 0]);
-    playclips(idarr);
+    // let idarr = [];
+    // idarr.push([111, 0]);
+    // idarr.push([112, 0]);
+    playleft(111);
+    playright(112);
+    // playclips(idarr);
 })
 
 
@@ -376,7 +380,7 @@ function tick(){
                 document.getElementById(box.children[i].id).remove();
             }
             else{
-                var pos = ((1440/tracktime) * (currenttime - timestamp))-140;
+                var pos = ((winwidth/tracktime) * (currenttime - timestamp))-140;
                 box.children[i].style.left = pos + "px";
             }
         }
@@ -460,6 +464,7 @@ function tick(){
                             let xPos = point[0];
                             let yPos = point[1];
                             let id = marker.id + "";
+
                             if (yPos < 100) {
                                 markerout[marker.id]++;
                                 if (markerout[marker.id] > 100) {
@@ -470,7 +475,7 @@ function tick(){
                                     VI.clippingid[marker.id] = Date.now();
                                 } else {
                                     var backcalc = xPos + 140;
-                                    backcalc = backcalc / (1440 / tracktime);
+                                    backcalc = backcalc / (winwidth / tracktime);
                                     backcalc = Date.now() - backcalc;
                                     var box = document.getElementById("mainbox");
                                     var currentheightest = Infinity;
@@ -496,7 +501,10 @@ function tick(){
                                 }
 
 
-                            } else {
+                            }
+
+
+                            else {
                                 if (yPos < 200) {
                                     // console.log("in play bar" + " " + marker.id)
                                     if (marker.id in VI.clippingid) {
@@ -513,7 +521,7 @@ function tick(){
 
                                         playpolling[str] = val;
                                     }
-                                    // playarr.push([xPos, marker.id]);
+
                                 }
                             }
 
