@@ -771,9 +771,51 @@ function playclips(idarr){
         box.innerHTML = "";
     if(idarr.length === 1){
         if(idarr[0][0] in clipbinding) {
+
             let left = document.getElementById("leftvid");
             left.innerHTML = "";
             let id = idarr[0][0];
+
+            let chartleft = document.getElementById("leftviz");
+
+            let chartid = "chart" + id
+            let viz = document.createElement("div");
+            viz.id = chartid;
+            // viz.style.maxWidth = "700px";
+            viz.style.width = "100%";
+            viz.style.height = "100%";
+            viz.style.float = "left";
+            chartleft.appendChild(viz);
+
+            embed('#' + chartid, vlSpec).then(function (res) {
+                windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                    if(newValue === "reset"){
+                        let changeSet = vega
+                            .changeset()
+                            .remove(true);
+                        res.view.change('table', changeSet).run();
+                    }
+                    else{
+                        // console.log(newValue);
+
+                        var value;
+                        value = {
+                            x: newValue.x,
+                            y: [newValue.y]
+                        }
+                        let changeSet = vega
+                            .changeset()
+                            .insert(value);
+                        // .remove(function (t) {
+                        //     return t.x < minimumX;
+                        // });
+                        res.view.change('table', changeSet).run();
+                        // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                    }
+
+                });
+            });
+
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
@@ -792,6 +834,48 @@ function playclips(idarr){
             let left = document.getElementById("leftvid");
             left.innerHTML = "";
 
+
+            let chartleft = document.getElementById("leftviz");
+
+            let chartid = "chart" + id
+            let viz1 = document.createElement("div");
+            viz1.id = chartid;
+            // viz.style.maxWidth = "700px";
+            viz1.style.width = "100%";
+            viz1.style.height = "100%";
+            viz1.style.float = "left";
+            chartleft.appendChild(viz1);
+
+            embed('#' + chartid, vlSpec).then(function (res) {
+                windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                    if(newValue === "reset"){
+                        let changeSet = vega
+                            .changeset()
+                            .remove(true);
+                        res.view.change('table', changeSet).run();
+                    }
+                    else{
+                        // console.log(newValue);
+
+                        var value;
+                        value = {
+                            x: newValue.x,
+                            y: [newValue.y]
+                        }
+                        let changeSet = vega
+                            .changeset()
+                            .insert(value);
+                        // .remove(function (t) {
+                        //     return t.x < minimumX;
+                        // });
+                        res.view.change('table', changeSet).run();
+                        // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                    }
+
+                });
+            });
+
+
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
             // contain1.style.maxWidth = "450px";
@@ -805,6 +889,46 @@ function playclips(idarr){
 
             let right = document.getElementById("rightvid");
             right.innerHTML = "";
+
+            let chartright = document.getElementById("rightviz");
+
+            let chartid2 = "chart" + id
+            let viz2 = document.createElement("div");
+            viz2.id = chartid2;
+            // viz.style.maxWidth = "700px";
+            viz2.style.width = "100%";
+            viz2.style.height = "100%";
+            viz2.style.float = "left";
+            chartright.appendChild(viz2);
+
+            embed('#' + chartid2, vlSpec).then(function (res) {
+                windowManager.sharedData.watch(chartid2 + "", function(prop, action, newValue, oldValue){
+                    if(newValue === "reset"){
+                        let changeSet = vega
+                            .changeset()
+                            .remove(true);
+                        res.view.change('table', changeSet).run();
+                    }
+                    else{
+                        // console.log(newValue);
+
+                        var value;
+                        value = {
+                            x: newValue.x,
+                            y: [newValue.y]
+                        }
+                        let changeSet = vega
+                            .changeset()
+                            .insert(value);
+                        // .remove(function (t) {
+                        //     return t.x < minimumX;
+                        // });
+                        res.view.change('table', changeSet).run();
+                        // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                    }
+
+                });
+            });
 
             contain2.id = idarr[1][0];
             // contain2.style.maxWidth = "450px";
