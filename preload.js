@@ -179,7 +179,7 @@ window.addEventListener('DOMContentLoaded', () => {
         //     res.view.change('table', changeSet).run();
         // }, 100);
     });
-
+    //
     // windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
     //     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
     //     let box = document.getElementById("clipviz");
@@ -816,6 +816,59 @@ function playclips(idarr){
                 });
             });
 
+            windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+                console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                let box = document.getElementById("clipviz");
+                box.innerHTML = "";
+                for(let idz in newValue){
+                    if(idz === id){
+                        let left = document.getElementById("leftvid");
+                        left.innerHTML = "";
+
+                        let chartleft = document.getElementById("leftviz");
+
+                        let chartid = "chart" + id
+                        let viz = document.createElement("div");
+                        viz.id = chartid;
+                        // viz.style.maxWidth = "700px";
+                        viz.style.width = "100%";
+                        viz.style.height = "100%";
+                        viz.style.float = "left";
+                        chartleft.appendChild(viz);
+
+                        embed('#' + chartid, vlSpec).then(function (res) {
+                            windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                                if(newValue === "reset"){
+                                    let changeSet = vega
+                                        .changeset()
+                                        .remove(true);
+                                    res.view.change('table', changeSet).run();
+                                }
+                                else{
+                                    // console.log(newValue);
+
+                                    var value;
+                                    value = {
+                                        x: newValue.x,
+                                        y: [newValue.y]
+                                    }
+                                    let changeSet = vega
+                                        .changeset()
+                                        .insert(value);
+                                    // .remove(function (t) {
+                                    //     return t.x < minimumX;
+                                    // });
+                                    res.view.change('table', changeSet).run();
+                                    // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                                }
+
+                            });
+                        });
+                    }
+
+                }
+            });
+
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
@@ -823,7 +876,7 @@ function playclips(idarr){
             contain1.style.height = "100%";
             left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
-            windowManager.sharedData.set("viz", [idarr[0][0]]);
+            // windowManager.sharedData.set("viz", [idarr[0][0]]);
             windowManager.sharedData.set(idarr[0][0], [0,0]);
         }
     }
@@ -874,6 +927,59 @@ function playclips(idarr){
                     }
 
                 });
+            });
+
+            windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+                console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                let box = document.getElementById("clipviz");
+                box.innerHTML = "";
+                for(let idz in newValue){
+                    if(idz === id){
+                        let left = document.getElementById("leftvid");
+                        left.innerHTML = "";
+
+                        let chartleft = document.getElementById("leftviz");
+
+                        let chartid = "chart" + id
+                        let viz = document.createElement("div");
+                        viz.id = chartid;
+                        // viz.style.maxWidth = "700px";
+                        viz.style.width = "100%";
+                        viz.style.height = "100%";
+                        viz.style.float = "left";
+                        chartleft.appendChild(viz);
+
+                        embed('#' + chartid, vlSpec).then(function (res) {
+                            windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                                if(newValue === "reset"){
+                                    let changeSet = vega
+                                        .changeset()
+                                        .remove(true);
+                                    res.view.change('table', changeSet).run();
+                                }
+                                else{
+                                    // console.log(newValue);
+
+                                    var value;
+                                    value = {
+                                        x: newValue.x,
+                                        y: [newValue.y]
+                                    }
+                                    let changeSet = vega
+                                        .changeset()
+                                        .insert(value);
+                                    // .remove(function (t) {
+                                    //     return t.x < minimumX;
+                                    // });
+                                    res.view.change('table', changeSet).run();
+                                    // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                                }
+
+                            });
+                        });
+                    }
+
+                }
             });
 
 
@@ -932,6 +1038,60 @@ function playclips(idarr){
                 });
             });
 
+
+            windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+                console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                let box = document.getElementById("clipviz");
+                box.innerHTML = "";
+                for(let idz in newValue){
+                    if(idz === id2){
+                        let right = document.getElementById("rightvid");
+                        right.innerHTML = "";
+
+                        let chartright = document.getElementById("rightviz");
+                        let chartid2 = "chart" + id2
+                        let viz2 = document.createElement("div");
+                        viz2.id = chartid2;
+                        // viz.style.maxWidth = "700px";
+                        viz2.style.width = "100%";
+                        viz2.style.height = "100%";
+                        viz2.style.float = "left";
+                        chartright.appendChild(viz2);
+
+                        embed('#' + chartid2, vlSpec).then(function (res) {
+                            console.log("listening to " + chartid2);
+                            windowManager.sharedData.watch(id2 + "", function(prop, action, newValue, oldValue){
+                                if(newValue === "reset"){
+                                    let changeSet = vega
+                                        .changeset()
+                                        .remove(true);
+                                    res.view.change('table', changeSet).run();
+                                }
+                                else{
+                                    // console.log(newValue);
+
+                                    var value;
+                                    value = {
+                                        x: newValue.x,
+                                        y: [newValue.y]
+                                    }
+                                    let changeSet = vega
+                                        .changeset()
+                                        .insert(value);
+                                    // .remove(function (t) {
+                                    //     return t.x < minimumX;
+                                    // });
+                                    res.view.change('table', changeSet).run();
+                                    // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                                }
+
+                            });
+                        });
+                    }
+
+                }
+            });
+
             contain2.id = idarr[1][0];
             // contain2.style.maxWidth = "450px";
             contain2.style.width = "450px";
@@ -939,7 +1099,7 @@ function playclips(idarr){
             // contain2.style.float = "left";
             right.appendChild(contain2);
             clipsToPlay.push([idarr[1][0], clipbinding[idarr[1][0]]]);
-            windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
+            // windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
             windowManager.sharedData.set(idarr[0][0], [0,0]);
             windowManager.sharedData.set(idarr[1][0], [0,0]);
         }
