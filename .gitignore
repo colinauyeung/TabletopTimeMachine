@@ -81,3 +81,4 @@ videos/
 #data storage
 saved_recordings/
 .idea/modules.xml
+package-lock.json
