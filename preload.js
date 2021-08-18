@@ -847,6 +847,7 @@ function playclips(idarr){
             chartleft.appendChild(viz1);
 
             embed('#' + chartid, vlSpec).then(function (res) {
+                console.log("listening to " + chartid);
                 windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
                     if(newValue === "reset"){
                         let changeSet = vega
@@ -902,6 +903,7 @@ function playclips(idarr){
             chartright.appendChild(viz2);
 
             embed('#' + chartid2, vlSpec).then(function (res) {
+                console.log("listening to " + chartid2);
                 windowManager.sharedData.watch(chartid2 + "", function(prop, action, newValue, oldValue){
                     if(newValue === "reset"){
                         let changeSet = vega
@@ -1274,6 +1276,7 @@ contextBridge.exposeInMainWorld(
 
         emitData: (id, data) => {
             windowManager.sharedData.set(id, data);
+            console.log("emitting to " + id);
         }
 
 
