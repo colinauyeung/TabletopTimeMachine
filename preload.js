@@ -49,6 +49,19 @@ var lastpolled = 0;
 
 SP.serialrand();
 
+var vlSpec = {
+    $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    data: {name: 'table'},
+    width: 340,
+    height: 175,
+    mark: 'line',
+    encoding: {
+        x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+        y: {field: 'y', type: 'quantitative'},
+        color: {field: 'category', type: 'nominal'}
+    }
+};
+
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
@@ -753,13 +766,14 @@ function playclips(idarr){
         box.innerHTML = "";
     if(idarr.length === 1){
         if(idarr[0][0] in clipbinding) {
+            let left = document.getElementById("leftvid");
             let id = idarr[0][0];
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
             contain1.style.width = "450x";
             contain1.style.height = "100%";
-            box.appendChild(contain1);
+            left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
             windowManager.sharedData.set("viz", [idarr[0][0]]);
             windowManager.sharedData.set(idarr[0][0], [0,0]);
@@ -976,17 +990,7 @@ windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldVa
 
 
 
-var vlSpec = {
-    $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-    data: {name: 'table'},
-    width: 400,
-    mark: 'line',
-    encoding: {
-        x: {field: 'x', type: 'quantitative', scale: {zero: false}},
-        y: {field: 'y', type: 'quantitative'},
-        color: {field: 'category', type: 'nominal'}
-    }
-};
+
 
 
 // Expose protected methods that allow the renderer process to use

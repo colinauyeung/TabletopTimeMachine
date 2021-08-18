@@ -139,6 +139,7 @@
             height: 100%;
             width: 375px;
             float: left;
+
         }
 
         #right {
@@ -167,7 +168,24 @@
             opacity: 0.5;
             width: 100%;
             height: 200px;
+            height: 200px;
+            overflow: hidden;
         }
+
+        #leftvid {
+            background-color: blue;
+            opacity: 0.5;
+            width: 100%;
+            height: 500px;
+        }
+
+        #rightvid {
+            background-color: blue;
+            opacity: 0.5;
+            width: 100%;
+            height: 500px;
+        }
+
 
 
 
@@ -207,7 +225,7 @@
     <div id="topbar2"></div>
 
     <div id="clipviz"></div>
-    <div id="chart"></div>
+
 
 
 </div>
@@ -262,12 +280,16 @@
 <div id="main">
     <div id="left">
         <div id="leftviz"></div>
+        <div id="leftvid"></div>
     </div>
     <div id="center">
-        <div id="centerviz"></div>
+        <div id="centerviz">
+            <div id="chart"></div>
+        </div>
     </div>
     <div id="right">
         <div id="rightviz"></div>
+        <div id="rightvid"></div>
     </div>
     <div id="loading"></div>
 
@@ -476,13 +498,13 @@
         }
         var idstring = "#" + id;
         $(idstring).empty();
-        var container = document.getElementById(id + "");
+        var videoContainer =  document.getElementById(id + "");
         // container.style.width = "800px";
-        var videoContainer = document.createElement('div');
+        // var videoContainer = document.createElement('div');
         videoContainer.id = "videocontainer" + id;
         videoContainer.style.float = "left";
 
-        container.appendChild(videoContainer);
+        // container.appendChild(videoContainer);
 
         // var chart = document.createElement("div");
         // var chartid = "chart" + id;
