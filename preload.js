@@ -767,6 +767,7 @@ function playclips(idarr){
     if(idarr.length === 1){
         if(idarr[0][0] in clipbinding) {
             let left = document.getElementById("leftvid");
+            left.innerHTML = "";
             let id = idarr[0][0];
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
