@@ -18,59 +18,126 @@
 <body>
 <div id="chart"></div>
 <script src="modules/script.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+
 <script>
-    var lineArr = [];
-    var MAX_LENGTH = 100;
-    var duration = 500;
-    var chart = realTimeLineChart();
 
-    function randomNumberBounds(min, max) {
-        return Math.floor(Math.random() * max) + min;
-    }
-
-    function seedData() {
-        var now = new Date();
-        for (var i = 0; i < MAX_LENGTH; ++i) {
-            lineArr.push({
-                time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
-                x: randomNumberBounds(0, 5),
-                y: randomNumberBounds(0, 2.5),
-                z: randomNumberBounds(0, 10)
-            });
+    var vlSpec = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+        data: {name: 'table'},
+        width: 400,
+        mark: 'line',
+        encoding: {
+            x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+            y: {field: 'y', type: 'quantitative'},
+            color: {field: 'category', type: 'nominal'}
         }
-    }
-
-    function updateData() {
-        var now = new Date();
-
-        var lineData = {
-            time: now,
-            x: randomNumberBounds(0, 10),
-            y: randomNumberBounds(0, 2.5),
-            z: randomNumberBounds(0, 10)
-        };
-        lineArr.push(lineData);
-
-        if (lineArr.length > 1000) {
-            lineArr.shift();
+    };
+    vegaEmbed('#chart', vlSpec).then(function (res) {
+        /**
+         * Generates a new tuple with random walk.
+         */
+        function newGenerator() {
+            var counter = -1;
+            var previousY = [5, 5, 5, 5];
+            return function () {
+                counter++;
+                var newVals = previousY.map(function (v, c) {
+                    return {
+                        x: counter,
+                        y: v + Math.round(Math.random() * 10 - c * 3),
+                        category: c
+                    };
+                });
+                previousY = newVals.map(function (v) {
+                    return v.y;
+                });
+                return newVals;
+            };
         }
-        d3.select("#chart").datum(lineArr).call(chart);
-    }
 
-    function resize() {
-        if (d3.select("#chart svg").empty()) {
-            return;
-        }
-        chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
-        d3.select("#chart").call(chart);
-    }
+        var valueGenerator = newGenerator();
+        var minimumX = -100;
+        window.setInterval(function () {
+            minimumX++;
+            var changeSet = vega
+                .changeset()
+                .insert(valueGenerator())
+                .remove(function (t) {
+                    return t.x < minimumX;
+                });
+            res.view.change('table', changeSet).run();
+        }, 1000);
 
-    document.addEventListener("DOMContentLoaded", function() {
-        seedData();
-        window.setInterval(updateData, 500);
-        d3.select("#chart").datum(lineArr).call(chart);
-        d3.select(window).on('resize', resize);
+        window.setInterval(function () {
+            console.log(minimumX);
+            if(minimumX >= -90){
+                console.log("reset");
+                minimumX = -100
+                var changeSet = vega
+                    .changeset()
+                    .remove(true)
+                    .insert({x:0, y:[0,0,0,0]});
+                res.view.change('table', changeSet).run();
+            }
+
+        }, 1000);
     });
+    // var lineArr = [];
+    // var MAX_LENGTH = 100;
+    // var duration = 500;
+    // var chart = realTimeLineChart();
+    //
+    // function randomNumberBounds(min, max) {
+    //     return Math.floor(Math.random() * max) + min;
+    // }
+    //
+    // function seedData() {
+    //     var now = new Date();
+    //     for (var i = 0; i < MAX_LENGTH; ++i) {
+    //         lineArr.push({
+    //             time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
+    //             x: randomNumberBounds(0, 5),
+    //             y: randomNumberBounds(0, 2.5),
+    //             z: randomNumberBounds(0, 10)
+    //         });
+    //     }
+    // }
+    //
+    // function updateData() {
+    //     var now = new Date();
+    //
+    //     var lineData = {
+    //         time: now,
+    //         x: randomNumberBounds(0, 10),
+    //         y: randomNumberBounds(0, 2.5),
+    //         z: randomNumberBounds(0, 10)
+    //     };
+    //     lineArr.push(lineData);
+    //
+    //     if (lineArr.length > 1000) {
+    //         lineArr.shift();
+    //     }
+    //     d3.select("#chart").datum(lineArr).call(chart);
+    // }
+    //
+    // function resize() {
+    //     if (d3.select("#chart svg").empty()) {
+    //         return;
+    //     }
+    //     chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
+    //     d3.select("#chart").call(chart);
+    // }
+    //
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     seedData();
+    //     window.setInterval(updateData, 500);
+    //     d3.select("#chart").datum(lineArr).call(chart);
+    //     d3.select(window).on('resize', resize);
+    // });
 </script>
 </body>
 </html>

@@ -43,3 +43,17 @@ SP.closeserial = function(){
     SP.port.close();
 
 }
+
+SP.serialrand = function(){
+    window.setInterval(function (){
+        var now = new Date();
+        var clunk = {
+            time: now,
+            x: Date.now(),
+            y: Math.random()
+        }
+        // console.log(typeof now);
+        SP.ardata.push(clunk);
+        SP.currentardata.push(clunk);
+    }, 1000)
+}

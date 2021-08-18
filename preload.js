@@ -21,6 +21,10 @@ var VI = require("./modules/vision").VI;
 const remote = require('electron').remote;
 const windowManager = remote.require('electron-window-manager');
 
+const {
+    embed,
+} = require("vega-embed");
+const vega = require("vega");
 
 var videodir = "./videos/";
 var videos = [];
@@ -43,9 +47,13 @@ var playpolling = {"detect": 0};
 var polltime = 5000;
 var lastpolled = 0;
 
+SP.serialrand();
+
+
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener('DOMContentLoaded', () => {
+    // window.$ = window.jQuery = require("jquery");
     const replaceText = (selector, text) => {
         const element = document.getElementById(selector)
         if (element) element.innerText = text
@@ -62,28 +70,169 @@ window.addEventListener('DOMContentLoaded', () => {
     context = canvas.getContext("2d");
     // CD.startup();
     lastchecked = Date.now();
-    document.getElementById("topbar2").addEventListener("click", function (e) {
-        var backcalc = e.x + 140;
-        backcalc = backcalc / (1440 / tracktime);
-        backcalc = Date.now() - backcalc;
-        var box = document.getElementById("mainbox");
-        var currentheightest = Infinity;
-        for (let i = 0; i < box.children.length; i++) {
-            if (box.children[i].className === "tick") {
-                var timestamp = box.children[i].id
-                timestamp = parseInt(timestamp).valueOf();
-                if (timestamp > backcalc && timestamp < currentheightest) {
-                    currentheightest = timestamp;
-                }
+    // document.getElementById("topbar2").addEventListener("click", function (e) {
+    //     var backcalc = e.x + 140;
+    //     backcalc = backcalc / (1440 / tracktime);
+    //     backcalc = Date.now() - backcalc;
+    //     var box = document.getElementById("mainbox");
+    //     var currentheightest = Infinity;
+    //     for (let i = 0; i < box.children.length; i++) {
+    //         if (box.children[i].className === "tick") {
+    //             var timestamp = box.children[i].id
+    //             timestamp = parseInt(timestamp).valueOf();
+    //             if (timestamp > backcalc && timestamp < currentheightest) {
+    //                 currentheightest = timestamp;
+    //             }
+    //         }
+    //     }
+    //     addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", 111)
+    //     VI.clippingid[111] = Date.now();
+    //     idarr = [];
+    //     idarr.push([111, 0]);
+    //     playclips(idarr);
+    //     console.log("x: " + e.x + " y: " + e.y);
+    // })
+    // window.$("bounding");
+    // window.$.getScript( "https://cdn.jsdelivr.net/npm/vega@5.20.2", function( data, textStatus, jqxhr ) {
+    //     console.log( data ); // Data returned
+    //     console.log( textStatus ); // Success
+    //     console.log( jqxhr.status ); // 200
+    //     console.log(vega)
+    //     console.log( "Load was performed." );
+    // });
+
+    const result = embed('#chart', vlSpec).then(function (res) {
+        var minimumX = Date.now()-10000;
+        windowManager.sharedData.watch("serial", function(prop, action, newValue, oldValue){
+            var data = newValue;
+            minimumX = minimumX + 100;
+            var clunk = data["data"];
+            lastvalue = clunk.y;
+            let value = {
+                x: clunk.x,
+                y: [clunk.y]
             }
+
+            var changeSet = vega
+                .changeset()
+                .insert(value)
+                .remove(function (t) {
+                        return t.x < minimumX;
+                });
+            // .remove(function (t) {
+            //     return t.x < minimumX;
+            // });
+            res.view.change('table', changeSet).run();
+            // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+        });
+
+        //
+        // var lastvalue = 0;
+        // function fetchdata (){
+        //     var data = windowManager.sharedData.fetch("serial");
+        //     var value;
+        //     if(data["changed"] === true){
+        //         var clunk = data["data"];
+        //         lastvalue = clunk.y;
+        //         value = {
+        //             x: clunk.x,
+        //             y: [clunk.y]
+        //         }
+        //         // windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
+        //
+        //     }
+        //     else{
+        //         value = {
+        //             x: Date.now(),
+        //             y: [lastvalue]
+        //         }
+        //     }
+        //
+        //     // window.api.addVisdata(value);
+        //     return value;
+        // }
+        //
+        //
+        // // var valueGenerator = newGenerator();
+        // var minimumX = Date.now()-10000;
+        // window.setInterval(function () {
+        //     minimumX = minimumX + 100;
+        //     var changeSet = vega
+        //         .changeset()
+        //         .insert(fetchdata())
+        //         .remove(function (t) {
+        //             return t.x < minimumX;
+        //         });
+        //     res.view.change('table', changeSet).run();
+        // }, 100);
+    });
+
+    windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+        console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+        let box = document.getElementById("clipviz");
+        box.innerHTML = "";
+        for(let id in oldValue){
+            windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
+                return;
+            })
         }
-        addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", 111)
-        VI.clippingid[111] = Date.now();
-        idarr = [];
-        idarr.push([111, 0]);
-        playclips(idarr);
-        console.log("x: " + e.x + " y: " + e.y);
-    })
+        for(let id in newValue){
+            console.log("watching " + newValue[id]);
+            let chartid = "chart" + newValue[id]
+            let contain = document.createElement("div");
+            contain.id = chartid;
+            contain.style.maxWidth = "700px";
+            contain.style.width = "700px";
+            contain.style.height = "100%";
+            contain.style.float = "left";
+            box.appendChild(contain);
+
+            embed('#' + chartid, vlSpec).then(function (res) {
+                windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
+                    if(newValue === "reset"){
+                        let changeSet = vega
+                            .changeset()
+                            .remove(true);
+                        res.view.change('table', changeSet).run();
+                    }
+                    else{
+                        // console.log(newValue);
+                        var minimumX = Date.now()-10000;
+
+                        var value;
+                        value = {
+                            x: newValue.x,
+                            y: [newValue.y]
+                        }
+                        let changeSet = vega
+                            .changeset()
+                            .insert(value);
+                        // .remove(function (t) {
+                        //     return t.x < minimumX;
+                        // });
+                        res.view.change('table', changeSet).run();
+                        // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                    }
+
+                });
+            });
+
+
+
+
+        }
+    });
+
+
+
+})
+
+windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue){
+    addCliptoQueue(newValue.start, newValue.length, "name", 111);
+    VI.clippingid[111] = Date.now();
+    let idarr = [];
+    idarr.push([111, 0]);
+    playclips(idarr);
 })
 
 
@@ -110,7 +259,8 @@ function startRecording() {
             mandatory: {
                 // width: { min: 1024, ideal: 1280, max: 1920 },
                 // height: { min: 576, ideal: 720, max: 1080 },
-                chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
             }
         }},
         (localMediaStream) => {
@@ -151,32 +301,56 @@ function handleStream(stream) {
 var firstfind = false;
 var markerout = {};
 
+window.setInterval(function(){
+    if(camera !== null){
+        // console.log(camera);
+        camera.takePhoto().then((blob) => {
+            var src = URL.createObjectURL(blob)
+            windowManager.sharedData.set("pictures", src);
+
+            // var x = document.createElement("IMG")
+            // x.src = src;
+            // x.classList.add("tick");
+            // x.id = (currenttime) + "";
+            // x.style.position = "absolute";
+            // x.style.top = "0px";
+            // x.style.maxWidth = ((1440/tracktime) * (tracktime/10) ) + 2 + "px";
+            // x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
+            // box.appendChild(x);
+
+        })
+    }
+}, 500)
+
 
 function tick(){
     requestAnimationFrame(tick);
     let currenttime = Date.now();
     var box = document.getElementById("mainbox");
-    if((currenttime - (tracktime/10)) > lastchecked){
-        if(camera !== null){
-            console.log(camera);
-            camera.takePhoto().then((blob) => {
-                var src = URL.createObjectURL(blob)
-                var x = document.createElement("IMG")
-                x.src = src;
-                x.classList.add("tick");
-                x.id = (currenttime) + "";
-                x.style.position = "absolute";
-                x.style.top = "0px";
-                x.style.maxWidth = ((1440/tracktime) * (tracktime/10) ) + 2 + "px";
-                x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
-                box.appendChild(x);
 
-            })
-        }
+    // if((currenttime - (tracktime/10)) > lastchecked){
+    //     if(camera !== null){
+    //         console.log(camera);
+    //         camera.takePhoto().then((blob) => {
+    //             var src = URL.createObjectURL(blob)
+    //             var x = document.createElement("IMG")
+    //             x.src = src;
+    //             x.classList.add("tick");
+    //             x.id = (currenttime) + "";
+    //             x.style.position = "absolute";
+    //             x.style.top = "0px";
+    //             x.style.maxWidth = ((1440/tracktime) * (tracktime/10) ) + 2 + "px";
+    //             x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
+    //             box.appendChild(x);
+    //
+    //         })
+    //     }
+    //
+    //     lastchecked = currenttime
+    //
+    // }
 
-        lastchecked = currenttime
 
-    }
     for(let i = 0; i < box.children.length; i++){
         if(box.children[i].className === "tick"){
             var timestamp = box.children[i].id
@@ -695,7 +869,7 @@ function clip(start, length, name){
         })
     }
     var actualstart = clip.files[0].file;
-    var actualend = clip.files[clip.files.length -1].file + recordingtime
+    var actualend = clip.files[clip.files.length-1].file + recordingtime
 
 
         let data = []
@@ -704,6 +878,8 @@ function clip(start, length, name){
             data.push(clunk);
         }
     })
+    console.log(SP.visdata);
+    console.log(data);
     for(let i = 0; i<data.length; i++){
         // data[i].x = data[i].x - actualstart;
     }
@@ -711,6 +887,7 @@ function clip(start, length, name){
     data.forEach((clunk) => {
         clip.serialdata.push(clunk);
     })
+
     let code = []
     let highest=0;
     let codefiles = windowManager.sharedData.fetch("codefiles")
@@ -743,16 +920,25 @@ function autorecord(){
     }, recordingtime);
 }
 
+var lastvalue = 0;
 function pollserial(){
     if(SP.currentardata.length > 0){
         var clunk = SP.currentardata.pop();
         lastvalue = clunk.y;
         value = {
             x: clunk.x,
-            y: [clunk.y]
+            y: clunk.y
         }
         windowManager.sharedData.set("serial", {"data": value, "changed": true});
 
+    }
+    else{
+        // var clunk = SP.currentardata.pop();
+        value = {
+            x: Date.now(),
+            y: lastvalue
+        }
+        windowManager.sharedData.set("serial", {"data": value, "changed": true});
     }
 
     SP.currentardata = [];
@@ -761,10 +947,10 @@ window.setInterval(pollserial, 100);
 
 // windowManager.sharedData.watch("serial", )
 windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldValue){
-    if(newValue["changed"] === false && oldValue["changed"] === true){
-        SP.visdata.push(newValue["data"]);
+    // if(newValue["changed"] === false && oldValue["changed"] === true){
+    SP.visdata.push(newValue["data"]);
         // console.log(SP.visdata);
-    }
+    // }
 });
 
 // windowManager.sharedData.watch("codefiles", function(prop, action, newValue, oldValue) {
@@ -790,8 +976,17 @@ windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldVa
 
 
 
-
-
+var vlSpec = {
+    $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    data: {name: 'table'},
+    width: 400,
+    mark: 'line',
+    encoding: {
+        x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+        y: {field: 'y', type: 'quantitative'},
+        color: {field: 'category', type: 'nominal'}
+    }
+};
 
 
 // Expose protected methods that allow the renderer process to use

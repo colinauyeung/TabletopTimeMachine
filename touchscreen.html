@@ -45,29 +45,408 @@
             left: 0px;
         }
 
+        #bar {
+            width: 700px;
+            height: 120px;
+            background: aquamarine;
+            overflow-x: scroll;
+            position: relative;
+        }
+
+        #clickbar {
+            width: 1000px;
+            height: 100px;
+            opacity: 0;
+            position: absolute;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            top: 0px;
+            left: -100px;
+            background-color: orangered;
+            pointer-events: none;
+            /*border: 3px solid #333333;*/
+            word-wrap: break-word;
+        }
+        #select {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            top: 410px;
+            left: 7px;
+            opacity: 0;
+            pointer-events: none;
+            border: 3px solid #0a24f0;
+        }
+
+        #img {
+            max-height: 400px;
+        }
+
 
 
     </style>
 </head>
 <body>
-<div class="row">
-    <div class="column" id="left"></div>
-    <div class="column" id="middle">
-        <div id="clipviz">
+<img src="out.png" id="img">
+<div id="bar">
+<!--    <div class="box"></div>-->
+</div>
+<div id="select">
 
-        </div>
-        <div id="tab1">
-            <div id="chart"></div>
-        </div>
-        <div id="tab2">
-            <pre id="display"></pre>
-        </div>
-    </div>
-    <div class="column" id="right"></div>
+</div>
+<div id="chartouter">
+
 </div>
 
+<!--<div class="row">-->
+<!--    <div class="column" id="left"></div>-->
+<!--    <div class="column" id="middle">-->
+<!--        <div id="clipviz">-->
+
+<!--        </div>-->
+<!--        <div id="tab1">-->
+<!--            <div id="chart"></div>-->
+<!--        </div>-->
+<!--        <div id="tab2">-->
+<!--            <pre id="display"></pre>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="column" id="right"></div>-->
+<!--</div>-->
 
 
+<script>
+
+    const {
+        contextBridge,
+        ipcRenderer
+    } = require("electron");
+    const remote = require('electron').remote;
+    var electron = require('electron');
+    const windowManager = remote.require('electron-window-manager');
+
+
+    function customscale (value){
+        let top = lasttime - starttime;
+        let faction = (value)/(startblock + 100);
+        let clunk = faction * top;
+        return clunk + starttime;
+    }
+
+    var userscroll = 0;
+    var listentoscroll = true;
+    var scroll = 0;
+    var dragging = false;
+    var startx = 0;
+    var started = false;
+
+    var startblock = -100;
+    var startscroll = -100;
+    var starttime = Date.now();
+    var lasttime = Date.now();
+    var follow = -100;
+
+    var selectdef = false;
+    var selectstart = 0;
+    var selectend = 0;
+
+    var images = {}
+
+    var data = [];
+
+    var vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Google's stock price over time.",
+        "data": {"url": "data/stocks.csv"},
+        "mark": "line",
+        "encoding": {
+            "x": {"field": "date", "type": "temporal"},
+            "y": {"field": "price", "type": "quantitative"}
+        }
+    }
+
+
+        windowManager.sharedData.watch("pictures", function(prop, action, newValue, oldValue){
+        let now = Date.now()
+        images[now] = newValue;
+        // console.log(images);
+
+        if(!started){
+            document.getElementById("img").src = images[now];
+            started = true;
+            starttime = Date.now();
+            window.setTimeout(function(){
+                window.setInterval(function (){
+                    startblock = startblock + 100;
+                    // lasttime = Date.now()-30000;
+                    lasttime = Date.now()-10;
+                    var box =document.createElement("div");
+                    box.className = "box";
+                    box.style.left = startblock + "px";
+                    var image = document.createElement("img");
+                    let highest = 0;
+                    for(let key in images){
+                        if(key < lasttime && key > highest){
+                            highest = key;
+                        }
+                    }
+                    image.style.maxWidth = "100%";
+                    image.style.maxHeight = "100%";
+                    image.src = images[highest];
+                    // box.innerText = lasttime;
+
+                    box.appendChild(image);
+                    document.getElementById("bar").appendChild(box);
+                    if(scroll > 0){
+                        scroll = scroll - 1;
+                    }
+                    if(scroll === 0){
+                        document.getElementById("select").style.opacity = "0";
+                        selectdef = false;
+                    }
+
+                    if(userscroll > 0){
+                        follow = follow + 5;
+                        userscroll = userscroll - 10;
+                        // document.getElementById("bar").scrollLeft = follow;
+
+                    }
+                    else{
+                        if(startblock - 600 > 0 && scroll === 0){
+                            document.getElementById("bar").scrollLeft = startblock-600;
+                        }
+                    }
+
+                    if(startblock <= 600){
+
+                    }
+
+
+
+                }, 2000);
+
+                // window.setInterval(function (){
+                //     // document.querySelectorAll("div.box").forEach(function(item){
+                //     //     let left = item.style.left
+                //     //     if(left !== ""){
+                //     //         left = parseInt(left);
+                //     //         left = left + 5;
+                //     //     }
+                //     //     else{
+                //     //         left = -100;
+                //     //     }
+                //     //
+                //     //     item.style.left = left + "px";
+                //     //
+                //     // })
+                //     startscroll = startscroll + 5;
+                //     if(scroll > 0){
+                //         scroll = scroll - 1;
+                //     }
+                //     if(scroll === 0){
+                //         document.getElementById("select").style.opacity = "0";
+                //         selectdef = false;
+                //     }
+                //
+                //     if(userscroll > 0){
+                //         follow = follow + 5;
+                //         userscroll = userscroll - 1;
+                //         // document.getElementById("bar").scrollLeft = follow;
+                //
+                //     }
+                //     else{
+                //         if(startscroll - 600 > 0 && scroll === 0){
+                //             document.getElementById("bar").scrollLeft = startscroll - 600;
+                //         }
+                //     }
+                //
+                //
+                //
+                //
+                // }, 100);
+            // }, 60000)
+            }, 10)
+
+        }
+
+    })
+
+    document.getElementById("bar").scrollLeft = 100;
+    document.getElementById("bar").addEventListener("mousedown", function(e){
+        let limit = 700;
+        if(startblock + 100 < 700){
+            limit = startblock + 100
+        }
+        if(e.y < 517 && e.x <= limit){
+        // if(e.x <= limit){
+            console.log(e);
+            startx = e.x;
+            let select = document.getElementById("select")
+            select.style.opacity = "1";
+            select.style.left = e.x + "px";
+            select.style.width = "0px";
+            scroll = -1;
+            dragging = true;
+        }
+        // let val = e.x + document.getElementById("bar").scrollLeft;
+        // console.log(customscale(val));
+
+    })
+
+    // window.setInterval(function (e){
+    //     var clunk = {};
+    //     clunk.x = Date.now();
+    //     clunk.y = Math.random()
+    //     data.push(clunk);
+    // }, 1000)
+
+
+    windowManager.sharedData.watch("serial", function(prop, action, newValue, oldValue){
+        var dats = newValue;
+        var clunk = dats["data"];
+
+        let value = {
+            x: clunk.x,
+            y: clunk.y
+        }
+        data.push(clunk);
+
+    });
+
+    window.addEventListener("mousemove", function (e) {
+        let limit = 700;
+        if(startblock + 100 < 700){
+            limit = startblock + 100
+        }
+        if(dragging && e.x <= limit){
+            let select = document.getElementById("select");
+            if(e.x > startx){
+                select.style.width = (e.x - startx) + "px";
+            }
+            else{
+                select.style.left = e.x + "px";
+                select.style.width = (startx - e.x) + "px";
+            }
+        }
+        if(e.y < 519 && e.y > 400 && e.x <= limit){
+            let scrollx = document.getElementById("bar").scrollLeft;
+            let hover = customscale(e.x + scrollx);
+            let highest = 0;
+            for(let key in images){
+                if(key < hover && key > highest){
+                    highest = key;
+                }
+            }
+            document.getElementById("img").src = images[highest];
+
+        }
+    })
+
+    window.addEventListener("mouseup", function (e) {
+        if(dragging && started){
+            let select = document.getElementById("select");
+            let scrollx = document.getElementById("bar").scrollLeft;
+            let limit = 700;
+            if(startblock + 100 < 700){
+                limit = startblock + 100
+            }
+            if(e.x <= limit){
+                if(e.x > startx){
+                    select.style.width = (e.x - startx) + "px";
+                    selectstart = customscale(startx + scrollx);
+                    selectend = customscale(e.x + scrollx);
+                }
+                else{
+                    select.style.left = e.x + "px";
+                    select.style.width = (startx - e.x) + "px";
+                    selectend = customscale(startx + scrollx);
+                    selectstart = customscale(e.x + scrollx);
+                }
+            }
+
+            dragging = false;
+            selectdef = true;
+
+            scroll = 100;
+            console.log("start: " + selectstart + " end: " + selectend);
+            windowManager.sharedData.set("clip", {
+                start: selectstart,
+                length: selectend-selectstart
+            })
+            // window.setTimeout(function (){
+            //     scroll = true;
+            //     document.getElementById("select").style.opacity = "0";
+            // }, 10000)
+        }
+    })
+
+
+
+    document.getElementById("bar").addEventListener("scroll", function(e){
+        // console.log("before " + follow);
+        console.log("userscroll " + userscroll);
+        var target = e.target.scrollLeft;
+        if(!(target> startblock - 600 -100 || (target>follow-50 && target<follow+50))){
+            console.log("scrolled")
+            userscroll = 50;
+            follow = target;
+            // console.log("after " + follow);
+        }
+
+        let chartouter = document.getElementById("chartouter");
+        chartouter.innerHTML = "";
+        let vis = document.createElement("div");
+        vis.id = "vis";
+        chartouter.appendChild(vis);
+
+        var dats = {};
+        dats.values = []
+        var low = customscale(target);
+        var high = customscale(target + 700);
+        console.log("high: " + high + " low: " + low);
+        console.log(data);
+        for(let index in data){
+            if(data[index].x >= low && data[index].x <= high){
+                let clunk = {};
+                let date = new Date(data[index].x);
+                clunk.x = date.toISOString();
+                clunk.y = data[index].y
+                dats.values.push(clunk);
+            }
+        }
+        scroll = 0;
+        document.getElementById("select").style.opacity = "0";
+        selectdef = false;
+
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Data at point.",
+            "data": dats,
+            "width": 700,
+            "height": 50,
+            "mark": "line",
+            "encoding": {
+                "x": {"field": "x", "type": "temporal"},
+                "y": {"field": "y", "type": "quantitative"}
+            }
+        }
+        console.log(vlSpec)
+        vegaEmbed('#vis', vlSpec);
+
+
+
+    })
+
+
+
+
+
+
+</script>
 
 <script>
 

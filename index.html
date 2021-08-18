@@ -156,6 +156,9 @@
     </div>
     <div id="topbar2"></div>
 
+    <div id="clipviz"></div>
+    <div id="chart"></div>
+
 
 </div>
 
@@ -442,12 +445,15 @@
         clunk.videoObjects[0].aId = id; //set index
         clunk.videoObjects[1].aId = id;
 
+        clunk.reset =false;
 
 
         initVideoElement(clunk.videoObjects[0], clunk);
         initVideoElement(clunk.videoObjects[1], clunk);
 
         clunk.videoObjects[0].autoplay = true;
+        clunk.lasttime = 0;
+        clunk.base = 0;
 
         clunk.videoObjects[0].src = "./videos/" + clunk.clip.files[clunk.nextActiveVideo].file + ".mp4";
         clunk.videoObjects[0].stime = clunk.clip.files[clunk.nextActiveVideo].file;
@@ -491,6 +497,9 @@
 
                 //select next index. If is equal vidSources.length then it is 0
                 clunk.nextActiveVideo = ++clunk.nextActiveVideo % clunk.clip.files.length;
+                if(clunk.nextActiveVideo === 0){
+                    clunk.reset = true;
+                }
 
                 //replace the video elements against each other:
                 if(this.inx === 0)
@@ -506,7 +515,17 @@
 
             video.onended = function(e)
             {
+                let time = this.currentTime;
+                let rtime = this.stime + (time *1000);
                 this.style.display = 'none';
+                if(clunk.reset){
+                    console.log("loop");
+                    // window.api.emitData(this.aId + "", "reset");
+                    clunk.base = clunk.lasttime;
+                    clunk.reset = false;
+                    window.api.emitData("viz", [this.aId]);
+
+                }
                 clunk.nextVideo.style.display = 'block';
                 clunk.nextVideo.play();
             };
@@ -514,6 +533,7 @@
             video.ontimeupdate = function(e){
               let time = this.currentTime;
               let rtime = this.stime + (time *1000);
+              clunk.lasttime = rtime;
               var last = 0;
               for(let index = 0; index<clunk.clip.serialdata.length; index++){
                   if(clunk.clip.serialdata[index].x < rtime){
@@ -523,9 +543,14 @@
                       break;
                   }
               }
-              console.log(this.aId + " emitting");
-              console.log(clunk.clip.serialdata);
-              console.log(rtime);
+              console.log(clunk.clip.serialdata[last])
+              let dat = {
+                  "x": clunk.clip.serialdata[last].x + clunk.base,
+                  "y": clunk.clip.serialdata[last].y
+              }
+              // console.log(this.aId + " emitting");
+              // console.log(clunk.clip.serialdata);
+              // console.log(rtime);
               window.api.emitData(this.aId + "", clunk.clip.serialdata[last]);
               // console.log(rtime);
               // let data = clunk.clip.serialdata;
@@ -612,6 +637,122 @@
     function takePhoto(){
         window.api.takePhoto();
     }
+
+
+
+    // const {
+    //     contextBridge,
+    //     ipcRenderer
+    // } = require("electron");
+    // const remote = require('electron').remote;
+    // var electron = require('electron');
+    // const windowManager = remote.require('electron-window-manager');
+    // var CD = require("./modules/codediff").CD;
+    //
+    // window.addEventListener('DOMContentLoaded', () => {
+    //     CD.startup();
+    // });
+    //
+    //
+    //
+    // windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+    //     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+    //     let box = document.getElementById("clipviz");
+    //     box.innerHTML = "";
+    //     for(let id in oldValue){
+    //         windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
+    //             return;
+    //         })
+    //     }
+    //     for(let id in newValue){
+    //         console.log("watching " + newValue[id]);
+    //         let chartid = "chart" + newValue[id]
+    //         let contain = document.createElement("div");
+    //         contain.id = chartid;
+    //         contain.style.maxWidth = "700px";
+    //         contain.style.width = "700px";
+    //         contain.style.height = "100%";
+    //         contain.style.float = "left";
+    //         box.appendChild(contain);
+    //
+    //         vegaEmbed('#' + chartid, vlSpec).then(function (res) {
+    //             windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
+    //                 var minimumX = Date.now()-10000;
+    //
+    //                 var value;
+    //                 value = {
+    //                     x: newValue.x,
+    //                     y: [newValue.y]
+    //                 }
+    //                 var changeSet = vega
+    //                     .changeset()
+    //                     .insert(value);
+    //                 // .remove(function (t) {
+    //                 //     return t.x < minimumX;
+    //                 // });
+    //                 res.view.change('table', changeSet).run();
+    //                 console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+    //             });
+    //         });
+    //
+    //
+    //
+    //
+    //     }
+    // });
+    //
+    // var vlSpec = {
+    //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    //     data: {name: 'table'},
+    //     width: 400,
+    //     mark: 'line',
+    //     encoding: {
+    //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+    //         y: {field: 'y', type: 'quantitative'},
+    //         color: {field: 'category', type: 'nominal'}
+    //     }
+    // };
+    // vegaEmbed('#chart', vlSpec).then(function (res) {
+    //     var lastvalue = 0;
+    //     function fetchdata (){
+    //         var data = windowManager.sharedData.fetch("serial");
+    //         var value;
+    //         if(data["changed"] === true){
+    //             var clunk = data["data"];
+    //             lastvalue = clunk.y;
+    //             value = {
+    //                 x: clunk.x,
+    //                 y: [clunk.y]
+    //             }
+    //             windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
+    //
+    //         }
+    //         else{
+    //             value = {
+    //                 x: Date.now(),
+    //                 y: [lastvalue]
+    //             }
+    //         }
+    //
+    //         // window.api.addVisdata(value);
+    //         return value;
+    //     }
+    //
+    //
+    //     // var valueGenerator = newGenerator();
+    //     var minimumX = Date.now()-10000;
+    //     window.setInterval(function () {
+    //         minimumX = minimumX + 100;
+    //         var changeSet = vega
+    //             .changeset()
+    //             .insert(fetchdata())
+    //             .remove(function (t) {
+    //                 return t.x < minimumX;
+    //             });
+    //         res.view.change('table', changeSet).run();
+    //     }, 100);
+    // });
+
 
 
 
