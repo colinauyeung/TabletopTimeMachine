@@ -268,14 +268,14 @@ function startRecording() {
     window.navigator.getUserMedia( {
         audio: false,
         video: {
-            // mandatory: {
-            //     // width: { min: 1024, ideal: 1280, max: 1920 },
-            //     // height: { min: 576, ideal: 720, max: 1080 },
-            //     // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
-            //     chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
-            // }
-            width: { ideal: 4096 },
-            height: { ideal: 2160 }
+            mandatory: {
+                // width: { min: 1024, ideal: 1280, max: 1920 },
+                // height: { min: 576, ideal: 720, max: 1080 },
+                // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
+            }
+            // width: { ideal: 4096 },
+            // height: { ideal: 2160 }
         }},
         (localMediaStream) => {
         filename = Date.now();
