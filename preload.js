@@ -848,7 +848,7 @@ function playclips(idarr){
 
             embed('#' + chartid, vlSpec).then(function (res) {
                 console.log("listening to " + chartid);
-                windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
                     if(newValue === "reset"){
                         let changeSet = vega
                             .changeset()
@@ -904,7 +904,7 @@ function playclips(idarr){
 
             embed('#' + chartid2, vlSpec).then(function (res) {
                 console.log("listening to " + chartid2);
-                windowManager.sharedData.watch(chartid2 + "", function(prop, action, newValue, oldValue){
+                windowManager.sharedData.watch(id2 + "", function(prop, action, newValue, oldValue){
                     if(newValue === "reset"){
                         let changeSet = vega
                             .changeset()
