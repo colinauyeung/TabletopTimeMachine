@@ -180,60 +180,60 @@ window.addEventListener('DOMContentLoaded', () => {
         // }, 100);
     });
 
-    windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-        console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-        let box = document.getElementById("clipviz");
-        box.innerHTML = "";
-        for(let id in oldValue){
-            windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
-                return;
-            })
-        }
-        for(let id in newValue){
-            console.log("watching " + newValue[id]);
-            let chartid = "chart" + newValue[id]
-            let contain = document.createElement("div");
-            contain.id = chartid;
-            contain.style.maxWidth = "700px";
-            contain.style.width = "700px";
-            contain.style.height = "100%";
-            contain.style.float = "left";
-            box.appendChild(contain);
-
-            embed('#' + chartid, vlSpec).then(function (res) {
-                windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
-                    if(newValue === "reset"){
-                        let changeSet = vega
-                            .changeset()
-                            .remove(true);
-                        res.view.change('table', changeSet).run();
-                    }
-                    else{
-                        // console.log(newValue);
-
-                        var value;
-                        value = {
-                            x: newValue.x,
-                            y: [newValue.y]
-                        }
-                        let changeSet = vega
-                            .changeset()
-                            .insert(value);
-                        // .remove(function (t) {
-                        //     return t.x < minimumX;
-                        // });
-                        res.view.change('table', changeSet).run();
-                        // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-                    }
-
-                });
-            });
-
-
-
-
-        }
-    });
+    // windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+    //     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+    //     let box = document.getElementById("clipviz");
+    //     box.innerHTML = "";
+    //     for(let id in oldValue){
+    //         windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
+    //             return;
+    //         })
+    //     }
+    //     for(let id in newValue){
+    //         console.log("watching " + newValue[id]);
+    //         let chartid = "chart" + newValue[id]
+    //         let contain = document.createElement("div");
+    //         contain.id = chartid;
+    //         contain.style.maxWidth = "700px";
+    //         contain.style.width = "700px";
+    //         contain.style.height = "100%";
+    //         contain.style.float = "left";
+    //         box.appendChild(contain);
+    //
+    //         embed('#' + chartid, vlSpec).then(function (res) {
+    //             windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
+    //                 if(newValue === "reset"){
+    //                     let changeSet = vega
+    //                         .changeset()
+    //                         .remove(true);
+    //                     res.view.change('table', changeSet).run();
+    //                 }
+    //                 else{
+    //                     // console.log(newValue);
+    //
+    //                     var value;
+    //                     value = {
+    //                         x: newValue.x,
+    //                         y: [newValue.y]
+    //                     }
+    //                     let changeSet = vega
+    //                         .changeset()
+    //                         .insert(value);
+    //                     // .remove(function (t) {
+    //                     //     return t.x < minimumX;
+    //                     // });
+    //                     res.view.change('table', changeSet).run();
+    //                     // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+    //                 }
+    //
+    //             });
+    //         });
+    //
+    //
+    //
+    //
+    //     }
+    // });
 
 
 
