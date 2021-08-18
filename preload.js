@@ -788,7 +788,7 @@ function playclips(idarr){
             chartleft.appendChild(viz);
 
             embed('#' + chartid, vlSpec).then(function (res) {
-                windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
                     if(newValue === "reset"){
                         let changeSet = vega
                             .changeset()
@@ -817,14 +817,14 @@ function playclips(idarr){
             });
 
             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+                console.log("viz fired " + newValue + " listening for " + id);
                 for(let idz in newValue){
-                    if(idz === id){
-                        let left = document.getElementById("leftvid");
-                        left.innerHTML = "";
+                    if(newValue[idz] === id){
+
 
                         let chartleft = document.getElementById("leftviz");
 
-                        let chartid = "chart" + id
+                        let chartid = "chart" + newValue[idz]
                         let viz = document.createElement("div");
                         viz.id = chartid;
                         // viz.style.maxWidth = "700px";
@@ -834,7 +834,7 @@ function playclips(idarr){
                         chartleft.appendChild(viz);
 
                         embed('#' + chartid, vlSpec).then(function (res) {
-                            windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                            windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
                                 if(newValue === "reset"){
                                     let changeSet = vega
                                         .changeset()
@@ -928,10 +928,9 @@ function playclips(idarr){
             });
 
             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+                console.log("viz fired " + newValue + " listening for " + id);
                 for(let idz in newValue){
-                    if(idz === id){
-                        let left = document.getElementById("leftvid");
-                        left.innerHTML = "";
+                    if(newValue[idz] === id){
 
                         let chartleft = document.getElementById("leftviz");
                         chartleft.innerHTML = "";
@@ -946,7 +945,7 @@ function playclips(idarr){
                         chartleft.appendChild(viz);
 
                         embed('#' + chartid, vlSpec).then(function (res) {
-                            windowManager.sharedData.watch(chartid + "", function(prop, action, newValue, oldValue){
+                            windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
                                 if(newValue === "reset"){
                                     let changeSet = vega
                                         .changeset()
@@ -1037,10 +1036,9 @@ function playclips(idarr){
 
 
             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+                console.log("viz fired " + newValue + " listening for " + id2);
                 for(let idz in newValue){
-                    if(idz === id2){
-                        let right = document.getElementById("rightvid");
-                        right.innerHTML = "";
+                    if(newValue[idz] === id2){
 
                         let chartright = document.getElementById("rightviz");
                         chartright.innerHTML = "";
