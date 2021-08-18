@@ -49,6 +49,8 @@ var playpolling = {"detect": 0};
 var polltime = 5000;
 var lastpolled = 0;
 
+var boxtracking = true;
+
 SP.serialrand();
 
 var vlSpec = {
@@ -391,6 +393,8 @@ function tick(){
 
         var markers = detector.detect(VI.imageData);
         VI.drawCorners(context, markers);
+
+
         VI.findcorners(markers);
 
 
@@ -402,7 +406,10 @@ function tick(){
         }
 
         if(VI.allcornersfound()) {
-            VI.findmainbox();
+            if(boxtracking){
+                VI.findmainbox();
+            }
+
 
             // VI.findinterbox();
 
@@ -411,6 +418,7 @@ function tick(){
                 markers.push(VI.workingbox);
                 // markers.push(VI.interactionbox);
             }
+
             VI.drawCorners(context, markers);
 
             VI.drawId(context, markers);
@@ -1664,6 +1672,10 @@ contextBridge.exposeInMainWorld(
         emitData: (id, data) => {
             windowManager.sharedData.set(id, data);
             // console.log("emitting to " + id);
+        },
+
+        toggleBoxTracking: () => {
+            boxtracking = (!boxtracking);
         }
 
 

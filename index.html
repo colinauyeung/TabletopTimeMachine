@@ -269,6 +269,7 @@
 
 
 <button id="recording" onclick="toggleRecording()">Record</button>
+<button id="tracking" onclick="toggleBoxTrack()">Freeze Box</button>
 <button id="s-start" onclick="window.api.openSerial()">Start Serial</button>
 <button id="s-stop" onclick="window.api.closeSerial()">Stop Serial</button>
 
@@ -323,6 +324,18 @@
 
     function errorCallback(e) {
         console.log('Error', e)
+    }
+
+    var tracking = true;
+    function toggleBoxTrack(){
+        tracking = !tracking;
+        if(tracking){
+            $("#tracking").html("Freeze Box");
+        }
+        else{
+            $("#tracking").html("Unfreeze Box");
+        }
+        window.api.toggleBoxTracking();
     }
 
 
