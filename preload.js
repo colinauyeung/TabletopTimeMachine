@@ -403,17 +403,17 @@ function tick(){
 
         if(VI.allcornersfound()) {
             VI.findmainbox();
-            VI.drawCorners(context, markers);
+
             // VI.findinterbox();
-            VI.drawId(context, markers);
+
             if (firstfind) {
                 // console.log(VI.interactionbox);
                 markers.push(VI.workingbox);
                 // markers.push(VI.interactionbox);
             }
+            VI.drawCorners(context, markers);
 
-
-
+            VI.drawId(context, markers);
             var playarr = {};
             playpolling.detect++;
             markers.forEach((marker) => {
