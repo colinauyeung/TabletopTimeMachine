@@ -242,8 +242,11 @@ window.addEventListener('DOMContentLoaded', () => {
 windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue){
     addCliptoQueue(newValue.start, newValue.length, "name", 111);
     VI.clippingid[111] = Date.now();
+    addCliptoQueue(newValue.start, newValue.length, "name", 112);
+    VI.clippingid[112] = Date.now();
     let idarr = [];
     idarr.push([111, 0]);
+    idarr.push([112, 0]);
     playclips(idarr);
 })
 
@@ -774,8 +777,8 @@ function playclips(idarr){
             console.log("attempting play of " + idarr[0]);
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
-            contain1.style.width = "450x";
-            contain1.style.height = "100%";
+            // contain1.style.width = "450x";
+            // contain1.style.height = "100%";
             left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
             windowManager.sharedData.set("viz", [idarr[0][0]]);
@@ -785,22 +788,30 @@ function playclips(idarr){
     else{
         // if(idarr.length === 2){
         if(idarr[0][0] in clipbinding && idarr[1][0] in clipbinding) {
+
+            let left = document.getElementById("leftvid");
+            left.innerHTML = "";
+
             let contain1 = document.createElement("div");
             contain1.id = idarr[0][0];
-            contain1.style.maxWidth = "450px";
-            contain1.style.width = "450px";
-            contain1.style.height = "100%";
-            contain1.style.float = "left";
-            box.appendChild(contain1);
+            // contain1.style.maxWidth = "450px";
+            // contain1.style.width = "450px";
+            // contain1.style.height = "100%";
+            // contain1.style.float = "left";
+            left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
 
             let contain2 = document.createElement("div");
+
+            let right = document.getElementById("rightvid");
+            right.innerHTML = "";
+
             contain2.id = idarr[1][0];
-            contain2.style.maxWidth = "450px";
-            contain2.style.width = "450px";
-            contain2.style.height = "100%";
-            contain2.style.float = "left";
-            box.appendChild(contain2);
+            // contain2.style.maxWidth = "450px";
+            // contain2.style.width = "450px";
+            // contain2.style.height = "100%";
+            // contain2.style.float = "left";
+            right.appendChild(contain2);
             clipsToPlay.push([idarr[1][0], clipbinding[idarr[1][0]]]);
             windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
             windowManager.sharedData.set(idarr[0][0], [0,0]);
