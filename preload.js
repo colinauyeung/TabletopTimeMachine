@@ -762,6 +762,229 @@ function playclip(arucoid){
     }
 }
 
+function playleft(idr){
+    let left = document.getElementById("leftvid");
+    left.innerHTML = "";
+    let id = idr;
+
+    let chartleft = document.getElementById("leftviz");
+    chartleft.innerHTML = "";
+
+    let chartid = "chart" + id
+    let viz1 = document.createElement("div");
+    viz1.id = chartid;
+    // viz.style.maxWidth = "700px";
+    viz1.style.width = "100%";
+    viz1.style.height = "100%";
+    viz1.style.float = "left";
+    chartleft.appendChild(viz1);
+
+    embed('#' + chartid, vlSpec).then(function (res) {
+        console.log("listening to " + chartid);
+        windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+            if(newValue === "reset"){
+                let changeSet = vega
+                    .changeset()
+                    .remove(true);
+                res.view.change('table', changeSet).run();
+            }
+            else{
+                // console.log(newValue);
+
+                var value;
+                value = {
+                    x: newValue.x,
+                    y: [newValue.y]
+                }
+                let changeSet = vega
+                    .changeset()
+                    .insert(value);
+                // .remove(function (t) {
+                //     return t.x < minimumX;
+                // });
+                res.view.change('table', changeSet).run();
+                // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+            }
+
+        });
+    });
+
+    windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+        console.log("viz fired " + newValue + " listening for " + id);
+        for(let idz in newValue){
+            if(newValue[idz] === id){
+
+                let chartleft = document.getElementById("leftviz");
+                chartleft.innerHTML = "";
+
+                let chartid = "chart" + id
+                let viz = document.createElement("div");
+                viz.id = chartid;
+                // viz.style.maxWidth = "700px";
+                viz.style.width = "100%";
+                viz.style.height = "100%";
+                viz.style.float = "left";
+                chartleft.appendChild(viz);
+
+                embed('#' + chartid, vlSpec).then(function (res) {
+                    windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+                        if(newValue === "reset"){
+                            let changeSet = vega
+                                .changeset()
+                                .remove(true);
+                            res.view.change('table', changeSet).run();
+                        }
+                        else{
+                            // console.log(newValue);
+
+                            var value;
+                            value = {
+                                x: newValue.x,
+                                y: [newValue.y]
+                            }
+                            let changeSet = vega
+                                .changeset()
+                                .insert(value);
+                            // .remove(function (t) {
+                            //     return t.x < minimumX;
+                            // });
+                            res.view.change('table', changeSet).run();
+                            // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                        }
+
+                    });
+                });
+            }
+
+        }
+    });
+
+
+    let contain1 = document.createElement("div");
+    contain1.id = idr;
+    // contain1.style.maxWidth = "450px";
+    contain1.style.width = "450px";
+    contain1.style.height = "100%";
+    // contain1.style.float = "left";
+    left.appendChild(contain1);
+    clipsToPlay.push([idr, clipbinding[idr]]);
+    windowManager.sharedData.set(idr, [0,0]);
+}
+
+
+function playright(idr){
+    let contain2 = document.createElement("div");
+
+    let right = document.getElementById("rightvid");
+    right.innerHTML = "";
+
+    let chartright = document.getElementById("rightviz");
+    chartright.innerHTML = "";
+    let id2 = idr;
+    let chartid2 = "chart" + id2
+    let viz2 = document.createElement("div");
+    viz2.id = chartid2;
+    // viz.style.maxWidth = "700px";
+    viz2.style.width = "100%";
+    viz2.style.height = "100%";
+    viz2.style.float = "left";
+    chartright.appendChild(viz2);
+
+    embed('#' + chartid2, vlSpec).then(function (res) {
+        console.log("listening to " + chartid2);
+        windowManager.sharedData.watch(id2 + "", function(prop, action, newValue, oldValue){
+            if(newValue === "reset"){
+                let changeSet = vega
+                    .changeset()
+                    .remove(true);
+                res.view.change('table', changeSet).run();
+            }
+            else{
+                // console.log(newValue);
+
+                var value;
+                value = {
+                    x: newValue.x,
+                    y: [newValue.y]
+                }
+                let changeSet = vega
+                    .changeset()
+                    .insert(value);
+                // .remove(function (t) {
+                //     return t.x < minimumX;
+                // });
+                res.view.change('table', changeSet).run();
+                // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+            }
+
+        });
+    });
+
+
+    windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+        console.log("viz fired " + newValue + " listening for " + id2);
+        for(let idz in newValue){
+            if(newValue[idz] === id2){
+
+                let chartright = document.getElementById("rightviz");
+                chartright.innerHTML = "";
+
+                let chartid2 = "chart" + id2
+                let viz2 = document.createElement("div");
+                viz2.id = chartid2;
+                // viz.style.maxWidth = "700px";
+                viz2.style.width = "100%";
+                viz2.style.height = "100%";
+                viz2.style.float = "left";
+                chartright.appendChild(viz2);
+
+                embed('#' + chartid2, vlSpec).then(function (res) {
+                    console.log("listening to " + chartid2);
+                    windowManager.sharedData.watch(id2 + "", function(prop, action, newValue, oldValue){
+                        if(newValue === "reset"){
+                            let changeSet = vega
+                                .changeset()
+                                .remove(true);
+                            res.view.change('table', changeSet).run();
+                        }
+                        else{
+                            // console.log(newValue);
+
+                            var value;
+                            value = {
+                                x: newValue.x,
+                                y: [newValue.y]
+                            }
+                            let changeSet = vega
+                                .changeset()
+                                .insert(value);
+                            // .remove(function (t) {
+                            //     return t.x < minimumX;
+                            // });
+                            res.view.change('table', changeSet).run();
+                            // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                        }
+
+                    });
+                });
+            }
+
+        }
+    });
+
+    contain2.id = idr;
+    // contain2.style.maxWidth = "450px";
+    contain2.style.width = "450px";
+    contain2.style.height = "100%";
+    // contain2.style.float = "left";
+    right.appendChild(contain2);
+    clipsToPlay.push([idr, clipbinding[idr]]);
+    // windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
+
+    windowManager.sharedData.set(idr, [0,0]);
+
+}
+
 
 function playclips(idarr){
     console.log("Play Clips");
@@ -986,6 +1209,8 @@ function playclips(idarr){
             // contain1.style.float = "left";
             left.appendChild(contain1);
             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
+            windowManager.sharedData.set(idarr[0][0], [0,0]);
+
 
             let contain2 = document.createElement("div");
 
@@ -1094,7 +1319,7 @@ function playclips(idarr){
             right.appendChild(contain2);
             clipsToPlay.push([idarr[1][0], clipbinding[idarr[1][0]]]);
             // windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
-            windowManager.sharedData.set(idarr[0][0], [0,0]);
+
             windowManager.sharedData.set(idarr[1][0], [0,0]);
         }
         // }
