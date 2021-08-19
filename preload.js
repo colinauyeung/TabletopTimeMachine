@@ -951,59 +951,58 @@ function playuni(idr, pos){
             else{
                 console.log("right viz fired " + newValue + " listening for " + id);
             }
-            for(let idz in newValue){
-                if(newValue[idz] === id){
+            if(newValue.includes(id)){
 
-                    let chart;
-                    if(pos < 0){
-                        chart = document.getElementById("leftviz");
-                        chart.innerHTML = "";
-                    }
-                    else{
-                        chart = document.getElementById("rightviz");
-                        chart.innerHTML = "";
-                    }
-
-                    let chartid = "chart" + id
-                    let viz = document.createElement("div");
-                    viz.id = chartid;
-                    // viz.style.maxWidth = "700px";
-                    viz.style.width = "100%";
-                    viz.style.height = "100%";
-                    viz.style.float = "left";
-                    chart.appendChild(viz);
-
-                    embed('#' + chartid, vlSpec).then(function (res) {
-                        windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
-                            if(newValue === "reset"){
-                                let changeSet = vega
-                                    .changeset()
-                                    .remove(true);
-                                res.view.change('table', changeSet).run();
-                            }
-                            else{
-                                // console.log(newValue);
-
-                                var value;
-                                value = {
-                                    x: newValue.x,
-                                    y: [newValue.y]
-                                }
-                                let changeSet = vega
-                                    .changeset()
-                                    .insert(value);
-                                // .remove(function (t) {
-                                //     return t.x < minimumX;
-                                // });
-                                res.view.change('table', changeSet).run();
-                                // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-                            }
-
-                        });
-                    });
+                let chart;
+                if(pos < 0){
+                    chart = document.getElementById("leftviz");
+                    chart.innerHTML = "";
+                }
+                else{
+                    chart = document.getElementById("rightviz");
+                    chart.innerHTML = "";
                 }
 
+                let chartid = "chart" + id;
+                let viz = document.createElement("div");
+                viz.id = chartid;
+                // viz.style.maxWidth = "700px";
+                viz.style.width = "100%";
+                viz.style.height = "100%";
+                viz.style.float = "left";
+                chart.appendChild(viz);
+
+                embed('#' + chartid, vlSpec).then(function (res) {
+                    windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+                        if(newValue === "reset"){
+                            let changeSet = vega
+                                .changeset()
+                                .remove(true);
+                            res.view.change('table', changeSet).run();
+                        }
+                        else{
+                            // console.log(newValue);
+
+                            var value;
+                            value = {
+                                x: newValue.x,
+                                y: [newValue.y]
+                            }
+                            let changeSet = vega
+                                .changeset()
+                                .insert(value);
+                            // .remove(function (t) {
+                            //     return t.x < minimumX;
+                            // });
+                            res.view.change('table', changeSet).run();
+                            // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                        }
+
+                    });
+                });
             }
+
+
         });
 
 
