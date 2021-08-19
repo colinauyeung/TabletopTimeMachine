@@ -53,7 +53,7 @@ var boxtracking = true;
 var leftplaying = 0;
 var rightplaying = 0;
 
-var registeredmarks = [131, 51];
+var registeredmarks = [131, 51, 195, 231];
 
 SP.serialrand();
 
