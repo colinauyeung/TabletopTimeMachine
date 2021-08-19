@@ -53,6 +53,8 @@ var boxtracking = true;
 var leftplaying = 0;
 var rightplaying = 0;
 
+var registeredmarks = [131, 51];
+
 SP.serialrand();
 
 var vlSpec = {
@@ -485,7 +487,8 @@ function tick(){
                         //
                         // }
 
-                        if (marker.id < 500) {
+                        // if (marker.id < 500) {
+                        if (registeredmarks.includes(marker.id)) {
                             let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
                             let xPos = point[0];
                             let yPos = point[1];
