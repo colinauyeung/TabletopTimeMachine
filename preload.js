@@ -684,14 +684,14 @@ function tick(){
             if(leftp.length > 0){
                 if(leftp[0] !== leftplaying){
                     leftplaying = leftp[0];
-                    playleft(leftp[0])
+                    playuni(leftp[0], -1)
                 }
             }
 
             if(rightp.length > 0){
                 if(rightp[0] !== rightplaying){
                     rightplaying = rightp[0];
-                    playright(rightp[0])
+                    playuni(rightp[0], 1)
                 }
             }
 
@@ -877,6 +877,149 @@ var clipsToPlay = [];
 //     }
 // }
 
+function playuni(idr, pos){
+    if(idr in clipbinding){
+
+        let main;
+        if(pos < 0){
+            main = document.getElementById("leftvid");
+            main.innerHTML = "";
+        }
+        else{
+            main = document.getElementById("rightvid");
+            main.innerHTML = "";
+        }
+
+
+        let id = idr;
+
+        let chart;
+        if(pos < 0){
+            chart = document.getElementById("leftviz");
+            chart.innerHTML = "";
+        }
+        else{
+            chart = document.getElementById("rightviz");
+            chart.innerHTML = "";
+        }
+
+
+        let chartid = "chart" + id
+        let viz = document.createElement("div");
+        viz.id = chartid;
+        // viz.style.maxWidth = "700px";
+        viz.style.width = "100%";
+        viz.style.height = "100%";
+        viz.style.float = "left";
+        chart.appendChild(viz);
+
+        embed('#' + chartid, vlSpec).then(function (res) {
+            console.log("listening to " + chartid);
+            windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+                if(newValue === "reset"){
+                    let changeSet = vega
+                        .changeset()
+                        .remove(true);
+                    res.view.change('table', changeSet).run();
+                }
+                else{
+                    // console.log(newValue);
+
+                    var value;
+                    value = {
+                        x: newValue.x,
+                        y: [newValue.y]
+                    }
+                    let changeSet = vega
+                        .changeset()
+                        .insert(value);
+                    // .remove(function (t) {
+                    //     return t.x < minimumX;
+                    // });
+                    res.view.change('table', changeSet).run();
+                    // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                }
+
+            });
+        });
+
+        windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
+
+            if(pos < 0){
+                console.log("left viz fired " + newValue + " listening for " + id);
+            }
+            else{
+                console.log("right viz fired " + newValue + " listening for " + id);
+            }
+            for(let idz in newValue){
+                if(newValue[idz] === id){
+
+                    let chart;
+                    if(pos < 0){
+                        chart = document.getElementById("leftviz");
+                        chart.innerHTML = "";
+                    }
+                    else{
+                        chart = document.getElementById("rightviz");
+                        chart.innerHTML = "";
+                    }
+
+                    let chartid = "chart" + id
+                    let viz = document.createElement("div");
+                    viz.id = chartid;
+                    // viz.style.maxWidth = "700px";
+                    viz.style.width = "100%";
+                    viz.style.height = "100%";
+                    viz.style.float = "left";
+                    chart.appendChild(viz);
+
+                    embed('#' + chartid, vlSpec).then(function (res) {
+                        windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
+                            if(newValue === "reset"){
+                                let changeSet = vega
+                                    .changeset()
+                                    .remove(true);
+                                res.view.change('table', changeSet).run();
+                            }
+                            else{
+                                // console.log(newValue);
+
+                                var value;
+                                value = {
+                                    x: newValue.x,
+                                    y: [newValue.y]
+                                }
+                                let changeSet = vega
+                                    .changeset()
+                                    .insert(value);
+                                // .remove(function (t) {
+                                //     return t.x < minimumX;
+                                // });
+                                res.view.change('table', changeSet).run();
+                                // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
+                            }
+
+                        });
+                    });
+                }
+
+            }
+        });
+
+
+        let contain1 = document.createElement("div");
+        contain1.id = idr;
+        // contain1.style.maxWidth = "450px";
+        contain1.style.width = "450px";
+        contain1.style.height = "100%";
+        // contain1.style.float = "left";
+        main.appendChild(contain1);
+        clipsToPlay.push([idr, clipbinding[idr]]);
+        windowManager.sharedData.set(idr, [0,0]);
+    }
+
+}
+
 function playleft(idr){
     if(idr in clipbinding){
         let left = document.getElementById("leftvid");
@@ -926,7 +1069,7 @@ function playleft(idr){
         });
 
         windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-            console.log("viz fired " + newValue + " listening for " + id);
+            console.log("left viz fired " + newValue + " listening for " + id);
             for(let idz in newValue){
                 if(newValue[idz] === id){
 
@@ -1041,7 +1184,7 @@ function playright(idr){
 
 
         windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-            console.log("viz fired " + newValue + " listening for " + id2);
+            console.log("right viz fired " + newValue + " listening for " + id2);
             for(let idz in newValue){
                 if(newValue[idz] === id2){
 
