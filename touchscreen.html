@@ -169,8 +169,15 @@
         }
     }
 
+    windowManager.sharedData.watch("clipgrabbed", function(prop, action, newValue, oldValue){
+        if(newValue === true){
+            scroll = 0;
+            windowManager.sharedData.set("clipgrabbed", false);
+        }
+    });
 
-        windowManager.sharedData.watch("pictures", function(prop, action, newValue, oldValue){
+
+    windowManager.sharedData.watch("pictures", function(prop, action, newValue, oldValue){
         let now = Date.now()
         images[now] = newValue;
         // console.log(images);
@@ -448,12 +455,7 @@
 
     })
 
-    windowManager.sharedData.watch("clipgrabbed", function(prop, action, newValue, oldValue){
-        if(newValue === true){
-            scroll = 0;
-            windowManager.sharedData.set("clipgrabbed", false);
-        }
-    })
+
 
 
 
