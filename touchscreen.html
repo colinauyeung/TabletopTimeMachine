@@ -421,13 +421,13 @@
                 if(e.x > startx){
                     select.style.width = (e.x - startx) + "px";
                     selectstart = customscale(startx + scrollx);
-                    selectend = customscale(e.x + scrollx);
+                    selectend = customscale((e.x-x) + scrollx);
                 }
                 else{
                     select.style.left = e.x + "px";
                     select.style.width = (startx - e.x) + "px";
                     selectend = customscale(startx + scrollx);
-                    selectstart = customscale(e.x + scrollx);
+                    selectstart = customscale((e.x-x) + scrollx);
                 }
             }
 
