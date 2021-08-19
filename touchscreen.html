@@ -47,7 +47,7 @@
 
         #bar {
             width: 800px;
-            height: 120px;
+            height: 95px;
             background: aquamarine;
             overflow-x: scroll;
             position: relative;
@@ -64,7 +64,7 @@
 
         .box {
             width: 100px;
-            height: 100px;
+            height: 75px;
             position: absolute;
             top: 0px;
             left: -100px;
@@ -75,7 +75,7 @@
         }
         #select {
             width: 100px;
-            height: 100px;
+            height: 75px;
             position: absolute;
             top: 410px;
             left: 7px;
@@ -85,11 +85,11 @@
         }
 
         #img {
-            width: 600px;
-            height:400px;
+            width: 640px;
+            height:480px;
             position: relative;
             top: 0px;
-            left: 200px;
+            left: 1800px;
             background-color: #333333;
             max-height: 400px;
         }
@@ -322,11 +322,12 @@
 
     document.getElementById("bar").scrollLeft = 100;
     document.getElementById("bar").addEventListener("mousedown", function(e){
+        var x = getOffset( document.getElementById('bar') ).left + scrollx;
         let limit = 700;
         if(startblock + 100 < 700){
             limit = startblock + 100
         }
-        if(e.y < 517 && e.x <= limit){
+        if(e.y < 517 && e.x <= (limit+x) && e.x> x){
         // if(e.x <= limit){
             console.log(e);
             startx = e.x;
