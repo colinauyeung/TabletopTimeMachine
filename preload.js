@@ -525,18 +525,19 @@ function tick(){
                                             document.getElementById("leftvid").innerHTML = "";
                                         }
                                     }
-                                }
-                                else{
-                                    if(marker.id === leftplaying){
-                                        document.getElementById("leftviz").innerHTML = "";
-                                        document.getElementById("leftvid").innerHTML = "";
-                                    }
+                                    else{
+                                        if(marker.id === leftplaying){
+                                            document.getElementById("leftviz").innerHTML = "";
+                                            document.getElementById("leftvid").innerHTML = "";
+                                        }
 
-                                    if(marker.id === rightplaying){
-                                        document.getElementById("rightviz").innerHTML = "";
-                                        document.getElementById("rightviz").innerHTML = "";
+                                        if(marker.id === rightplaying){
+                                            document.getElementById("rightviz").innerHTML = "";
+                                            document.getElementById("rightviz").innerHTML = "";
+                                        }
                                     }
                                 }
+
                             }
 
 
