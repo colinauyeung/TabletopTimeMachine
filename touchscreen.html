@@ -170,6 +170,7 @@
     }
 
     windowManager.sharedData.watch("clipgrabbed", function(prop, action, newValue, oldValue){
+        console.log("clip grabbed " + newValue);
         if(newValue === true){
             scroll = 0;
             windowManager.sharedData.set("clipgrabbed", false);
