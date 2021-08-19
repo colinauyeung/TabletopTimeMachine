@@ -491,6 +491,8 @@ function tick(){
                             let yPos = point[1];
                             let id = marker.id + "";
 
+                            console.log("id " + marker.id + " xpos " + xPos);
+
                             if(xPos > 1125){
                                 if(clipwaiting){
                                     addCliptoQueue(waitingclip.start, waitingclip.length, "name", marker.id);
@@ -511,19 +513,21 @@ function tick(){
                             }
                             else{
                                 if(xPos <= 375){
-                                    leftp.push(marker.id);
                                     if(marker.id === rightplaying){
                                         document.getElementById("rightviz").innerHTML = "";
                                         document.getElementById("rightviz").innerHTML = "";
                                     }
+                                    leftp.push(marker.id);
+
                                 }
                                 else{
                                     if(xPos >=750){
-                                        rightp.push(marker.id);
                                         if(marker.id === leftplaying){
                                             document.getElementById("leftviz").innerHTML = "";
                                             document.getElementById("leftvid").innerHTML = "";
                                         }
+                                        rightp.push(marker.id);
+
                                     }
                                     else{
                                         if(marker.id === leftplaying){
