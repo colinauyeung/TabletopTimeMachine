@@ -41,6 +41,7 @@ app.whenReady().then(() => {
     windowManager.sharedData.set("codefiles", []);
     windowManager.sharedData.set("pictures", "");
     windowManager.sharedData.set("clip", {});
+    windowManager.sharedData.set("clipgrabbed", true);
     var win = windowManager.createNew("Main", "Tabletop Time Machine", 'file://' + __dirname + '/index.html', false, {
         'width': 1400,
         'height': 800,
