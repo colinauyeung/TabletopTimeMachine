@@ -497,15 +497,44 @@ function tick(){
                                     clipwaiting = false;
                                     document.getElementById("main").style.backgroundColor = "indianred";
                                     windowManager.sharedData.set("clipgrabbed", true);
+
+                                    if(marker.id === leftplaying){
+                                        document.getElementById("leftviz").innerHTML = "";
+                                        document.getElementById("leftvid").innerHTML = "";
+                                    }
+
+                                    if(marker.id === rightplaying){
+                                        document.getElementById("rightviz").innerHTML = "";
+                                        document.getElementById("rightviz").innerHTML = "";
+                                    }
                                 }
                             }
                             else{
                                 if(xPos <= 375){
                                     leftp.push(marker.id);
+                                    if(marker.id === rightplaying){
+                                        document.getElementById("rightviz").innerHTML = "";
+                                        document.getElementById("rightviz").innerHTML = "";
+                                    }
                                 }
                                 else{
                                     if(xPos >=750){
                                         rightp.push(marker.id);
+                                        if(marker.id === leftplaying){
+                                            document.getElementById("leftviz").innerHTML = "";
+                                            document.getElementById("leftvid").innerHTML = "";
+                                        }
+                                    }
+                                }
+                                else{
+                                    if(marker.id === leftplaying){
+                                        document.getElementById("leftviz").innerHTML = "";
+                                        document.getElementById("leftvid").innerHTML = "";
+                                    }
+
+                                    if(marker.id === rightplaying){
+                                        document.getElementById("rightviz").innerHTML = "";
+                                        document.getElementById("rightviz").innerHTML = "";
                                     }
                                 }
                             }
