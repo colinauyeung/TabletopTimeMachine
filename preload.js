@@ -504,21 +504,24 @@ function tick(){
                                     windowManager.sharedData.set("clipgrabbed", true);
 
                                     if(marker.id === leftplaying){
+                                        leftplaying = 0;
                                         document.getElementById("leftviz").innerHTML = "";
                                         document.getElementById("leftvid").innerHTML = "";
                                     }
 
                                     if(marker.id === rightplaying){
+                                        rightplaying = 0;
                                         document.getElementById("rightviz").innerHTML = "";
-                                        document.getElementById("rightviz").innerHTML = "";
+                                        document.getElementById("rightvid").innerHTML = "";
                                     }
                                 }
                             }
                             else{
                                 if(xPos <= 375){
                                     if(marker.id === rightplaying){
+                                        rightplaying = 0;
                                         document.getElementById("rightviz").innerHTML = "";
-                                        document.getElementById("rightviz").innerHTML = "";
+                                        document.getElementById("rightvid").innerHTML = "";
                                     }
                                     leftp.push(marker.id);
 
@@ -526,6 +529,7 @@ function tick(){
                                 else{
                                     if(xPos >=750){
                                         if(marker.id === leftplaying){
+                                            leftplaying = 0;
                                             document.getElementById("leftviz").innerHTML = "";
                                             document.getElementById("leftvid").innerHTML = "";
                                         }
@@ -534,13 +538,15 @@ function tick(){
                                     }
                                     else{
                                         if(marker.id === leftplaying){
+                                            leftplaying = 0;
                                             document.getElementById("leftviz").innerHTML = "";
                                             document.getElementById("leftvid").innerHTML = "";
                                         }
 
                                         if(marker.id === rightplaying){
+                                            rightplaying = 0;
                                             document.getElementById("rightviz").innerHTML = "";
-                                            document.getElementById("rightviz").innerHTML = "";
+                                            document.getElementById("rightvid").innerHTML = "";
                                         }
                                     }
                                 }
