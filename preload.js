@@ -648,7 +648,7 @@ function tick(){
             if(rightp.length > 0){
                 if(rightp[0] !== rightplaying){
                     rightplaying = rightp[0];
-                    playleft(rightp[0])
+                    playright(rightp[0])
                 }
             }
 
