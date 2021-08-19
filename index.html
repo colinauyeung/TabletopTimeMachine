@@ -222,21 +222,21 @@
     </div>
 </div>
 
-<div id="mainbox">
-    <div id="topbar"></div>
-    <div id="bar"></div>
-    <div id="box">
-<!--        <div style="width: 50%; height: 100%; background-color: aliceblue; float: left"></div>-->
-<!--        <div style="width: 50%; height: 100%; background-color: indianred; float: left"></div>-->
-        <!--    <video id="video" src="videos/1624567955073.webm">-->
-    </div>
-    <div id="topbar2"></div>
+<!--<div id="mainbox">-->
+<!--    <div id="topbar"></div>-->
+<!--    <div id="bar"></div>-->
+<!--    <div id="box">-->
+<!--&lt;!&ndash;        <div style="width: 50%; height: 100%; background-color: aliceblue; float: left"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;        <div style="width: 50%; height: 100%; background-color: indianred; float: left"></div>&ndash;&gt;-->
+<!--        &lt;!&ndash;    <video id="video" src="videos/1624567955073.webm">&ndash;&gt;-->
+<!--    </div>-->
+<!--    <div id="topbar2"></div>-->
 
-    <div id="clipviz"></div>
+<!--    <div id="clipviz"></div>-->
 
 
 
-</div>
+<!--</div>-->
 
 
 
@@ -262,11 +262,11 @@
 <!--<div id="line0">1 2 3 <br></div>-->
 <!--<div id="line1">1 2 3</div>-->
 <!--<div id="line2">1 2 3</div>-->
-<div id="box3">
+<!--<div id="box3">-->
 
 
 
-</div>
+<!--</div>-->
 
 
 
@@ -344,22 +344,22 @@
 
 
 
-    function loadVideo(source, id){
-        var path = "./videos/" + source + ".mp4";
-        var vidooid = window.api.getNewID() + "";
-        var video = '<video id=\"' + vidooid + '\" src="'+ path + '\" autoplay></video>';
-        console.log(video);
-        // mediaPlayer.remove();
-        var idstring = "#" + id;
-        $(idstring).empty();
-        $(idstring).append(video);
-        // var video1 = $(document).find(vidooid)[0]
-        // video1.load();
-        var media = document.getElementById(vidooid);
-        media.load();
-        return media
-
-    }
+    // function loadVideo(source, id){
+    //     var path = "./videos/" + source + ".mp4";
+    //     var vidooid = window.api.getNewID() + "";
+    //     var video = '<video id=\"' + vidooid + '\" src="'+ path + '\" autoplay></video>';
+    //     console.log(video);
+    //     // mediaPlayer.remove();
+    //     var idstring = "#" + id;
+    //     $(idstring).empty();
+    //     $(idstring).append(video);
+    //     // var video1 = $(document).find(vidooid)[0]
+    //     // video1.load();
+    //     var media = document.getElementById(vidooid);
+    //     media.load();
+    //     return media
+    //
+    // }
 
     // function toggleVideo(){
     //     var btn = document.getElementById('play-pause')
@@ -389,20 +389,21 @@
 
 
 
-    function clip(){
-        var name = $("#name").val();
-        if(name === ""){
-            name = "Untitled";
-        }
-        var xclip = window.api.clip(Date.now()-60000, 60000, name);
-        var id = window.api.getNewID();
-        clips[id] = xclip;
-        $("#list").append(new Option(name, id));
-        // $("#name").val("");
-        //
-        // var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
-        // $("#container").append(item);
-    }
+    // function clip(){
+    //     var name = $("#name").val();
+    //     if(name === ""){
+    //         name = "Untitled";
+    //     }
+    //     var xclip = window.api.clip(Date.now()-60000, 60000, name);
+    //     var id = window.api.getNewID();
+    //     clips[id] = xclip;
+    //     $("#list").append(new Option(name, id));
+    //     // $("#name").val("");
+    //     //
+    //     // var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
+    //     // $("#container").append(item);
+    // }
+
     //
     // function playClipHelper(){
     //     var list = $("#list");
