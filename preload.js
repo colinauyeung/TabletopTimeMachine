@@ -55,7 +55,7 @@ var rightplaying = 0;
 
 var registeredmarks = [131, 51, 195, 231];
 
-SP.serialrand();
+// SP.serialrand();
 
 var vlSpec = {
     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
