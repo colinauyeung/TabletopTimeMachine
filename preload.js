@@ -40,7 +40,7 @@ var camera;
 var filename;
 var blobs = [];
 var looprecording = false;
-var recordingtime = 10000;
+var recordingtime = 30000;
 var lastchecked = 0;
 var tracktime = 300000;
 
@@ -362,7 +362,7 @@ window.setInterval(function(){
 
         })
     }
-}, 1000)
+}, 500)
 
 
 function tick(){
