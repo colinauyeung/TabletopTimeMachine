@@ -113,6 +113,18 @@
             left: 10px;
         }
 
+        #annoline {
+            height: 20px;
+            width: 800px;
+            position: relative;
+            top: -120px;
+            left: 100px;
+            background-color: blueviolet;
+            opacity: 0.5;
+            z-index: 3;
+            pointer-events: none;
+        }
+
 
 
 
@@ -130,6 +142,10 @@
 
     </div>
     <div id="chartouter">
+
+    </div>
+
+    <div id="annoline">
 
     </div>
 </div>
@@ -168,6 +184,14 @@
         let faction = (value)/(startblock + 100);
         let clunk = faction * top;
         return clunk + starttime;
+    }
+
+    function reversescale (time){
+        let base = lasttime - starttime;
+        let index = time-starttime;
+        let ratio = index/base;
+        return ratio * (startblock + 100);
+
     }
 
     var userscroll = 0;
@@ -508,6 +532,11 @@
 
 
     })
+
+    function annonate(time){
+        
+    }
+
 
 
 
