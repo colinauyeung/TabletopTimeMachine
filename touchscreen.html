@@ -296,8 +296,8 @@
             window.setTimeout(function(){
                 window.setInterval(function (){
                     startblock = startblock + 100;
-                    // lasttime = Date.now()-30000;
-                    lasttime = Date.now()-1000;
+                    lasttime = Date.now()-30000;
+                    // lasttime = Date.now()-1000;
                     var box =document.createElement("div");
                     box.className = "box";
                     box.style.left = startblock + "px";
@@ -372,7 +372,7 @@
 
 
 
-                }, 2000);
+                }, 30000);
 
                 // window.setInterval(function (){
                 //     // document.querySelectorAll("div.box").forEach(function(item){
@@ -413,8 +413,8 @@
                 //
                 //
                 // }, 100);
-            // }, 30000)
-            }, 3000)
+            }, 30000)
+            // }, 3000)
 
         }
 
