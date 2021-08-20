@@ -73,6 +73,19 @@
             /*border: 3px solid #333333;*/
             word-wrap: break-word;
         }
+
+        .tick {
+            width: 7px;
+            height: 75px;
+            position: absolute;
+            top: 0px;
+            /*left: -100px;*/
+            /*z-index: 2;*/
+            pointer-events: none;
+            /*border: 3px solid #333333;*/
+            word-wrap: break-word;
+        }
+
         #select {
             width: 100px;
             height: 75px;
@@ -97,7 +110,7 @@
         #column {
             margin: auto;
             width: 1000px;
-            background-color: khaki;
+            /*background-color: khaki;*/
         }
 
         #chartouter {
@@ -105,7 +118,7 @@
             height: 100px;
             position: relative;
             left: 50px;
-            background-color: indianred;
+            /*background-color: indianred;*/
         }
 
         .visual {
@@ -114,15 +127,36 @@
         }
 
         #annoline {
-            height: 20px;
+            height: 10px;
             width: 800px;
             position: relative;
-            top: -120px;
+            top: -110px;
             left: 100px;
-            background-color: blueviolet;
+            /*background-color: blueviolet;*/
             opacity: 0.5;
             z-index: 3;
             pointer-events: none;
+        }
+
+        .linetick {
+            width: 2px;
+            height: 10px;
+            position: absolute;
+            top: 0px;
+            left: -100px;
+            z-index: 2;
+            pointer-events: none;
+            /*border: 3px solid #333333;*/
+            word-wrap: break-word;
+        }
+
+        #marked {
+            font-size: 100px;
+            position: relative;
+            left: 310px;
+            top: -470px;
+            color: white;
+            opacity: 0;
         }
 
 
@@ -147,6 +181,10 @@
 
     <div id="annoline">
 
+    </div>
+
+    <div id="marked">
+        SPACE
     </div>
 </div>
 
@@ -194,6 +232,13 @@
 
     }
 
+    function scrollscale (time){
+        let base = lasttime - starttime;
+        let index = time-starttime;
+        let ratio = index/base;
+        return ratio * 800;
+    }
+
     var userscroll = 0;
     var listentoscroll = true;
     var scroll = 0;
@@ -214,6 +259,9 @@
     var images = {}
 
     var data = [];
+
+    var queuedanno = [];
+    var currentanno = [];
 
     var vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -290,6 +338,34 @@
                         }
                     }
 
+
+                    for(let i in queuedanno){
+                        if(queuedanno[i].time <= lasttime){
+                            console.log(queuedanno[i]);
+                            let tick = document.createElement("div");
+                            tick.className = "tick";
+                            tick.style.backgroundColor = queuedanno[i].color;
+                            tick.style.left = reversescale(queuedanno[i].time) + "px";
+                            document.getElementById("bar").appendChild(tick)
+                            currentanno.push(queuedanno[i]);
+                            queuedanno.splice(i, 1);
+
+                        }
+                    }
+                    var line = document.getElementById("annoline");
+                    line.innerHTML = "";
+
+                    for(let i in currentanno){
+                        let tick = document.createElement("div");
+                        tick.className = "linetick";
+                        tick.style.backgroundColor = currentanno[i].color;
+                        tick.style.left = scrollscale(currentanno[i].time) + "px";
+                        document.getElementById("annoline").appendChild(tick);
+                    }
+
+
+
+
                     if(startblock <= 700){
 
                     }
@@ -344,6 +420,32 @@
 
     })
 
+    function annotate(time, color, data){
+        queuedanno.push({
+            time: time,
+            color: color,
+            data: data
+        })
+    }
+
+    function basicanno(){
+        annotate(Date.now(), "orangered", {});
+    }
+
+    document.addEventListener('keypress', (event) => {
+        var name = event.key;
+        var code = event.code;
+        // Alert the key name and key code on keydown
+        if(code === "Space" && started){
+            basicanno();
+            document.getElementById("marked").style.opacity = "0.5";
+            window.setTimeout(function(){
+                document.getElementById("marked").style.opacity = "0";
+            }, 500)
+        }
+    });
+
+
     document.getElementById("bar").scrollLeft = 100;
     document.getElementById("bar").addEventListener("mousedown", function(e){
         let scrollx = document.getElementById("bar").scrollLeft;
@@ -354,7 +456,6 @@
         }
         if(e.y < 517 && e.x <= (limit+x) && e.x> x){
         // if(e.x <= limit){
-            console.log(e);
             startx = e.x;
             let select = document.getElementById("select")
             select.style.opacity = "1";
@@ -407,7 +508,6 @@
         if(startblock + 100 < 800){
             limit = startblock + 100
         }
-        console.log(e.x + " " + x + " " + (limit+x));
         if(dragging && e.x <= (limit+x) && e.x > x){
             let select = document.getElementById("select");
             if(e.x > startx){
@@ -533,9 +633,6 @@
 
     })
 
-    function annonate(time){
-        
-    }
 
 
 
