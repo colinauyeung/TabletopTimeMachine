@@ -519,7 +519,7 @@
             }
         }
         if(e.y < 519 && e.y > 400 && e.x <= (limit+x) && e.x >= x ){
-            let hover = customscale((e.x+x) + scrollx);
+            let hover = customscale((e.x-x) + scrollx);
             let highest = 0;
             for(let key in images){
                 if(key < hover && key > highest){
