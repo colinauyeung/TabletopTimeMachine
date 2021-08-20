@@ -362,7 +362,7 @@ window.setInterval(function(){
 
         })
     }
-}, 500)
+}, 2000)
 
 
 function tick(){
