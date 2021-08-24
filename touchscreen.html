@@ -483,34 +483,37 @@
     }
 
     window.addEventListener("mousemove", function (e) {
-        let scrollx = document.getElementById("bar").scrollLeft;
-        var x = getOffset( document.getElementById('bar') ).left + scrollx;
-        let limit = 800;
-        if(startblock + 100 < 800){
-            limit = startblock + 100
-        }
-        if(dragging && e.x <= (limit+x) && e.x > x){
-            let select = document.getElementById("select");
-            if(e.x > startx){
-                select.style.width = (e.x - startx) + "px";
+        var y = getOffset( document.getElementById('bar') ).top;
+        if(e.y < (y + 75)){
+            let scrollx = document.getElementById("bar").scrollLeft;
+            var x = getOffset( document.getElementById('bar') ).left + scrollx;
+            let limit = 800;
+            if(startblock + 100 < 800){
+                limit = startblock + 100
             }
-            else{
-                select.style.left = e.x + "px";
-                select.style.width = (startx - e.x) + "px";
-            }
-        }
-        if(e.y < 519 && e.y > 400 && e.x <= (limit+x) && e.x >= x ){
-            let hover = customscale((e.x-x) + scrollx);
-            let highest = 0;
-            for(let key in images){
-                if(key < hover && key > highest){
-                    highest = key;
+            if(dragging && e.x <= (limit+x) && e.x > x){
+                let select = document.getElementById("select");
+                if(e.x > startx){
+                    select.style.width = (e.x - startx) + "px";
+                }
+                else{
+                    select.style.left = e.x + "px";
+                    select.style.width = (startx - e.x) + "px";
                 }
             }
-            document.getElementById("img").src = images[highest];
+            if(e.y > y && e.x <= (limit+x) && e.x >= x ){
+                let hover = customscale((e.x-x) + scrollx);
+                let highest = 0;
+                for(let key in images){
+                    if(key < hover && key > highest){
+                        highest = key;
+                    }
+                }
+                document.getElementById("img").src = images[highest];
 
+            }
         }
-    })
+    });
 
     window.addEventListener("mouseup", function (e) {
         if(dragging && started){
