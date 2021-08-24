@@ -321,7 +321,7 @@
             window.setTimeout(function(){
                 window.setInterval(function (){
                     startblock = startblock + 100;
-                    lasttime = Date.now()-40000;
+                    lasttime = Date.now()-30000;
                     // lasttime = Date.now()-1000;
                     var box =document.createElement("div");
                     box.className = "box";
@@ -397,9 +397,9 @@
 
 
 
-                }, 30000);
+                }, 15000);
 
-            }, 40000)
+            }, 15000)
             // }, 3000)
 
         }
@@ -436,11 +436,12 @@
     document.getElementById("bar").addEventListener("mousedown", function(e){
         let scrollx = document.getElementById("bar").scrollLeft;
         var x = getOffset( document.getElementById('bar') ).left + scrollx;
+        var y = getOffset( document.getElementById('bar') ).top;
         let limit = 700;
         if(startblock + 100 < 700){
             limit = startblock + 100
         }
-        if(e.y < 517 && e.x <= (limit+x) && e.x> x){
+        if(e.y < (y + 75) && e.x <= (limit+x) && e.x> x){
         // if(e.x <= limit){
             startx = e.x;
             let select = document.getElementById("select")
@@ -455,12 +456,6 @@
 
     })
 
-    // window.setInterval(function (e){
-    //     var clunk = {};
-    //     clunk.x = Date.now();
-    //     clunk.y = Math.random()
-    //     data.push(clunk);
-    // }, 1000)
 
 
     windowManager.sharedData.watch("serial", function(prop, action, newValue, oldValue){
@@ -635,7 +630,7 @@
             }
         }
 
-        thumbimg.src = images[highest].src;
+        thumbimg.src = images[highest];
         // thumbimg.src = thumbdir + file.file + ".jpg";
         thumbimg.alt = "Thumb";
         thumbimg.className = "thumbimg";

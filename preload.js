@@ -214,7 +214,7 @@ window.setInterval(function(){
             windowManager.sharedData.set("pictures", src);
         })
     }
-}, 1000);
+}, 5000);
 
 
 function tick(){
@@ -720,6 +720,9 @@ function clip(start, length, name){
     console.log(start);
     console.log(length);
     var ava = true;
+    if(length < 1000){
+        length = 1000;
+    }
     if(start + length >= filename){
         ava = false;
     }
