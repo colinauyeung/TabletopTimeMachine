@@ -723,6 +723,7 @@ function clip(start, length, name){
     var clip = {
         name: name,
         available: ava,
+        start: start,
         length: length,
         files: [],
         serialdata: [],
