@@ -77,7 +77,8 @@ typings/
 
 # Video folder
 videos/
-old_videos
+old_videos/
+codeversions/
 
 #data storage
 saved_recordings/
