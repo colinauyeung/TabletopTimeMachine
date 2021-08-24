@@ -129,7 +129,7 @@ var waitingclip = {start:0, length:0}
 windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue){
 
     if(newValue.ava){
-        let id = addCliptoQueue(waitingclip.start, waitingclip.length, "name");
+        let id = addCliptoQueue(newValue.start, newValue.length, "name");
         playuni(id, -1);
     }
 })
