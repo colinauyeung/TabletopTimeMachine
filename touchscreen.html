@@ -434,25 +434,28 @@
 
     document.getElementById("bar").scrollLeft = 100;
     document.getElementById("bar").addEventListener("mousedown", function(e){
-        let scrollx = document.getElementById("bar").scrollLeft;
-        var x = getOffset( document.getElementById('bar') ).left + scrollx;
         var y = getOffset( document.getElementById('bar') ).top;
-        let limit = 700;
-        if(startblock + 100 < 700){
-            limit = startblock + 100
+        if(e.y < (y + 75)){
+            let scrollx = document.getElementById("bar").scrollLeft;
+            var x = getOffset( document.getElementById('bar') ).left + scrollx;
+            let limit = 700;
+            if(startblock + 100 < 700){
+                limit = startblock + 100
+            }
+            if( e.x <= (limit+x) && e.x> x){
+                // if(e.x <= limit){
+                startx = e.x;
+                let select = document.getElementById("select")
+                select.style.opacity = "1";
+                select.style.left = e.x + "px";
+                select.style.width = "0px";
+                scroll = -1;
+                dragging = true;
+            }
         }
-        if(e.y < (y + 75) && e.x <= (limit+x) && e.x> x){
-        // if(e.x <= limit){
-            startx = e.x;
-            let select = document.getElementById("select")
-            select.style.opacity = "1";
-            select.style.left = e.x + "px";
-            select.style.width = "0px";
-            scroll = -1;
-            dragging = true;
-        }
-        // let val = e.x + document.getElementById("bar").scrollLeft;
-        // console.log(customscale(val));
+
+
+
 
     })
 
