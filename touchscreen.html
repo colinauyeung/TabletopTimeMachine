@@ -159,6 +159,26 @@
             opacity: 0;
         }
 
+        #viewbox {
+            width: 850px;
+            height: 250px;
+            background-color: orange;
+            overflow: scroll;
+        }
+
+        .thumb {
+            width: 190px;
+            height: 200px;
+            padding: 5px;
+            float: left;
+            overflow: hidden;
+        }
+
+        .thumbimg{
+            max-width: 190px;
+            pointer-events: none;
+        }
+
 
 
 
@@ -186,6 +206,9 @@
     <div id="marked">
         SPACE
     </div>
+    <div id="viewbox">
+    </div>
+
 </div>
 
 
@@ -215,6 +238,7 @@
     const remote = require('electron').remote;
     var electron = require('electron');
     const windowManager = remote.require('electron-window-manager');
+    const { v4: uuidv4 } = require('uuid');
 
 
     function customscale (value){
@@ -273,6 +297,7 @@
             "y": {"field": "price", "type": "quantitative"}
         }
     }
+
 
     windowManager.sharedData.watch("clipgrabbed", function(prop, action, newValue, oldValue){
         console.log("clip grabbed " + newValue);
@@ -374,45 +399,6 @@
 
                 }, 30000);
 
-                // window.setInterval(function (){
-                //     // document.querySelectorAll("div.box").forEach(function(item){
-                //     //     let left = item.style.left
-                //     //     if(left !== ""){
-                //     //         left = parseInt(left);
-                //     //         left = left + 5;
-                //     //     }
-                //     //     else{
-                //     //         left = -100;
-                //     //     }
-                //     //
-                //     //     item.style.left = left + "px";
-                //     //
-                //     // })
-                //     startscroll = startscroll + 5;
-                //     if(scroll > 0){
-                //         scroll = scroll - 1;
-                //     }
-                //     if(scroll === 0){
-                //         document.getElementById("select").style.opacity = "0";
-                //         selectdef = false;
-                //     }
-                //
-                //     if(userscroll > 0){
-                //         follow = follow + 5;
-                //         userscroll = userscroll - 1;
-                //         // document.getElementById("bar").scrollLeft = follow;
-                //
-                //     }
-                //     else{
-                //         if(startscroll - 600 > 0 && scroll === 0){
-                //             document.getElementById("bar").scrollLeft = startscroll - 600;
-                //         }
-                //     }
-                //
-                //
-                //
-                //
-                // }, 100);
             }, 40000)
             // }, 3000)
 
@@ -560,10 +546,12 @@
 
             scroll = 100;
             console.log("start: " + selectstart + " end: " + selectend);
+            let id = uuidv4();
             windowManager.sharedData.set("clip", {
                 ava: true,
                 start: selectstart,
-                length: selectend-selectstart
+                length: selectend-selectstart,
+                id: id
             })
             // window.setTimeout(function (){
             //     scroll = true;
@@ -632,6 +620,41 @@
 
 
     })
+
+    function thumb(start, id){
+        let viewbox = document.getElementById("viewbox");
+        let thumb = document.createElement("div");
+        thumb.className = "thumb";
+        let thumbimg = document.createElement("img");
+
+        let highest = 0;
+        for(let key in images){
+            if(key < start && key > highest){
+                highest = key;
+            }
+        }
+
+        thumbimg.src = images[highest].src;
+        // thumbimg.src = thumbdir + file.file + ".jpg";
+        thumbimg.alt = "Thumb";
+        thumbimg.className = "thumbimg";
+
+        let label = document.createElement("div");
+        let date = new Date(start)
+        label.innerText = date.toString();
+        thumb.appendChild(thumbimg);
+        thumb.appendChild(label);
+        thumb.onclick = (event) => {
+            event.preventDefault();
+            playfile(id)
+            // console.log(file.file);
+        }
+        viewbox.appendChild(thumb);
+
+        function playfile(id){
+            windowManager.sharedData.set("play", id);
+        }
+    }
 
 
 

@@ -341,38 +341,6 @@
     }
 
 
-
-
-
-    // function loadVideo(source, id){
-    //     var path = "./videos/" + source + ".mp4";
-    //     var vidooid = window.api.getNewID() + "";
-    //     var video = '<video id=\"' + vidooid + '\" src="'+ path + '\" autoplay></video>';
-    //     console.log(video);
-    //     // mediaPlayer.remove();
-    //     var idstring = "#" + id;
-    //     $(idstring).empty();
-    //     $(idstring).append(video);
-    //     // var video1 = $(document).find(vidooid)[0]
-    //     // video1.load();
-    //     var media = document.getElementById(vidooid);
-    //     media.load();
-    //     return media
-    //
-    // }
-
-    // function toggleVideo(){
-    //     var btn = document.getElementById('play-pause')
-    //     if (mediaPlayer.paused || mediaPlayer.ended){
-    //         btn.innerHTML = "Pause Video";
-    //         mediaPlayer.play();
-    //     }
-    //     else{
-    //         btn.innerHTML = "Play Video";
-    //         mediaPlayer.pause();
-    //     }
-    // }
-
     function toggleRecording(){
         if(recording){
             recording = false;
@@ -387,99 +355,6 @@
     }
 
 
-
-
-    // function clip(){
-    //     var name = $("#name").val();
-    //     if(name === ""){
-    //         name = "Untitled";
-    //     }
-    //     var xclip = window.api.clip(Date.now()-60000, 60000, name);
-    //     var id = window.api.getNewID();
-    //     clips[id] = xclip;
-    //     $("#list").append(new Option(name, id));
-    //     // $("#name").val("");
-    //     //
-    //     // var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
-    //     // $("#container").append(item);
-    // }
-
-    //
-    // function playClipHelper(){
-    //     var list = $("#list");
-    //     var clip = list.val();
-    //     playClip(clip);
-    // }
-
-    // var playingclip = null;
-
-    // function playClip(clip, id){
-    //     playingclips[id] = clip;
-    //     if(!(clip in clips)){
-    //         return;
-    //     }
-    //     if(!(clips[clip].available)){
-    //         if(window.api.checkAva(clips[clip])){
-    //             clips[clip].available = true;
-    //         }
-    //         else{
-    //             setTimeout(() => {
-    //                 playClipWaiting(clip, id);
-    //             }, 1000)
-    //             return;
-    //         }
-    //     }
-    //
-    //
-    //
-    //     playingclips[id] = clips[clip];
-    //     console.log(playingclips[id]);
-    //     clipindexes[id] = 0;
-    //     // videoclip = clips[clip];
-    //     // clipindex = 0;
-    //     var media = loadVideo(playingclips[id].files[clipindexes[id]].file, id);
-    //     media.addEventListener("ended", function () {
-    //         playNextFile(media, id);
-    //     })
-    //     media.pause();
-    //     media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-    //     media.playbackRate = playspeed;
-    //     media.play();
-    //
-    // }
-    //
-    // function playNextFile(media, id){
-    //     clipindexes[id]++;
-    //     if(clipindexes[id] < playingclips[id].files.length){
-    //         loadVideo(playingclips[id].files[clipindexes[id]].file, id);
-    //         media.addEventListener("ended", function () {
-    //             playNextFile(media, id);
-    //         })
-    //         // media.pause();
-    //         // media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-    //         // media.playbackRate = playspeed;
-    //         // media.play();
-    //     }
-    //     else{
-    //         clipindexes[id] = 0;
-    //         loadVideo(playingclips[id].files[clipindexes[id]].file, id);
-    //         media.addEventListener("ended", function () {
-    //             playNextFile(media, id);
-    //         })
-    //         media.pause();
-    //         media.currentTime = (playingclips[id].files[clipindexes[id]].start)/1000;
-    //         media.playbackRate = playspeed;
-    //         media.play();
-    //
-    //     }
-    // }
-
-    // function playClipWaiting(clip, id){
-    //     if(clip !== playingclips[id]){
-    //         return;
-    //     }
-    //     playClip(clip, id);
-    // }
 
     function playClipWaitingv2(clip, id){
         // if(clip !== playingclips[id]){
@@ -530,24 +405,6 @@
         // var videoContainer = document.createElement('div');
         videoContainer.id = "videocontainer" + id;
         videoContainer.style.float = "left";
-
-        // container.appendChild(videoContainer);
-
-        // var chart = document.createElement("div");
-        // var chartid = "chart" + id;
-        // chart.id = chartid;
-        // chart.style.float = "left";
-        //
-        // container.appendChild(chart);
-        // var diff = document.createElement("pre");
-        // var diffid = "diff" + id;
-        // diff.id = diffid;
-        // diff.className = "code";
-        // container.appendChild(diff);
-        // window.api.testdiff("./codeversions/" + clunk.clip.codefiles[0].file + ".txt",
-        //     "./codeversions/" + clunk.clip.codefiles[clunk.clip.codefiles.length-1].file + ".txt",
-        //     diffid);
-
 
 
         clunk.videoObjects[0].inx = 0; //set index
@@ -698,37 +555,8 @@
                 playClipv2(pending[i][1], pending[i][0])
             }
         }
-        // if(pending[0] !== null){
-        //     console.log(pending[0]);
-        //     playClipv2(pending[0], pending[1]);
-        // }
 
     }
-
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     initPlayer();
-    // }, false);
-
-
-
-
-
-
-
-    // window.navigator.getUserMedia({video: true}, (localMediaStream) => {
-    //     console.log("Hello");
-    //     var video = document.querySelector('video')
-    //     video.srcObject = localMediaStream;
-    //     video.onloadedmetadata = (e) => {
-    //         // Ready to go. Do some stuff.
-    //     };
-    // }, errorCallback)
-
-    // window.api.record();
-
-    // $("#list").append(new Option("Hello", "name"));
-    // $("#clip").on("click", clip);
-    // clip();
 
 
     window.addEventListener("load", () => {
@@ -752,120 +580,6 @@
         window.api.takePhoto();
     }
 
-
-
-    // const {
-    //     contextBridge,
-    //     ipcRenderer
-    // } = require("electron");
-    // const remote = require('electron').remote;
-    // var electron = require('electron');
-    // const windowManager = remote.require('electron-window-manager');
-    // var CD = require("./modules/codediff").CD;
-    //
-    // window.addEventListener('DOMContentLoaded', () => {
-    //     CD.startup();
-    // });
-    //
-    //
-    //
-    // windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-    //     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-    //     let box = document.getElementById("clipviz");
-    //     box.innerHTML = "";
-    //     for(let id in oldValue){
-    //         windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
-    //             return;
-    //         })
-    //     }
-    //     for(let id in newValue){
-    //         console.log("watching " + newValue[id]);
-    //         let chartid = "chart" + newValue[id]
-    //         let contain = document.createElement("div");
-    //         contain.id = chartid;
-    //         contain.style.maxWidth = "700px";
-    //         contain.style.width = "700px";
-    //         contain.style.height = "100%";
-    //         contain.style.float = "left";
-    //         box.appendChild(contain);
-    //
-    //         vegaEmbed('#' + chartid, vlSpec).then(function (res) {
-    //             windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
-    //                 var minimumX = Date.now()-10000;
-    //
-    //                 var value;
-    //                 value = {
-    //                     x: newValue.x,
-    //                     y: [newValue.y]
-    //                 }
-    //                 var changeSet = vega
-    //                     .changeset()
-    //                     .insert(value);
-    //                 // .remove(function (t) {
-    //                 //     return t.x < minimumX;
-    //                 // });
-    //                 res.view.change('table', changeSet).run();
-    //                 console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-    //             });
-    //         });
-    //
-    //
-    //
-    //
-    //     }
-    // });
-    //
-    // var vlSpec = {
-    //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-    //     data: {name: 'table'},
-    //     width: 400,
-    //     mark: 'line',
-    //     encoding: {
-    //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
-    //         y: {field: 'y', type: 'quantitative'},
-    //         color: {field: 'category', type: 'nominal'}
-    //     }
-    // };
-    // vegaEmbed('#chart', vlSpec).then(function (res) {
-    //     var lastvalue = 0;
-    //     function fetchdata (){
-    //         var data = windowManager.sharedData.fetch("serial");
-    //         var value;
-    //         if(data["changed"] === true){
-    //             var clunk = data["data"];
-    //             lastvalue = clunk.y;
-    //             value = {
-    //                 x: clunk.x,
-    //                 y: [clunk.y]
-    //             }
-    //             windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
-    //
-    //         }
-    //         else{
-    //             value = {
-    //                 x: Date.now(),
-    //                 y: [lastvalue]
-    //             }
-    //         }
-    //
-    //         // window.api.addVisdata(value);
-    //         return value;
-    //     }
-    //
-    //
-    //     // var valueGenerator = newGenerator();
-    //     var minimumX = Date.now()-10000;
-    //     window.setInterval(function () {
-    //         minimumX = minimumX + 100;
-    //         var changeSet = vega
-    //             .changeset()
-    //             .insert(fetchdata())
-    //             .remove(function (t) {
-    //                 return t.x < minimumX;
-    //             });
-    //         res.view.change('table', changeSet).run();
-    //     }, 100);
-    // });
 
 
 

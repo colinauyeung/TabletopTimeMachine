@@ -127,11 +127,14 @@ window.addEventListener('DOMContentLoaded', () => {
 var clipwaiting = false;
 var waitingclip = {start:0, length:0}
 windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue){
-
     if(newValue.ava){
-        let id = addCliptoQueue(newValue.start, newValue.length, "name");
+        let id = addCliptoQueue(newValue.start, newValue.length, "name", newValue.id);
         playuni(id, -1);
     }
+})
+
+windowManager.sharedData.watch("play", function(prop, action, newValue, oldValue){
+    playuni(newValue, -1);
 })
 
 
@@ -282,9 +285,9 @@ var clipbinding = {};
 var playspeed = 1.0;
 var clipToPlay = null;
 var clipPlayID = null;
-function addCliptoQueue(start, length, name){
+function addCliptoQueue(start, length, name, id){
     var xclip = clip(start, length, name);
-    var id = uuidv4();
+    // var id = uuidv4();
     QueuedClips[id] = xclip;
     clipbinding[id] = id;
     return id
