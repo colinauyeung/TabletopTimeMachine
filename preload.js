@@ -214,7 +214,7 @@ window.setInterval(function(){
             windowManager.sharedData.set("pictures", src);
         })
     }
-}, 500);
+}, 1000);
 
 
 function tick(){
