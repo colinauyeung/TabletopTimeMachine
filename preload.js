@@ -132,19 +132,6 @@ windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue
         let id = addCliptoQueue(waitingclip.start, waitingclip.length, "name");
         playuni(id, -1);
     }
-
-
-
-    // addCliptoQueue(newValue.start, newValue.length, "name", 111);
-    // VI.clippingid[111] = Date.now();
-    // addCliptoQueue(newValue.start, newValue.length, "name", 112);
-    // VI.clippingid[112] = Date.now();
-    // let idarr = [];
-    // idarr.push([111, 0]);
-    // idarr.push([112, 0]);
-    // playleft(111);
-    // playright(112);
-    // playclips(idarr);
 })
 
 
@@ -179,13 +166,13 @@ function startRecording() {
             // height: { ideal: 2160 }
         }},
         (localMediaStream) => {
-        filename = Date.now();
+        // filename = Date.now();
         handleStream(localMediaStream);
 
     }, errorCallback)
-
+    let now = Date.now();
     setTimeout(function() {
-        stopRecording();
+        stopRecording(now);
         if(looprecording){
             startRecording();
         }
@@ -236,153 +223,17 @@ function tick(){
     if (video.readyState === video.HAVE_ENOUGH_DATA){
         VI.snapshot(context);
 
-        // var markers = detector.detect(VI.imageData);
-        // VI.drawCorners(context, markers);
-        //
-        //
-        // VI.findcorners(markers);
-        //
-        //
-        // if(!firstfind){
-        //     if(VI.allcornersfound()){
-        //         // console.log(boundingmarkers);
-        //         firstfind = true;
-        //     }
-        // }
-        //
-        // if(VI.allcornersfound()) {
-        //     if(boxtracking){
-        //         VI.findmainbox();
-        //     }
-        //
-        //
-        //     // VI.findinterbox();
-        //
-        //     if (firstfind) {
-        //         // console.log(VI.interactionbox);
-        //         markers.push(VI.workingbox);
-        //         // markers.push(VI.interactionbox);
-        //     }
-        //
-        //     VI.drawCorners(context, markers);
-        //
-        //     VI.drawId(context, markers);
-        //     var playarr = {};
-        //     playpolling.detect++;
-        //     var leftp = [];
-        //     var rightp = [];
-        //     markers.forEach((marker) => {
-        //
-        //         if (marker.id > 5) {
-        //             if (!(marker.id in markerout)) {
-        //                 markerout[marker.id] = 0;
-        //             }
-        //             if (MP.in_box(marker.corners, VI.workingbox)) {
-        //                 markerout[marker.id] = 0;
-        //                 if (registeredmarks.includes(marker.id)) {
-        //                     let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
-        //                     let xPos = point[0];
-        //                     let yPos = point[1];
-        //                     let id = marker.id + "";
-        //                     //
-        //                     // console.log("id " + marker.id + " xpos " + xPos);
-        //
-        //                     if(xPos > 1125){
-        //                         if(clipwaiting){
-        //                             addCliptoQueue(waitingclip.start, waitingclip.length, "name", marker.id);
-        //                             clipwaiting = false;
-        //                             document.getElementById("main").style.backgroundColor = "indianred";
-        //                             windowManager.sharedData.set("clipgrabbed", true);
-        //
-        //                             if(marker.id === leftplaying){
-        //                                 leftplaying = 0;
-        //                                 document.getElementById("leftviz").innerHTML = "";
-        //                                 document.getElementById("leftvid").innerHTML = "";
-        //                             }
-        //
-        //                             if(marker.id === rightplaying){
-        //                                 rightplaying = 0;
-        //                                 document.getElementById("rightviz").innerHTML = "";
-        //                                 document.getElementById("rightvid").innerHTML = "";
-        //                             }
-        //                         }
-        //                     }
-        //                     else{
-        //                         if(xPos <= 375){
-        //                             if(marker.id === rightplaying){
-        //                                 rightplaying = 0;
-        //                                 document.getElementById("rightviz").innerHTML = "";
-        //                                 document.getElementById("rightvid").innerHTML = "";
-        //                             }
-        //                             leftp.push(marker.id);
-        //
-        //                         }
-        //                         else{
-        //                             if(xPos >=750){
-        //                                 if(marker.id === leftplaying){
-        //                                     leftplaying = 0;
-        //                                     document.getElementById("leftviz").innerHTML = "";
-        //                                     document.getElementById("leftvid").innerHTML = "";
-        //                                 }
-        //                                 rightp.push(marker.id);
-        //
-        //                             }
-        //                             else{
-        //                                 if(marker.id === leftplaying){
-        //                                     leftplaying = 0;
-        //                                     document.getElementById("leftviz").innerHTML = "";
-        //                                     document.getElementById("leftvid").innerHTML = "";
-        //                                 }
-        //
-        //                                 if(marker.id === rightplaying){
-        //                                     rightplaying = 0;
-        //                                     document.getElementById("rightviz").innerHTML = "";
-        //                                     document.getElementById("rightvid").innerHTML = "";
-        //                                 }
-        //                             }
-        //                         }
-        //
-        //                     }
-        //
-        //                 }
-        //
-        //
-        //             }
-        //
-        //
-        //         }
-        //     });
-        //
-        //     if(leftp.length > 0){
-        //         if(leftp[0] !== leftplaying){
-        //             leftplaying = leftp[0];
-        //             playuni(leftp[0], -1)
-        //         }
-        //     }
-        //
-        //     if(rightp.length > 0){
-        //         if(rightp[0] !== rightplaying){
-        //             rightplaying = rightp[0];
-        //             playuni(rightp[0], 1)
-        //         }
-        //     }
-        //
-        //
-        //
-        // }
-
-
     }
 }
 
 
 
-function stopRecording() {
+function stopRecording(time) {
     var save = function() {
         console.log(blobs);
         var data = new Blob(blobs, {type: 'video/webm'});
         var stream = data.stream();
-        var localfilename = filename;
+        var localfilename = time;
 
         var file = videodir + localfilename + ".webm";
 
@@ -915,8 +766,10 @@ function clip(start, length, name){
             end: end
         })
     }
+    console.log(videos);
+    console.log(clip);
     var actualstart = clip.files[0].file;
-    var actualend = clip.files[clip.files.length-1].file + recordingtime
+    var actualend = clip.files[clip.files.length-1].file + recordingtime;
 
 
         let data = []
