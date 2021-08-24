@@ -442,19 +442,6 @@
         console.log( clunk.clip.serialdata);
 
 
-        // var vlSpec2 = {
-        //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-        //     data: {values: clunk.clip.serialdata},
-        //     width: 400,
-        //     mark: 'line',
-        //     encoding: {
-        //         x: {field: 'x', type: 'quantitative', scale: {zero: false}},
-        //         y: {field: 'y', type: 'quantitative'},
-        //         color: {field: 'category', type: 'nominal'}
-        //     }
-        // };
-        //
-        // vegaEmbed("#" + chartid, vlSpec2);
 
         function initVideoElement(video, clunk)
         {
@@ -519,22 +506,12 @@
                   "x": clunk.clip.serialdata[last].x + clunk.base,
                   "y": clunk.clip.serialdata[last].y
               }
-              // console.log(this.aId + " emitting");
-              // console.log(clunk.clip.serialdata);
-              // console.log(rtime);
               window.api.emitData(this.aId + "", clunk.clip.serialdata[last]);
-              // console.log(rtime);
-              // let data = clunk.clip.serialdata;
 
             };
         }
     }
 
-    // function changespeed(){
-    //     if(mediaPlayer !== null){
-    //         mediaPlayer.playbackRate = playspeed;
-    //     }
-    // }
 
     function saveClips(){
         window.api.saveClips(clips);
