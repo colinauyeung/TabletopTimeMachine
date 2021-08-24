@@ -91,36 +91,6 @@ window.addEventListener('DOMContentLoaded', () => {
     context = canvas.getContext("2d");
     // CD.startup();
     lastchecked = Date.now();
-    // document.getElementById("topbar2").addEventListener("click", function (e) {
-    //     var backcalc = e.x + 140;
-    //     backcalc = backcalc / (1440 / tracktime);
-    //     backcalc = Date.now() - backcalc;
-    //     var box = document.getElementById("mainbox");
-    //     var currentheightest = Infinity;
-    //     for (let i = 0; i < box.children.length; i++) {
-    //         if (box.children[i].className === "tick") {
-    //             var timestamp = box.children[i].id
-    //             timestamp = parseInt(timestamp).valueOf();
-    //             if (timestamp > backcalc && timestamp < currentheightest) {
-    //                 currentheightest = timestamp;
-    //             }
-    //         }
-    //     }
-    //     addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", 111)
-    //     VI.clippingid[111] = Date.now();
-    //     idarr = [];
-    //     idarr.push([111, 0]);
-    //     playclips(idarr);
-    //     console.log("x: " + e.x + " y: " + e.y);
-    // })
-    // window.$("bounding");
-    // window.$.getScript( "https://cdn.jsdelivr.net/npm/vega@5.20.2", function( data, textStatus, jqxhr ) {
-    //     console.log( data ); // Data returned
-    //     console.log( textStatus ); // Success
-    //     console.log( jqxhr.status ); // 200
-    //     console.log(vega)
-    //     console.log( "Load was performed." );
-    // });
 
     const result = embed('#chart', vlSpec).then(function (res) {
         var minimumX = Date.now()-10000;
@@ -147,101 +117,8 @@ window.addEventListener('DOMContentLoaded', () => {
             // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
         });
 
-        //
-        // var lastvalue = 0;
-        // function fetchdata (){
-        //     var data = windowManager.sharedData.fetch("serial");
-        //     var value;
-        //     if(data["changed"] === true){
-        //         var clunk = data["data"];
-        //         lastvalue = clunk.y;
-        //         value = {
-        //             x: clunk.x,
-        //             y: [clunk.y]
-        //         }
-        //         // windowManager.sharedData.set("serial", {"data": data["data"], "changed": false})
-        //
-        //     }
-        //     else{
-        //         value = {
-        //             x: Date.now(),
-        //             y: [lastvalue]
-        //         }
-        //     }
-        //
-        //     // window.api.addVisdata(value);
-        //     return value;
-        // }
-        //
-        //
-        // // var valueGenerator = newGenerator();
-        // var minimumX = Date.now()-10000;
-        // window.setInterval(function () {
-        //     minimumX = minimumX + 100;
-        //     var changeSet = vega
-        //         .changeset()
-        //         .insert(fetchdata())
-        //         .remove(function (t) {
-        //             return t.x < minimumX;
-        //         });
-        //     res.view.change('table', changeSet).run();
-        // }, 100);
     });
-    //
-    // windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-    //     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-    //     let box = document.getElementById("clipviz");
-    //     box.innerHTML = "";
-    //     for(let id in oldValue){
-    //         windowManager.sharedData.unwatch(oldValue[id] + "", function (e) {
-    //             return;
-    //         })
-    //     }
-    //     for(let id in newValue){
-    //         console.log("watching " + newValue[id]);
-    //         let chartid = "chart" + newValue[id]
-    //         let contain = document.createElement("div");
-    //         contain.id = chartid;
-    //         contain.style.maxWidth = "700px";
-    //         contain.style.width = "700px";
-    //         contain.style.height = "100%";
-    //         contain.style.float = "left";
-    //         box.appendChild(contain);
-    //
-    //         embed('#' + chartid, vlSpec).then(function (res) {
-    //             windowManager.sharedData.watch(newValue[id] + "", function(prop, action, newValue, oldValue){
-    //                 if(newValue === "reset"){
-    //                     let changeSet = vega
-    //                         .changeset()
-    //                         .remove(true);
-    //                     res.view.change('table', changeSet).run();
-    //                 }
-    //                 else{
-    //                     // console.log(newValue);
-    //
-    //                     var value;
-    //                     value = {
-    //                         x: newValue.x,
-    //                         y: [newValue.y]
-    //                     }
-    //                     let changeSet = vega
-    //                         .changeset()
-    //                         .insert(value);
-    //                     // .remove(function (t) {
-    //                     //     return t.x < minimumX;
-    //                     // });
-    //                     res.view.change('table', changeSet).run();
-    //                     // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-    //                 }
-    //
-    //             });
-    //         });
-    //
-    //
-    //
-    //
-    //     }
-    // });
+
 
 
 
@@ -250,16 +127,12 @@ window.addEventListener('DOMContentLoaded', () => {
 var clipwaiting = false;
 var waitingclip = {start:0, length:0}
 windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue){
+
     if(newValue.ava){
-        clipwaiting = true;
-        waitingclip.start = newValue.start;
-        waitingclip.length = newValue.length;
-        document.getElementById("main").style.backgroundColor = "lawngreen"
+        let id = addCliptoQueue(waitingclip.start, waitingclip.length, "name");
+        playuni(id, -1);
     }
-    else{
-        clipwaiting = false;
-        document.getElementById("main").style.backgroundColor = "indianred"
-    }
+
 
 
     // addCliptoQueue(newValue.start, newValue.length, "name", 111);
@@ -349,20 +222,9 @@ window.setInterval(function(){
         camera.takePhoto().then((blob) => {
             var src = URL.createObjectURL(blob)
             windowManager.sharedData.set("pictures", src);
-
-            // var x = document.createElement("IMG")
-            // x.src = src;
-            // x.classList.add("tick");
-            // x.id = (currenttime) + "";
-            // x.style.position = "absolute";
-            // x.style.top = "0px";
-            // x.style.maxWidth = ((1440/tracktime) * (tracktime/10) ) + 2 + "px";
-            // x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
-            // box.appendChild(x);
-
         })
     }
-}, 500)
+}, 500);
 
 
 function tick(){
@@ -370,424 +232,144 @@ function tick(){
     let currenttime = Date.now();
     var box = document.getElementById("mainbox");
 
-    // if((currenttime - (tracktime/10)) > lastchecked){
-    //     if(camera !== null){
-    //         console.log(camera);
-    //         camera.takePhoto().then((blob) => {
-    //             var src = URL.createObjectURL(blob)
-    //             var x = document.createElement("IMG")
-    //             x.src = src;
-    //             x.classList.add("tick");
-    //             x.id = (currenttime) + "";
-    //             x.style.position = "absolute";
-    //             x.style.top = "0px";
-    //             x.style.maxWidth = ((1440/tracktime) * (tracktime/10) ) + 2 + "px";
-    //             x.style.left = ((1440/tracktime) * (Date.now() - (currenttime))) -140+ "px";
-    //             box.appendChild(x);
-    //
-    //         })
-    //     }
-    //
-    //     lastchecked = currenttime
-    //
-    // }
-
-
-    for(let i = 0; i < box.children.length; i++){
-        if(box.children[i].className === "tick"){
-            var timestamp = box.children[i].id
-            timestamp = parseInt(timestamp).valueOf();
-            if(timestamp < currenttime - (tracktime + (tracktime/10))){
-                document.getElementById(box.children[i].id).remove();
-            }
-            else{
-                var pos = ((winwidth/tracktime) * (currenttime - timestamp))-140;
-                box.children[i].style.left = pos + "px";
-            }
-        }
-    }
 
     if (video.readyState === video.HAVE_ENOUGH_DATA){
         VI.snapshot(context);
 
-        var markers = detector.detect(VI.imageData);
-        VI.drawCorners(context, markers);
-
-
-        VI.findcorners(markers);
-
-
-        if(!firstfind){
-            if(VI.allcornersfound()){
-                // console.log(boundingmarkers);
-                firstfind = true;
-            }
-        }
-
-        if(VI.allcornersfound()) {
-            if(boxtracking){
-                VI.findmainbox();
-            }
-
-
-            // VI.findinterbox();
-
-            if (firstfind) {
-                // console.log(VI.interactionbox);
-                markers.push(VI.workingbox);
-                // markers.push(VI.interactionbox);
-            }
-
-            VI.drawCorners(context, markers);
-
-            VI.drawId(context, markers);
-            var playarr = {};
-            playpolling.detect++;
-            var leftp = [];
-            var rightp = [];
-            markers.forEach((marker) => {
-
-                if (marker.id > 5) {
-                    if (!(marker.id in markerout)) {
-                        markerout[marker.id] = 0;
-                    }
-                    if (MP.in_box(marker.corners, VI.workingbox)) {
-                        markerout[marker.id] = 0;
-                        // if (marker.id === 887) {
-                        //     // console.log(marker.corners);
-                        //     let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
-                        //     let xPos = point[0];
-                        //     let yPos = point[1];
-                        //     document.getElementById("chart").style.top = yPos + "px"
-                        //     document.getElementById("chart").style.left = xPos + "px"
-                        //     // console.log(point);
-                        //     if (marker.id in VI.activeids) {
-                        //         VI.activeids[marker.id] = Date.now();
-                        //     } else {
-                        //         //CLIP
-                        //         // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
-                        //         VI.activeids[marker.id] = Date.now()
-                        //     }
-                        //
-                        // }
-                        // if (marker.id === 502) {
-                        //     // console.log(marker.corners);
-                        //     let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
-                        //     let xPos = point[0];
-                        //     let yPos = point[1];
-                        //     document.getElementById("display").style.top = yPos + "px"
-                        //     document.getElementById("display").style.left = xPos + "px"
-                        //     // console.log(point);
-                        //     if (marker.id in VI.activeids) {
-                        //         VI.activeids[marker.id] = Date.now();
-                        //     } else {
-                        //         //CLIP
-                        //         // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
-                        //         VI.activeids[marker.id] = Date.now()
-                        //     }
-                        //
-                        // }
-
-                        // if (marker.id < 500) {
-                        if (registeredmarks.includes(marker.id)) {
-                            let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
-                            let xPos = point[0];
-                            let yPos = point[1];
-                            let id = marker.id + "";
-                            //
-                            // console.log("id " + marker.id + " xpos " + xPos);
-
-                            if(xPos > 1125){
-                                if(clipwaiting){
-                                    addCliptoQueue(waitingclip.start, waitingclip.length, "name", marker.id);
-                                    clipwaiting = false;
-                                    document.getElementById("main").style.backgroundColor = "indianred";
-                                    windowManager.sharedData.set("clipgrabbed", true);
-
-                                    if(marker.id === leftplaying){
-                                        leftplaying = 0;
-                                        document.getElementById("leftviz").innerHTML = "";
-                                        document.getElementById("leftvid").innerHTML = "";
-                                    }
-
-                                    if(marker.id === rightplaying){
-                                        rightplaying = 0;
-                                        document.getElementById("rightviz").innerHTML = "";
-                                        document.getElementById("rightvid").innerHTML = "";
-                                    }
-                                }
-                            }
-                            else{
-                                if(xPos <= 375){
-                                    if(marker.id === rightplaying){
-                                        rightplaying = 0;
-                                        document.getElementById("rightviz").innerHTML = "";
-                                        document.getElementById("rightvid").innerHTML = "";
-                                    }
-                                    leftp.push(marker.id);
-
-                                }
-                                else{
-                                    if(xPos >=750){
-                                        if(marker.id === leftplaying){
-                                            leftplaying = 0;
-                                            document.getElementById("leftviz").innerHTML = "";
-                                            document.getElementById("leftvid").innerHTML = "";
-                                        }
-                                        rightp.push(marker.id);
-
-                                    }
-                                    else{
-                                        if(marker.id === leftplaying){
-                                            leftplaying = 0;
-                                            document.getElementById("leftviz").innerHTML = "";
-                                            document.getElementById("leftvid").innerHTML = "";
-                                        }
-
-                                        if(marker.id === rightplaying){
-                                            rightplaying = 0;
-                                            document.getElementById("rightviz").innerHTML = "";
-                                            document.getElementById("rightvid").innerHTML = "";
-                                        }
-                                    }
-                                }
-
-                            }
-
-
-
-
-                            // if (yPos < 100) {
-                            //     markerout[marker.id]++;
-                            //     if (markerout[marker.id] > 100) {
-                            //
-                            //     }
-                            //     // console.log("TOPBAR" + " " + marker.id);
-                            //     if (marker.id in VI.clippingid) {
-                            //         VI.clippingid[marker.id] = Date.now();
-                            //     } else {
-                            //         var backcalc = xPos + 140;
-                            //         backcalc = backcalc / (winwidth / tracktime);
-                            //         backcalc = Date.now() - backcalc;
-                            //         var box = document.getElementById("mainbox");
-                            //         var currentheightest = Infinity;
-                            //         for (let i = 0; i < box.children.length; i++) {
-                            //             if (box.children[i].className === "tick") {
-                            //                 var timestamp = box.children[i].id
-                            //                 timestamp = parseInt(timestamp).valueOf();
-                            //                 if (timestamp > backcalc && timestamp < currentheightest) {
-                            //                     currentheightest = timestamp;
-                            //                 }
-                            //             }
-                            //         }
-                            //         addCliptoQueue(currentheightest, Date.now() - currentheightest, "name", marker.id)
-                            //         VI.clippingid[marker.id] = Date.now()
-                            //     }
-                            //     if (marker.id in VI.videoid) {
-                            //         delete VI.videoid[marker.id];
-                            //         if (document.getElementById(id) !== null) {
-                            //             // console.log("in top bar" + " " + marker.id)
-                            //             document.getElementById(id).style.opacity = "0";
-                            //         }
-                            //
-                            //     }
-                            //
-                            //
-                            // }
-                            //
-                            //
-                            // else {
-                            //     if (yPos < 200) {
-                            //         // console.log("in play bar" + " " + marker.id)
-                            //         if (marker.id in VI.clippingid) {
-                            //             delete VI.clippingid[marker.id];
-                            //         }
-                            //         let str = marker.id + "";
-                            //         if (str in playpolling) {
-                            //             playpolling[str]["x"].push(xPos);
-                            //         } else {
-                            //             let val = {
-                            //                 "id": marker.id,
-                            //                 "x": [xPos]
-                            //             };
-                            //
-                            //             playpolling[str] = val;
-                            //         }
-                            //
-                            //     }
-                            // }
-
-
-                            // else{
-                            //     if(marker.id in VI.videoid){
-                            //         VI.videoid[marker.id] = Date.now();
-                            //         if(document.getElementById(id) !== null){
-                            //             document.getElementById(id).style.top = yPos + "px"
-                            //             document.getElementById(id).style.left = xPos + "px"
-                            //         }
-                            //         else{
-                            //             console.log("attempting playback" + " " + marker.id);
-                            //             playclip(marker.id);
-                            //             if(document.getElementById(id) !== null){
-                            //                 document.getElementById(id).style.opacity = "1";
-                            //                 document.getElementById(id).style.top = yPos + "px"
-                            //                 document.getElementById(id).style.left = xPos + "px"
-                            //             }
-                            //         }
-                            //
-                            //
-                            //     }
-                            //     else{
-                            //         //CLIP
-                            //         // addCliptoQueue(Date.now()-60000, 60000, "name", marker.id);
-                            //
-                            //         console.log("attempting playback" + " " + marker.id);
-                            //         playclip(marker.id);
-                            //         if(document.getElementById(id) !== null){
-                            //             document.getElementById(id).style.opacity = "1";
-                            //             document.getElementById(id).style.top = yPos + "px"
-                            //             document.getElementById(id).style.left = xPos + "px"
-                            //         }
-                            //
-                            //         VI.videoid[marker.id] = Date.now()
-                            //     }
-
-                            // }
-                        }
-
-
-                    }
-                    // else {
-                    //     if (marker.id in VI.activeids) {
-                    //         delete VI.activeids[marker.id];
-                    //     }
-                    //     if (marker.id in VI.videoid) {
-                    //         console.log("out of box" + " " + marker.id)
-                    //         markerout[marker.id]++;
-                    //         if (markerout[marker.id] > 100) {
-                    //             delete VI.videoid[marker.id];
-                    //             if (document.getElementById(marker.id + "") !== null) {
-                    //                 document.getElementById(marker.id + "").style.opacity = "0";
-                    //             }
-                    //         }
-                    //
-                    //
-                    //     }
-                    //     if (marker.id in VI.clippingid) {
-                    //         delete VI.clippingid[marker.id];
-                    //     }
-                    // }
-
-
-                }
-            });
-
-            if(leftp.length > 0){
-                if(leftp[0] !== leftplaying){
-                    leftplaying = leftp[0];
-                    playuni(leftp[0], -1)
-                }
-            }
-
-            if(rightp.length > 0){
-                if(rightp[0] !== rightplaying){
-                    rightplaying = rightp[0];
-                    playuni(rightp[0], 1)
-                }
-            }
-
-
-
-            // if (lastpolled === 0) {
-            //     lastpolled = Date.now();
-            // }
-            // playarr = [];
-            // if (Date.now() > lastpolled + polltime) {
-            //     console.log(playpolling);
-            //     lastpolled = Date.now();
-            //     for(let id in playpolling){
-            //         if(id !== "detect"){
-            //             if(playpolling[id]["x"].length > (playpolling.detect /5)){
-            //                 let total = 0;
-            //                 let count = 0;
-            //                 for(let x in playpolling[id].x){
-            //                     count++;
-            //                     total = total + x;
-            //                 }
-            //                 total = total/count;
-            //                 playarr.push([total, playpolling[id]["id"]])
-            //             }
-            //         }
-            //     }
-            //     playpolling = {"detect": 0};
-            //     playarr.sort((a,b) => {
-            //        return a[0] - b[0];
-            //     });
-            //
-            //     let newid = false;
-            //     let idarr = []
-            //     for(let i = 0; i < 2 && i<playarr.length; i++){
-            //         let marker = playarr[i][1];
-            //         let x = playarr[i][0]
-            //         VI.videoid[marker] = Date.now()
-            //         if(!(marker in VI.videoid)) {
-            //             newid = true;
-            //         }
-            //         idarr.push(marker, x);
-            //
-            //     }
-            //     if(idarr.length === previousplay.length){
-            //         let same = true;
-            //         for(let i = 0; i < idarr.length; i++){
-            //             if(idarr[i][0] !== previousplay[i][0]){
-            //                 same = false;
-            //             }
-            //         }
-            //
-            //         if(!same){
-            //             console.log("not same" );
-            //             // console.log(previousplay)
-            //             // console.log(idarr)
-            //             playclips(idarr);
-            //
-            //         }
-            //     }
-            //     else{
-            //         console.log("not same" );
-            //         // console.log(previousplay)
-            //         // console.log(idarr)
-            //         playclips(idarr);
-            //
-            //     }
-            //     previousplay = idarr;
-            // }
-
-
-
-
-
-
-            // var idDelete = [];
-            // for(let id in VI.activeids){
-            //     if(VI.activeids[id] < Date.now()-10000){
-            //         idDelete.push(id);
-            //     }
-            // }
-            // idDelete.forEach((id) => {
-            //     delete VI.activeids[id];
-            // })
-
-
-            // for(let id in VI.clippingid){
-            //     if(VI.clippingid[id] < Date.now()-10000){
-            //         idDelete.push(id);
-            //     }
-            // }
-            // idDelete.forEach((id) => {
-            //     delete VI.clippingid[id];
-            // })
-
-        }
+        // var markers = detector.detect(VI.imageData);
+        // VI.drawCorners(context, markers);
+        //
+        //
+        // VI.findcorners(markers);
+        //
+        //
+        // if(!firstfind){
+        //     if(VI.allcornersfound()){
+        //         // console.log(boundingmarkers);
+        //         firstfind = true;
+        //     }
+        // }
+        //
+        // if(VI.allcornersfound()) {
+        //     if(boxtracking){
+        //         VI.findmainbox();
+        //     }
+        //
+        //
+        //     // VI.findinterbox();
+        //
+        //     if (firstfind) {
+        //         // console.log(VI.interactionbox);
+        //         markers.push(VI.workingbox);
+        //         // markers.push(VI.interactionbox);
+        //     }
+        //
+        //     VI.drawCorners(context, markers);
+        //
+        //     VI.drawId(context, markers);
+        //     var playarr = {};
+        //     playpolling.detect++;
+        //     var leftp = [];
+        //     var rightp = [];
+        //     markers.forEach((marker) => {
+        //
+        //         if (marker.id > 5) {
+        //             if (!(marker.id in markerout)) {
+        //                 markerout[marker.id] = 0;
+        //             }
+        //             if (MP.in_box(marker.corners, VI.workingbox)) {
+        //                 markerout[marker.id] = 0;
+        //                 if (registeredmarks.includes(marker.id)) {
+        //                     let point = VI.getRealPos(VI.workingbox.corners, MP.findcenter(marker.corners));
+        //                     let xPos = point[0];
+        //                     let yPos = point[1];
+        //                     let id = marker.id + "";
+        //                     //
+        //                     // console.log("id " + marker.id + " xpos " + xPos);
+        //
+        //                     if(xPos > 1125){
+        //                         if(clipwaiting){
+        //                             addCliptoQueue(waitingclip.start, waitingclip.length, "name", marker.id);
+        //                             clipwaiting = false;
+        //                             document.getElementById("main").style.backgroundColor = "indianred";
+        //                             windowManager.sharedData.set("clipgrabbed", true);
+        //
+        //                             if(marker.id === leftplaying){
+        //                                 leftplaying = 0;
+        //                                 document.getElementById("leftviz").innerHTML = "";
+        //                                 document.getElementById("leftvid").innerHTML = "";
+        //                             }
+        //
+        //                             if(marker.id === rightplaying){
+        //                                 rightplaying = 0;
+        //                                 document.getElementById("rightviz").innerHTML = "";
+        //                                 document.getElementById("rightvid").innerHTML = "";
+        //                             }
+        //                         }
+        //                     }
+        //                     else{
+        //                         if(xPos <= 375){
+        //                             if(marker.id === rightplaying){
+        //                                 rightplaying = 0;
+        //                                 document.getElementById("rightviz").innerHTML = "";
+        //                                 document.getElementById("rightvid").innerHTML = "";
+        //                             }
+        //                             leftp.push(marker.id);
+        //
+        //                         }
+        //                         else{
+        //                             if(xPos >=750){
+        //                                 if(marker.id === leftplaying){
+        //                                     leftplaying = 0;
+        //                                     document.getElementById("leftviz").innerHTML = "";
+        //                                     document.getElementById("leftvid").innerHTML = "";
+        //                                 }
+        //                                 rightp.push(marker.id);
+        //
+        //                             }
+        //                             else{
+        //                                 if(marker.id === leftplaying){
+        //                                     leftplaying = 0;
+        //                                     document.getElementById("leftviz").innerHTML = "";
+        //                                     document.getElementById("leftvid").innerHTML = "";
+        //                                 }
+        //
+        //                                 if(marker.id === rightplaying){
+        //                                     rightplaying = 0;
+        //                                     document.getElementById("rightviz").innerHTML = "";
+        //                                     document.getElementById("rightvid").innerHTML = "";
+        //                                 }
+        //                             }
+        //                         }
+        //
+        //                     }
+        //
+        //                 }
+        //
+        //
+        //             }
+        //
+        //
+        //         }
+        //     });
+        //
+        //     if(leftp.length > 0){
+        //         if(leftp[0] !== leftplaying){
+        //             leftplaying = leftp[0];
+        //             playuni(leftp[0], -1)
+        //         }
+        //     }
+        //
+        //     if(rightp.length > 0){
+        //         if(rightp[0] !== rightplaying){
+        //             rightplaying = rightp[0];
+        //             playuni(rightp[0], 1)
+        //         }
+        //     }
+        //
+        //
+        //
+        // }
 
 
     }
@@ -849,12 +431,12 @@ var clipbinding = {};
 var playspeed = 1.0;
 var clipToPlay = null;
 var clipPlayID = null;
-function addCliptoQueue(start, length, name, arucoid){
+function addCliptoQueue(start, length, name){
     var xclip = clip(start, length, name);
     var id = uuidv4();
     QueuedClips[id] = xclip;
-    clipbinding[arucoid] = id;
-
+    clipbinding[id] = id;
+    return id
 }
 
 var clipsToPlay = [];
@@ -1258,346 +840,6 @@ function playright(idr){
 }
 
 
-// function playclips(idarr){
-//     console.log("Play Clips");
-//     console.log(idarr);
-//     clipsToPlay = [];
-//     let  box = document.getElementById("box");
-//         box.innerHTML = "";
-//     if(idarr.length === 1){
-//         if(idarr[0][0] in clipbinding) {
-//
-//             let left = document.getElementById("leftvid");
-//             left.innerHTML = "";
-//             let id = idarr[0][0];
-//
-//             let chartleft = document.getElementById("leftviz");
-//
-//             let chartid = "chart" + id
-//             let viz = document.createElement("div");
-//             viz.id = chartid;
-//             // viz.style.maxWidth = "700px";
-//             viz.style.width = "100%";
-//             viz.style.height = "100%";
-//             viz.style.float = "left";
-//             chartleft.appendChild(viz);
-//
-//             embed('#' + chartid, vlSpec).then(function (res) {
-//                 windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
-//                     if(newValue === "reset"){
-//                         let changeSet = vega
-//                             .changeset()
-//                             .remove(true);
-//                         res.view.change('table', changeSet).run();
-//                     }
-//                     else{
-//                         // console.log(newValue);
-//
-//                         var value;
-//                         value = {
-//                             x: newValue.x,
-//                             y: [newValue.y]
-//                         }
-//                         let changeSet = vega
-//                             .changeset()
-//                             .insert(value);
-//                         // .remove(function (t) {
-//                         //     return t.x < minimumX;
-//                         // });
-//                         res.view.change('table', changeSet).run();
-//                         // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-//                     }
-//
-//                 });
-//             });
-//
-//             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-//                 console.log("viz fired " + newValue + " listening for " + id);
-//                 for(let idz in newValue){
-//                     if(newValue[idz] === id){
-//
-//
-//                         let chartleft = document.getElementById("leftviz");
-//
-//                         let chartid = "chart" + newValue[idz]
-//                         let viz = document.createElement("div");
-//                         viz.id = chartid;
-//                         // viz.style.maxWidth = "700px";
-//                         viz.style.width = "100%";
-//                         viz.style.height = "100%";
-//                         viz.style.float = "left";
-//                         chartleft.appendChild(viz);
-//
-//                         embed('#' + chartid, vlSpec).then(function (res) {
-//                             windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
-//                                 if(newValue === "reset"){
-//                                     let changeSet = vega
-//                                         .changeset()
-//                                         .remove(true);
-//                                     res.view.change('table', changeSet).run();
-//                                 }
-//                                 else{
-//                                     // console.log(newValue);
-//
-//                                     var value;
-//                                     value = {
-//                                         x: newValue.x,
-//                                         y: [newValue.y]
-//                                     }
-//                                     let changeSet = vega
-//                                         .changeset()
-//                                         .insert(value);
-//                                     // .remove(function (t) {
-//                                     //     return t.x < minimumX;
-//                                     // });
-//                                     res.view.change('table', changeSet).run();
-//                                     // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-//                                 }
-//
-//                             });
-//                         });
-//                     }
-//
-//                 }
-//             });
-//
-//             console.log("attempting play of " + idarr[0]);
-//             let contain1 = document.createElement("div");
-//             contain1.id = idarr[0][0];
-//             contain1.style.width = "450x";
-//             contain1.style.height = "100%";
-//             left.appendChild(contain1);
-//             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
-//             // windowManager.sharedData.set("viz", [idarr[0][0]]);
-//             windowManager.sharedData.set(idarr[0][0], [0,0]);
-//         }
-//     }
-//     else{
-//         // if(idarr.length === 2){
-//         if(idarr[0][0] in clipbinding && idarr[1][0] in clipbinding) {
-//
-//             let left = document.getElementById("leftvid");
-//             left.innerHTML = "";
-//             let id = idarr[0][0];
-//
-//             let chartleft = document.getElementById("leftviz");
-//             chartleft.innerHTML = "";
-//
-//             let chartid = "chart" + id
-//             let viz1 = document.createElement("div");
-//             viz1.id = chartid;
-//             // viz.style.maxWidth = "700px";
-//             viz1.style.width = "100%";
-//             viz1.style.height = "100%";
-//             viz1.style.float = "left";
-//             chartleft.appendChild(viz1);
-//
-//             embed('#' + chartid, vlSpec).then(function (res) {
-//                 console.log("listening to " + chartid);
-//                 windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
-//                     if(newValue === "reset"){
-//                         let changeSet = vega
-//                             .changeset()
-//                             .remove(true);
-//                         res.view.change('table', changeSet).run();
-//                     }
-//                     else{
-//                         // console.log(newValue);
-//
-//                         var value;
-//                         value = {
-//                             x: newValue.x,
-//                             y: [newValue.y]
-//                         }
-//                         let changeSet = vega
-//                             .changeset()
-//                             .insert(value);
-//                         // .remove(function (t) {
-//                         //     return t.x < minimumX;
-//                         // });
-//                         res.view.change('table', changeSet).run();
-//                         // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-//                     }
-//
-//                 });
-//             });
-//
-//             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-//                 console.log("viz fired " + newValue + " listening for " + id);
-//                 for(let idz in newValue){
-//                     if(newValue[idz] === id){
-//
-//                         let chartleft = document.getElementById("leftviz");
-//                         chartleft.innerHTML = "";
-//
-//                         let chartid = "chart" + id
-//                         let viz = document.createElement("div");
-//                         viz.id = chartid;
-//                         // viz.style.maxWidth = "700px";
-//                         viz.style.width = "100%";
-//                         viz.style.height = "100%";
-//                         viz.style.float = "left";
-//                         chartleft.appendChild(viz);
-//
-//                         embed('#' + chartid, vlSpec).then(function (res) {
-//                             windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
-//                                 if(newValue === "reset"){
-//                                     let changeSet = vega
-//                                         .changeset()
-//                                         .remove(true);
-//                                     res.view.change('table', changeSet).run();
-//                                 }
-//                                 else{
-//                                     // console.log(newValue);
-//
-//                                     var value;
-//                                     value = {
-//                                         x: newValue.x,
-//                                         y: [newValue.y]
-//                                     }
-//                                     let changeSet = vega
-//                                         .changeset()
-//                                         .insert(value);
-//                                     // .remove(function (t) {
-//                                     //     return t.x < minimumX;
-//                                     // });
-//                                     res.view.change('table', changeSet).run();
-//                                     // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-//                                 }
-//
-//                             });
-//                         });
-//                     }
-//
-//                 }
-//             });
-//
-//
-//             let contain1 = document.createElement("div");
-//             contain1.id = idarr[0][0];
-//             // contain1.style.maxWidth = "450px";
-//             contain1.style.width = "450px";
-//             contain1.style.height = "100%";
-//             // contain1.style.float = "left";
-//             left.appendChild(contain1);
-//             clipsToPlay.push([idarr[0][0], clipbinding[idarr[0][0]]]);
-//             windowManager.sharedData.set(idarr[0][0], [0,0]);
-//
-//
-//             let contain2 = document.createElement("div");
-//
-//             let right = document.getElementById("rightvid");
-//             right.innerHTML = "";
-//
-//             let chartright = document.getElementById("rightviz");
-//             chartright.innerHTML = "";
-//             let id2 = idarr[1][0];
-//             let chartid2 = "chart" + id2
-//             let viz2 = document.createElement("div");
-//             viz2.id = chartid2;
-//             // viz.style.maxWidth = "700px";
-//             viz2.style.width = "100%";
-//             viz2.style.height = "100%";
-//             viz2.style.float = "left";
-//             chartright.appendChild(viz2);
-//
-//             embed('#' + chartid2, vlSpec).then(function (res) {
-//                 console.log("listening to " + chartid2);
-//                 windowManager.sharedData.watch(id2 + "", function(prop, action, newValue, oldValue){
-//                     if(newValue === "reset"){
-//                         let changeSet = vega
-//                             .changeset()
-//                             .remove(true);
-//                         res.view.change('table', changeSet).run();
-//                     }
-//                     else{
-//                         // console.log(newValue);
-//
-//                         var value;
-//                         value = {
-//                             x: newValue.x,
-//                             y: [newValue.y]
-//                         }
-//                         let changeSet = vega
-//                             .changeset()
-//                             .insert(value);
-//                         // .remove(function (t) {
-//                         //     return t.x < minimumX;
-//                         // });
-//                         res.view.change('table', changeSet).run();
-//                         // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-//                     }
-//
-//                 });
-//             });
-//
-//
-//             windowManager.sharedData.watch("viz", function(prop, action, newValue, oldValue){
-//                 console.log("viz fired " + newValue + " listening for " + id2);
-//                 for(let idz in newValue){
-//                     if(newValue[idz] === id2){
-//
-//                         let chartright = document.getElementById("rightviz");
-//                         chartright.innerHTML = "";
-//
-//                         let chartid2 = "chart" + id2
-//                         let viz2 = document.createElement("div");
-//                         viz2.id = chartid2;
-//                         // viz.style.maxWidth = "700px";
-//                         viz2.style.width = "100%";
-//                         viz2.style.height = "100%";
-//                         viz2.style.float = "left";
-//                         chartright.appendChild(viz2);
-//
-//                         embed('#' + chartid2, vlSpec).then(function (res) {
-//                             console.log("listening to " + chartid2);
-//                             windowManager.sharedData.watch(id2 + "", function(prop, action, newValue, oldValue){
-//                                 if(newValue === "reset"){
-//                                     let changeSet = vega
-//                                         .changeset()
-//                                         .remove(true);
-//                                     res.view.change('table', changeSet).run();
-//                                 }
-//                                 else{
-//                                     // console.log(newValue);
-//
-//                                     var value;
-//                                     value = {
-//                                         x: newValue.x,
-//                                         y: [newValue.y]
-//                                     }
-//                                     let changeSet = vega
-//                                         .changeset()
-//                                         .insert(value);
-//                                     // .remove(function (t) {
-//                                     //     return t.x < minimumX;
-//                                     // });
-//                                     res.view.change('table', changeSet).run();
-//                                     // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-//                                 }
-//
-//                             });
-//                         });
-//                     }
-//
-//                 }
-//             });
-//
-//             contain2.id = idarr[1][0];
-//             // contain2.style.maxWidth = "450px";
-//             contain2.style.width = "450px";
-//             contain2.style.height = "100%";
-//             // contain2.style.float = "left";
-//             right.appendChild(contain2);
-//             clipsToPlay.push([idarr[1][0], clipbinding[idarr[1][0]]]);
-//             // windowManager.sharedData.set("viz", [idarr[0][0], idarr[1][0]]);
-//
-//             windowManager.sharedData.set(idarr[1][0], [0,0]);
-//         }
-//         // }
-//     }
-//     console.log(clipsToPlay);
-// }
 
 function queuespeed(speed){
     playspeed = speed;
@@ -1634,7 +876,7 @@ function clip(start, length, name){
         files: [],
         serialdata: [],
         codefiles: []
-    }
+    };
     var temp = []
     videos.forEach(file => {
         if(file + recordingtime >= start && file < (start + length)){
@@ -1757,28 +999,6 @@ windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldVa
         // console.log(SP.visdata);
     // }
 });
-
-// windowManager.sharedData.watch("codefiles", function(prop, action, newValue, oldValue) {
-//     console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
-// });
-
-
-// var clip = {
-//     name: "Hello",
-//     available: false,
-//     files: [
-//         {
-//             clip: "adfadsf.mp4",
-//             start: 0,
-//             end: 0
-//         }
-//     ]
-// }
-
-
-
-// SP.openserial();
-
 
 
 
