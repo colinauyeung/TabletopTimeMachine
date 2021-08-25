@@ -427,8 +427,8 @@
         var name = event.key;
         var code = event.code;
         // Alert the key name and key code on keydown
-        // if(code === "Space" && started){
-        if(code === "Space"){
+        if(code === "Space" && started){
+        // if(code === "Space"){
             basicanno();
             document.getElementById("marked").style.opacity = "0.5";
             window.setTimeout(function(){
