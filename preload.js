@@ -70,6 +70,18 @@ var vlSpec = {
     }
 };
 
+var vlSpec2 = {
+    $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    data: {name: 'table'},
+    width: 740,
+    height: 175,
+    mark: 'line',
+    encoding: {
+        x: {field: 'x', type: 'quantitative', scale: {zero: false}},
+        y: {field: 'y', type: 'quantitative'},
+        color: {field: 'category', type: 'nominal'}
+    }
+};
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
@@ -84,9 +96,9 @@ window.addEventListener('DOMContentLoaded', () => {
         replaceText(`${dependency}-version`, process.versions[dependency])
     }
 
-    detector = new AR.Detector({
-        dictionaryName: 'ARUCO'
-    });
+    // detector = new AR.Detector({
+    //     dictionaryName: 'ARUCO'
+    // });
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
     // CD.startup();
@@ -164,10 +176,10 @@ function startRecording() {
             mandatory: {
                 // width: { min: 1024, ideal: 1280, max: 1920 },
                 // height: { min: 576, ideal: 720, max: 1080 },
-                // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                chromeMediaSourceId: '677ffe33a74a2fa2ea2c2a978437280622d8aa43a959d907fd7b972a4fec7b43',
                 // chromeMediaSourceId: 'a9a5941dca194c65010c55af6890de13d367371d675be7d62a6a03af7f555e42',
                 // chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
-                chromeMediaSourceId: 'c60b4a1581d1b280b4bf56d5117562c1681eb621fe5af090ee982779000cf5a0',
+                // chromeMediaSourceId: '349e056a76fad05f3e6290995cde971b22387ab9fcc92a23c8096dbdfab9b843',
             }
             // width: { ideal: 4096 },
             // height: { ideal: 2160 }
@@ -358,7 +370,7 @@ function playuni(idr, pos){
         viz.style.float = "left";
         chart.appendChild(viz);
 
-        embed('#' + chartid, vlSpec).then(function (res) {
+        embed('#' + chartid, vlSpec2).then(function (res) {
             console.log("listening to " + chartid);
             windowManager.sharedData.watch(id + "", function(prop, action, newValue, oldValue){
                 if(newValue === "reset"){
@@ -425,7 +437,7 @@ function playuni(idr, pos){
             viz.style.float = "left";
             chart.appendChild(viz);
 
-            embed('#' + chartid, vlSpec).then(function (res) {
+            embed('#' + chartid, vlSpec2).then(function (res) {
                 windowManager.sharedData.watch(inid + "", function(prop, action, newValue, oldValue){
                     if(newValue === "reset"){
                         let changeSet = vega
