@@ -444,7 +444,7 @@
             }
             if( e.x <= (limit+x) && e.x> x){
                 // if(e.x <= limit){
-                startx = e.x;
+                startx = e.x - x;
                 let select = document.getElementById("select")
                 select.style.opacity = "1";
                 select.style.left = e.x + "px";
