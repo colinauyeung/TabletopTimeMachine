@@ -131,8 +131,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    looprecording = true;
-    startRecording();
+    // looprecording = true;
+    // startRecording();
 
 
 

@@ -102,7 +102,7 @@
             height:400px;
             position: relative;
             top: 0px;
-            left: 180px;
+            left: 240px;
             background-color: #333333;
             max-height: 400px;
         }
@@ -114,16 +114,16 @@
         }
 
         #chartouter {
-            width: 900px;
+            width: 820px;
             height: 100px;
             position: relative;
-            left: 50px;
+            left: 90px;
             /*background-color: indianred;*/
         }
 
         .visual {
             position: relative;
-            left: 10px;
+            left: -25px;
         }
 
         #annoline {
@@ -164,6 +164,9 @@
             height: 250px;
             background-color: orange;
             overflow: scroll;
+            position: relative;
+            top: -130px;
+            left: 75px;
         }
 
         .thumb {
@@ -202,6 +205,8 @@
     <div id="annoline">
 
     </div>
+
+
 
     <div id="marked">
         SPACE
@@ -422,7 +427,8 @@
         var name = event.key;
         var code = event.code;
         // Alert the key name and key code on keydown
-        if(code === "Space" && started){
+        // if(code === "Space" && started){
+        if(code === "Space"){
             basicanno();
             document.getElementById("marked").style.opacity = "0.5";
             window.setTimeout(function(){
@@ -545,7 +551,7 @@
             dragging = false;
             selectdef = true;
 
-            scroll = 100;
+            scroll = 3;
             console.log("start: " + selectstart + " end: " + selectend);
             let id = uuidv4();
             windowManager.sharedData.set("clip", {
