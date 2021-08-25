@@ -206,7 +206,8 @@
 <!--Chromium <span id="chrome-version"></span>,-->
 <!--and Electron <span id="electron-version"></span>.-->
 
-
+<button id="s-start" onclick="window.api.openSerial()">Start Serial</button>
+<button id="s-stop" onclick="window.api.closeSerial()">Stop Serial</button>
 <div id="outerContainer">
     <div id="container">
 <!--        <div id="playarea" class="area">-->
@@ -270,10 +271,9 @@
 
 
 
-<button id="recording" onclick="toggleRecording()">Record</button>
-<button id="tracking" onclick="toggleBoxTrack()">Freeze Box</button>
-<button id="s-start" onclick="window.api.openSerial()">Start Serial</button>
-<button id="s-stop" onclick="window.api.closeSerial()">Stop Serial</button>
+<!--<button id="recording" onclick="toggleRecording()">Record</button>-->
+<!--<button id="tracking" onclick="toggleBoxTrack()">Freeze Box</button>-->
+
 
 
 <!--<label for="list">Clip List</label>-->
