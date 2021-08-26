@@ -114,16 +114,17 @@
         }
 
         #chartouter {
-            width: 820px;
+            width: 830px;
             height: 100px;
             position: relative;
-            left: 90px;
+            left: 80px;
+            overflow: hidden;
             /*background-color: indianred;*/
         }
 
         .visual {
             position: relative;
-            left: -25px;
+            left: -15px;
         }
 
         #annoline {
@@ -182,6 +183,18 @@
             pointer-events: none;
         }
 
+        #s-start{
+            position: relative;
+            top: -135px;
+            left: 75px;
+        }
+
+        #s-stop{
+            position: relative;
+            top: -135px;
+            left: 75px;
+        }
+
 
 
 
@@ -211,6 +224,8 @@
     <div id="marked">
         SPACE
     </div>
+    <button id="s-start" class="button" onclick="SStart()">Start Serial</button>
+    <button id="s-stop" class="button" onclick="SStop()">Stop Serial</button>
     <div id="viewbox">
     </div>
 
@@ -421,6 +436,14 @@
 
     function basicanno(){
         annotate(Date.now(), "orangered", {});
+    }
+
+    function SStart(){
+        windowManager.sharedData.set("StartSerial", true);
+    }
+
+    function SStop(){
+        windowManager.sharedData.set("StopSerial", true);
     }
 
     document.addEventListener('keypress', (event) => {

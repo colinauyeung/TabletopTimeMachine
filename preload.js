@@ -60,7 +60,7 @@ var registeredmarks = [131, 51, 195, 231];
 var vlSpec = {
     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
     data: {name: 'table'},
-    width: 340,
+    width: 480,
     height: 175,
     mark: 'line',
     encoding: {
@@ -130,9 +130,9 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
     });
-
-    looprecording = true;
-    startRecording();
+    //
+    // looprecording = true;
+    // startRecording();
 
 
 
@@ -678,6 +678,19 @@ function takephoto(callback){
     //     });
 }
 
+windowManager.sharedData.watch("StartSerial", function (prop, action, newValue, oldValue) {
+    if(newValue === true){
+        SP.openserial();
+        windowManager.sharedData.set("StartSerial", false);
+    }
+});
+
+windowManager.sharedData.watch("StopSerial", function (prop, action, newValue, oldValue) {
+    if(newValue === true){
+        SP.closeserial();
+        windowManager.sharedData.set("StopSerial", false);
+    }
+});
 
 
 
