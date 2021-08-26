@@ -1,3 +1,4 @@
+//Most of this is default stuff from the electron example, although modifed to use electron-window-manager
 // main.js
 
 // Modules to control application life and create native browser window
@@ -37,11 +38,14 @@ app.whenReady().then(() => {
         }
     });
 
+    //Preset all the shareddata that we need for the two windows
     windowManager.sharedData.set("serial", {"data": 0, "changed": false});
     windowManager.sharedData.set("codefiles", []);
     windowManager.sharedData.set("pictures", "");
     windowManager.sharedData.set("clip", {});
     windowManager.sharedData.set("clipgrabbed", false);
+
+
     var win = windowManager.createNew("Main", "Tabletop Time Machine", 'file://' + __dirname + '/index.html', false, {
         'width': 1400,
         'height': 800,
@@ -59,6 +63,7 @@ app.whenReady().then(() => {
         'width': 1400,
         'height': 800,
         resizable: true,
+        //These webpreferences are needed to allow the windows to use node js modules
         'webPreferences': {
             nodeIntegration: true,
             contextIsolation: false,

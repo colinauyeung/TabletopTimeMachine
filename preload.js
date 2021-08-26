@@ -12,10 +12,10 @@ const { v4: uuidv4 } = require('uuid');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
-var AR = require('./src/aruco').AR;
+// var AR = require('./src/aruco').AR;
 var CD = require("./modules/codediff").CD;
 var SP = require("./modules/serialport").SP;
-var MP = require("./modules/pointmath").MP;
+// var MP = require("./modules/pointmath").MP;
 var VI = require("./modules/vision").VI;
 const remote = require('electron').remote;
 const windowManager = remote.require('electron-window-manager');
@@ -53,6 +53,9 @@ var rightplaying = 0;
 
 // SP.serialrand();
 
+//Visualization Specfications
+//vlspec = live visualization
+//vlSpec2 = video playback visualization
 var vlSpec = {
     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
     data: {name: 'table'},
@@ -83,25 +86,28 @@ var vlSpec2 = {
 // It has the same sandbox as a Chrome extension.
 window.addEventListener('DOMContentLoaded', () => {
     // window.$ = window.jQuery = require("jquery");
-    const replaceText = (selector, text) => {
-        const element = document.getElementById(selector)
-        if (element) element.innerText = text
-    }
+    // const replaceText = (selector, text) => {
+    //     const element = document.getElementById(selector)
+    //     if (element) element.innerText = text
+    // }
 
-    for (const dependency of ['chrome', 'node', 'electron']) {
-        replaceText(`${dependency}-version`, process.versions[dependency])
-    }
+    // for (const dependency of ['chrome', 'node', 'electron']) {
+    //     replaceText(`${dependency}-version`, process.versions[dependency])
+    // }
 
-    // detector = new AR.Detector({
-    //     dictionaryName: 'ARUCO'
-    // });
+
+    //Grab canvas details
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
-    // CD.startup();
+
+    //start checking things
     lastchecked = Date.now();
 
+    //Set up realtime visualzation
     const result = embed('#chart', vlSpec).then(function (res) {
         var minimumX = Date.now()-10000;
+
+        //watch the serial data and update viuualization based on that
         windowManager.sharedData.watch("serial", function(prop, action, newValue, oldValue){
             var data = newValue;
             minimumX = minimumX + 100;
@@ -116,17 +122,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 .changeset()
                 .insert(value)
                 .remove(function (t) {
-                        return t.x < Date.now() - 30000;
+                    //remove data older than 30s
+                    return t.x < Date.now() - 30000;
                 });
-            // .remove(function (t) {
-            //     return t.x < minimumX;
-            // });
             res.view.change('table', changeSet).run();
-            // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
         });
 
     });
     //
+
+    //start recording
     looprecording = true;
     startRecording();
 
@@ -135,28 +140,39 @@ window.addEventListener('DOMContentLoaded', () => {
 
 })
 
-var clipwaiting = false;
-var waitingclip = {start:0, length:0}
+// var clipwaiting = false;
+// var waitingclip = {start:0, length:0}
+
+//Watch for a clip signal
+// newValue should be an object like so
+// {start: (time), length (# of ms), id: (a unique id string), ava: true}
 windowManager.sharedData.watch("clip", function(prop, action, newValue, oldValue){
     if(newValue.ava){
+        //create a new clip
         let id = addCliptoQueue(newValue.start, newValue.length, "name", newValue.id);
+        //then play it
         playuni(id, -1);
     }
 })
 
+//Watch for a play signal and play the clip on recieving it
+//newvalue should be an id string
 windowManager.sharedData.watch("play", function(prop, action, newValue, oldValue){
     playuni(newValue, -1);
 })
 
 
-
+//On start, poll and add all previously video files
 fs.readdirSync(videodir).forEach(file => {
     videos.push(parseInt(file.split(".")[0]));
 });
 
-function startRecording() {
-    vidstream = document.getElementById("video");
 
+//Starts Recording
+function startRecording() {
+
+    //Grab the elements to place video stream in
+    vidstream = document.getElementById("video");
     canvas.width = parseInt(canvas.style.width);
     canvas.height = parseInt(canvas.style.height);
     console.log("recording started!");
@@ -166,26 +182,22 @@ function startRecording() {
     }
 
 
+    //Get the device
     window.navigator.getUserMedia( {
         audio: false,
         video: {
             mandatory: {
-                // width: { min: 1024, ideal: 1280, max: 1920 },
-                // height: { min: 576, ideal: 720, max: 1080 },
                 chromeMediaSourceId: '677ffe33a74a2fa2ea2c2a978437280622d8aa43a959d907fd7b972a4fec7b43',
-                // chromeMediaSourceId: 'a9a5941dca194c65010c55af6890de13d367371d675be7d62a6a03af7f555e42',
-                // chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
-                // chromeMediaSourceId: '349e056a76fad05f3e6290995cde971b22387ab9fcc92a23c8096dbdfab9b843',
             }
-            // width: { ideal: 4096 },
-            // height: { ideal: 2160 }
+
         }},
         (localMediaStream) => {
-        // filename = Date.now();
         handleStream(localMediaStream);
 
     }, errorCallback)
     let now = Date.now();
+
+    //Set a time to end the recording
     setTimeout(function() {
         stopRecording(now);
         if(looprecording){
@@ -194,6 +206,8 @@ function startRecording() {
     }, recordingtime);
 }
 
+
+//Takes a video stream and passes it to the related objects 
 function handleStream(stream) {
     const track = stream.getVideoTracks()[0];
     camera = new ImageCapture(track);
@@ -221,13 +235,6 @@ window.setInterval(function(){
         var src = URL.createObjectURL(blob)
         windowManager.sharedData.set("pictures", src);
     });
-    // if(camera !== null){
-    //     // console.log(camera);
-    //     camera.takePhoto().then((blob) => {
-    //         var src = URL.createObjectURL(blob)
-    //         windowManager.sharedData.set("pictures", src);
-    //     })
-    // }
 }, 5000);
 
 
@@ -406,7 +413,6 @@ function playuni(idr, pos){
             let chartid = "chart" + inid;
             let viz = document.createElement("div");
             viz.id = chartid;
-            // viz.style.maxWidth = "700px";
             viz.style.width = "100%";
             viz.style.height = "100%";
             viz.style.float = "left";
@@ -421,7 +427,6 @@ function playuni(idr, pos){
                         res.view.change('table', changeSet).run();
                     }
                     else{
-                        // console.log(newValue);
 
                         var value;
                         value = {
@@ -431,11 +436,7 @@ function playuni(idr, pos){
                         let changeSet = vega
                             .changeset()
                             .insert(value);
-                        // .remove(function (t) {
-                        //     return t.x < minimumX;
-                        // });
                         res.view.change('table', changeSet).run();
-                        // console.log('The property: ', prop, ' was:', action, ' to: ', newValue, ' from: ', oldValue);
                     }
 
                 });
@@ -579,16 +580,6 @@ function clip(start, length, name){
     return clip;
 }
 
-function autorecord(){
-    startRecording();
-    setTimeout(function() {
-        stopRecording();
-        if(looprecording){
-            autorecord();
-        }
-    }, recordingtime);
-}
-
 var lastvalue = 0;
 function pollserial(){
     if(SP.currentardata.length > 0){
@@ -614,12 +605,8 @@ function pollserial(){
 }
 window.setInterval(pollserial, 100);
 
-// windowManager.sharedData.watch("serial", )
 windowManager.sharedData.watch( "serial", function(prop, action, newValue, oldValue){
-    // if(newValue["changed"] === false && oldValue["changed"] === true){
     SP.visdata.push(newValue["data"]);
-        // console.log(SP.visdata);
-    // }
 });
 
 function takephoto(callback){
