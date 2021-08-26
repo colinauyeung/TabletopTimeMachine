@@ -29,11 +29,6 @@
             opacity: 0;
         }
 
-        /*video {*/
-        /*    -webkit-transform: scaleX(-1);*/
-        /*    transform: scaleX(-1);*/
-        /*}*/
-
 
         #main {
             background-color: indianred;
@@ -137,34 +132,9 @@
 </div>
 
 
-<!--    <source id="sourcediv" src="videos/example.webm" type="video/webm">-->
 
 </video>
 
-<!--<div id="line0">1 2 3 <br></div>-->
-<!--<div id="line1">1 2 3</div>-->
-<!--<div id="line2">1 2 3</div>-->
-<!--<div id="box3">-->
-
-
-
-<!--</div>-->
-
-
-
-<!--<button id="recording" onclick="toggleRecording()">Record</button>-->
-<!--<button id="tracking" onclick="toggleBoxTrack()">Freeze Box</button>-->
-
-
-
-<!--<label for="list">Clip List</label>-->
-<!--<select id="list" name="list"></select>-->
-<!--<label for="name">Clip Name:</label>-->
-<!--<input type="text" id="name" placeholder="Enter Clip Name">-->
-<!--<button id="clip" onclick="clip()">Clip</button>-->
-<!--<button id="play-last-clip" onclick="playClipHelper()">Play Clip</button>-->
-<!--<button id="save-clips" onclick="saveClips()">Save Clips</button>-->
-<!--<button id="take-photo" onclick="takePhoto()">Take Photo</button>-->
 
 
 <div id="main">
@@ -177,11 +147,6 @@
             <div id="chart"></div>
         </div>
     </div>
-    <!-- <div id="right">
-        <div id="rightviz"></div>
-        <div id="rightvid"></div>
-    </div> -->
-    <!-- <div id="loading"></div> -->
 
 </div>
 
@@ -424,7 +389,7 @@
         //     var item = "<div id=\"" + id + "\" class=\"draggable\"></div>"
         //     $("#container").append(item);
         // }
-    })
+    });
     console.log(window.api.getfiles());
     setInterval(handleQueue, 500);
 
