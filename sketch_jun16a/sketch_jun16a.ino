@@ -151,6 +151,8 @@
 //  
 //  delay(10);
 //}
+//Testing
+//Tested
 
 int echo = 8;
 int trigger = 9;
@@ -164,6 +166,7 @@ void setup() {
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
   pinMode(led, OUTPUT);
+  
    
 }
 
@@ -173,7 +176,7 @@ void loop() {
   digitalWrite(trigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
-
+  Serial.println("Hello World");
   pinMode(echo, INPUT);
   duration = pulseIn(echo, HIGH);
   cm = (duration/2) / 29.1; 
@@ -184,6 +187,6 @@ void loop() {
     digitalWrite(led, LOW);
   }
 
-  Serial.println(cm);
+  Serial.println(cm*10);
   delay(10);
 }

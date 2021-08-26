@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+    <style>
+
+
+        #bar {
+            width: 800px;
+            height: 95px;
+            background: aquamarine;
+            overflow-x: scroll;
+            position: relative;
+            left: 100px;
+            /*top: 400px;*/
+        }
+
+        .box {
+            width: 100px;
+            height: 75px;
+            position: absolute;
+            top: 0px;
+            left: -100px;
+            background-color: orangered;
+            pointer-events: none;
+            /*border: 3px solid #333333;*/
+            word-wrap: break-word;
+        }
+
+        .tick {
+            width: 7px;
+            height: 75px;
+            position: absolute;
+            top: 0px;
+            /*left: -100px;*/
+            /*z-index: 2;*/
+            pointer-events: none;
+            /*border: 3px solid #333333;*/
+            word-wrap: break-word;
+        }
+
+        #select {
+            width: 100px;
+            height: 75px;
+            position: absolute;
+            top: 410px;
+            left: 7px;
+            opacity: 0;
+            pointer-events: none;
+            border: 3px solid #0a24f0;
+        }
+
+        #img {
+            width: 534px;
+            height:400px;
+            position: relative;
+            top: 0px;
+            left: 240px;
+            background-color: #333333;
+            max-height: 400px;
+        }
+
+        #column {
+            margin: auto;
+            width: 1000px;
+            /*background-color: khaki;*/
+        }
+
+        #chartouter {
+            width: 830px;
+            height: 100px;
+            position: relative;
+            left: 80px;
+            overflow: hidden;
+            /*background-color: indianred;*/
+        }
+
+        .visual {
+            position: relative;
+            left: -15px;
+        }
+
+        #annoline {
+            height: 15px;
+            width: 800px;
+            position: relative;
+            top: -115px;
+            left: 100px;
+            /*background-color: blueviolet;*/
+            opacity: 0.5;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .linetick {
+            width: 2px;
+            height: 15px;
+            position: absolute;
+            top: 0px;
+            left: -100px;
+            z-index: 2;
+            pointer-events: none;
+            /*border: 3px solid #333333;*/
+            word-wrap: break-word;
+        }
+
+        #marked {
+            font-size: 100px;
+            position: relative;
+            left: 310px;
+            top: -470px;
+            color: white;
+            opacity: 0;
+        }
+
+        #viewbox {
+            width: 850px;
+            height: 250px;
+            background-color: orange;
+            overflow: scroll;
+            position: relative;
+            top: -130px;
+            left: 75px;
+        }
+
+        .thumb {
+            width: 190px;
+            height: 200px;
+            padding: 5px;
+            float: left;
+            overflow: hidden;
+        }
+
+        .thumbimg{
+            max-width: 190px;
+            pointer-events: none;
+        }
+
+        #s-start{
+            position: relative;
+            top: -135px;
+            left: 75px;
+        }
+
+        #s-stop{
+            position: relative;
+            top: -135px;
+            left: 75px;
+        }
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div id="column">
+    <img src="out.png" id="img">
+    <div id="bar">
+    </div>
+    <div id="select">
+
+    </div>
+    <div id="chartouter">
+
+    </div>
+
+    <div id="annoline">
+
+    </div>
+
+
+
+    <div id="marked">
+        SPACE
+    </div>
+    <button id="s-start" class="button" onclick="SStart()">Start Serial</button>
+    <button id="s-stop" class="button" onclick="SStop()">Stop Serial</button>
+    <div id="viewbox">
+    </div>
+
+</div>
+
+
+
+<script>
+
+    const {
+        contextBridge,
+        ipcRenderer
+    } = require("electron");
+    const remote = require('electron').remote;
+    var electron = require('electron');
+    const windowManager = remote.require('electron-window-manager');
+    const { v4: uuidv4 } = require('uuid');
+
+
+    function customscale (value){
+        let top = lasttime - starttime;
+        let faction = (value)/(startblock + 100);
+        let clunk = faction * top;
+        return clunk + starttime;
+    }
+
+    function reversescale (time){
+        let base = lasttime - starttime;
+        let index = time-starttime;
+        let ratio = index/base;
+        return ratio * (startblock + 100);
+
+    }
+
+    function scrollscale (time){
+        let base = lasttime - starttime;
+        let index = time-starttime;
+        let ratio = index/base;
+        return ratio * 800;
+    }
+
+    var userscroll = 0;
+    var scroll = 0;
+    var dragging = false;
+    var startx = 0;
+    var started = false;
+
+    var startblock = -100;
+    var startscroll = -100;
+    var starttime = Date.now();
+    var lasttime = Date.now();
+    var follow = -100;
+
+    var selectdef = false;
+    var selectstart = 0;
+    var selectend = 0;
+
+    var images = {}
+
+    var data = [];
+
+    var queuedanno = [];
+    var currentanno = [];
+
+    var vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Google's stock price over time.",
+        "data": {"url": "data/stocks.csv"},
+        "mark": "line",
+        "encoding": {
+            "x": {"field": "date", "type": "temporal"},
+            "y": {"field": "price", "type": "quantitative"}
+        }
+    }
+
+
+    windowManager.sharedData.watch("clipgrabbed", function(prop, action, newValue, oldValue){
+        console.log("clip grabbed " + newValue);
+        if(newValue === true){
+            scroll = 0;
+            windowManager.sharedData.set("clipgrabbed", false);
+            document.getElementById("select").style.opacity = "0";
+        }
+    });
+
+
+    windowManager.sharedData.watch("pictures", function(prop, action, newValue, oldValue){
+        let now = Date.now()
+        images[now] = newValue;
+        // console.log(images);
+
+        if(!started){
+            document.getElementById("img").src = images[now];
+            started = true;
+            starttime = Date.now();
+            window.setTimeout(function(){
+                window.setInterval(function (){
+                    startblock = startblock + 100;
+                    lasttime = Date.now()-30000;
+                    // lasttime = Date.now()-1000;
+                    var box =document.createElement("div");
+                    box.className = "box";
+                    box.style.left = startblock + "px";
+                    var image = document.createElement("img");
+                    let highest = 0;
+                    for(let key in images){
+                        if(key < lasttime && key > highest){
+                            highest = key;
+                        }
+                    }
+                    image.style.maxWidth = "100%";
+                    image.style.maxHeight = "100%";
+                    image.src = images[highest];
+
+                    box.appendChild(image);
+                    document.getElementById("bar").appendChild(box);
+                    if(scroll > 0){
+                        scroll = scroll - 1;
+                    }
+                    if(scroll === 0){
+                        document.getElementById("select").style.opacity = "0";
+                        selectdef = false;
+                        windowManager.sharedData.set("clip", {
+                            ava: false
+                        });
+                    }
+
+                    if(userscroll > 0){
+                        follow = follow + 5;
+                        userscroll = userscroll - 10;
+                        // document.getElementById("bar").scrollLeft = follow;
+
+                    }
+                    else{
+                        if(startblock - 700 > 0 && scroll === 0){
+                            document.getElementById("bar").scrollLeft = startblock-700;
+                        }
+                    }
+
+
+                    for(let i in queuedanno){
+                        if(queuedanno[i].time <= lasttime){
+                            console.log(queuedanno[i]);
+                            let tick = document.createElement("div");
+                            tick.className = "tick";
+                            tick.style.backgroundColor = queuedanno[i].color;
+                            tick.style.left = reversescale(queuedanno[i].time) + "px";
+                            document.getElementById("bar").appendChild(tick)
+                            currentanno.push(queuedanno[i]);
+                            queuedanno.splice(i, 1);
+
+                        }
+                    }
+                    var line = document.getElementById("annoline");
+                    line.innerHTML = "";
+
+                    for(let i in currentanno){
+                        let tick = document.createElement("div");
+                        tick.className = "linetick";
+                        tick.style.backgroundColor = currentanno[i].color;
+                        tick.style.left = scrollscale(currentanno[i].time) + "px";
+                        document.getElementById("annoline").appendChild(tick);
+                    }
+
+
+
+
+                    if(startblock <= 700){
+
+                    }
+
+
+
+                }, 15000);
+
+            }, 15000)
+            // }, 3000)
+
+        }
+
+    })
+
+    function annotate(time, color, data){
+        queuedanno.push({
+            time: time,
+            color: color,
+            data: data
+        })
+    }
+
+    function basicanno(){
+        annotate(Date.now(), "orangered", {});
+    }
+
+    function SStart(){
+        windowManager.sharedData.set("StartSerial", true);
+    }
+
+    function SStop(){
+        windowManager.sharedData.set("StopSerial", true);
+    }
+
+    document.addEventListener('keypress', (event) => {
+        var name = event.key;
+        var code = event.code;
+        // Alert the key name and key code on keydown
+        if(code === "Space" && started){
+        // if(code === "Space"){
+            basicanno();
+            document.getElementById("marked").style.opacity = "0.5";
+            window.setTimeout(function(){
+                document.getElementById("marked").style.opacity = "0";
+            }, 500)
+        }
+    });
+
+
+    document.getElementById("bar").scrollLeft = 100;
+    document.getElementById("bar").addEventListener("mousedown", function(e){
+        var y = getOffset( document.getElementById('bar') ).top;
+        if(e.y < (y + 75)){
+            let scrollx = document.getElementById("bar").scrollLeft;
+            var x = getOffset( document.getElementById('bar') ).left + scrollx;
+            let limit = 700;
+            if(startblock + 100 < 700){
+                limit = startblock + 100
+            }
+            if( e.x <= (limit+x) && e.x> x){
+                // if(e.x <= limit){
+                startx = e.x;
+                let select = document.getElementById("select")
+                select.style.opacity = "1";
+                select.style.left = e.x + "px";
+                select.style.width = "0px";
+                scroll = -1;
+                dragging = true;
+            }
+        }
+
+
+
+
+    })
+
+
+
+    windowManager.sharedData.watch("serial", function(prop, action, newValue, oldValue){
+        var dats = newValue;
+        var clunk = dats["data"];
+
+        let value = {
+            x: clunk.x,
+            y: clunk.y
+        }
+        data.push(clunk);
+
+    });
+
+    //https://stackoverflow.com/questions/442404/retrieve-the-position-x-y-of-an-html-element-relative-to-the-browser-window
+    function getOffset( el ) {
+        var _x = 0;
+        var _y = 0;
+        while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+            _x += el.offsetLeft - el.scrollLeft;
+            _y += el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+        }
+        return { top: _y, left: _x };
+    }
+
+    window.addEventListener("mousemove", function (e) {
+        var y = getOffset( document.getElementById('bar') ).top;
+        if(e.y < (y + 75)){
+            let scrollx = document.getElementById("bar").scrollLeft;
+            var x = getOffset( document.getElementById('bar') ).left + scrollx;
+            let limit = 800;
+            if(startblock + 100 < 800){
+                limit = startblock + 100
+            }
+            if(dragging && e.x <= (limit+x) && e.x > x){
+                let select = document.getElementById("select");
+                if(e.x > startx){
+                    select.style.width = (e.x - startx) + "px";
+                }
+                else{
+                    select.style.left = e.x + "px";
+                    select.style.width = (startx - e.x) + "px";
+                }
+            }
+            if(e.y > y && e.x <= (limit+x) && e.x >= x ){
+                let hover = customscale((e.x-x) + scrollx);
+                let highest = 0;
+                for(let key in images){
+                    if(key < hover && key > highest){
+                        highest = key;
+                    }
+                }
+                document.getElementById("img").src = images[highest];
+
+            }
+        }
+    });
+
+    window.addEventListener("mouseup", function (e) {
+        if(dragging && started){
+            let select = document.getElementById("select");
+            let scrollx = document.getElementById("bar").scrollLeft;
+            let limit = 800;
+            if(startblock + 100 < 800){
+                limit = startblock + 100
+            }
+            var x = getOffset( document.getElementById('bar') ).left + scrollx;
+
+            if(e.x <= (limit+x) && e.x >= x){
+                if(e.x > startx){
+                    select.style.width = (e.x - startx) + "px";
+                    selectstart = customscale((startx-x) + scrollx);
+                    selectend = customscale((e.x-x) + scrollx);
+                }
+                else{
+                    select.style.left = e.x + "px";
+                    select.style.width = (startx - e.x) + "px";
+                    selectend = customscale((startx-x) + scrollx);
+                    selectstart = customscale((e.x-x) + scrollx);
+                }
+            }
+
+            dragging = false;
+            selectdef = true;
+
+            scroll = 3;
+            console.log("start: " + selectstart + " end: " + selectend);
+            let id = uuidv4();
+            windowManager.sharedData.set("clip", {
+                ava: true,
+                start: selectstart,
+                length: selectend-selectstart,
+                id: id
+            })
+            thumb(selectstart, id);
+            // window.setTimeout(function (){
+            //     scroll = true;
+            //     document.getElementById("select").style.opacity = "0";
+            // }, 10000)
+        }
+    })
+
+
+
+    document.getElementById("bar").addEventListener("scroll", function(e){
+        // console.log("before " + follow);
+        console.log("userscroll " + userscroll);
+        var target = e.target.scrollLeft;
+        if(!(target> startblock - 700 -100 || (target>follow-50 && target<follow+50))){
+            console.log("scrolled")
+            userscroll = 50;
+            follow = target;
+            // console.log("after " + follow);
+        }
+
+        let chartouter = document.getElementById("chartouter");
+        chartouter.innerHTML = "";
+        let vis = document.createElement("div");
+        vis.id = "vis";
+        vis.className = "visual"
+        chartouter.appendChild(vis);
+
+        var dats = {};
+        dats.values = []
+        var low = customscale(target);
+        var high = customscale(target + 700);
+        console.log("high: " + high + " low: " + low);
+        console.log(data);
+        for(let index in data){
+            if(data[index].x >= low && data[index].x <= high){
+                let clunk = {};
+                let date = new Date(data[index].x);
+                clunk.x = date.toISOString();
+                clunk.y = data[index].y
+                dats.values.push(clunk);
+            }
+        }
+        scroll = 0;
+        document.getElementById("select").style.opacity = "0";
+        selectdef = false;
+        windowManager.sharedData.set("clip", {
+            ava: false
+        });
+
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Data at point.",
+            "data": dats,
+            "width": 800,
+            "height": 50,
+            "mark": "line",
+            "encoding": {
+                "x": {"field": "x", "type": "temporal"},
+                "y": {"field": "y", "type": "quantitative"}
+            }
+        }
+        console.log(vlSpec)
+        vegaEmbed('#vis', vlSpec);
+
+
+
+    })
+
+    function thumb(start, id){
+        let viewbox = document.getElementById("viewbox");
+        let thumb = document.createElement("div");
+        thumb.className = "thumb";
+        let thumbimg = document.createElement("img");
+
+        let highest = 0;
+        for(let key in images){
+            if(key < start && key > highest){
+                highest = key;
+            }
+        }
+
+        thumbimg.src = images[highest];
+        // thumbimg.src = thumbdir + file.file + ".jpg";
+        thumbimg.alt = "Thumb";
+        thumbimg.className = "thumbimg";
+
+        let label = document.createElement("div");
+        let date = new Date(start)
+        label.innerText = date.toString();
+        thumb.appendChild(thumbimg);
+        thumb.appendChild(label);
+        thumb.onclick = (event) => {
+            event.preventDefault();
+            playfile(id)
+            // console.log(file.file);
+        }
+        viewbox.appendChild(thumb);
+
+        function playfile(id){
+            windowManager.sharedData.set("play", id);
+        }
+    }
+
+
+
+</script>
+
+<script>
+
+
+</script>
+</body>
+</html>

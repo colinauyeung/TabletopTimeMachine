@@ -7,86 +7,142 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
 
-<!--    <style media="screen">-->
-<!--        /* Add space between Vega-Embed links  */-->
-<!--        .vega-actions a {-->
-<!--            margin-right: 5px;-->
-<!--        }-->
-<!--    </style>-->
+    <style media="screen">
+        /* Add space between Vega-Embed links  */
+        .vega-actions a {
+            margin-right: 5px;
+        }
+
+        #videobox {
+            overflow: hidden;
+            height: 800px;
+            width: 800px;
+            background-color: indianred;
+        }
+
+        #video {
+            height: 200%;
+            margin-left: -300px;
+            margin-top: -300px;
+        }
+
+        #main {
+            background-color: indianred;
+            height: 710px;
+            width: 1240px
+        }
+
+        #left {
+            background-color: aliceblue;
+            height: 100%;
+            width: 30%;
+            float: left;
+        }
+
+        #center {
+            background-color: khaki;
+            height: 100%;
+            width: 30%;
+            float: left;
+        }
+
+        #right {
+            background-color: green;
+            height: 100%;
+            width: 30%;
+            float: left;
+        }
+
+
+
+
+    </style>
 </head>
 <body>
-<h1>Template for Embedding Vega-Lite Visualization</h1>
 <!-- Container for the visualization -->
-<div id="videoContainer" style="display:inline-block"></div>
-<b id="output" style="vertical-align:top"></b>
-<div id="chart"></div>
+<!--<div id="videoContainer" style="display:inline-block"></div>-->
+<!--<b id="output" style="vertical-align:top"></b>-->
+<!--<div id="chart"></div>-->
+
+<!--<div id="videobox">-->
+<!--    &lt;!&ndash; Crops video to the left by 300px &ndash;&gt;-->
+<!--    <video id="video" src="videos/1626985875815.mp4" loop autoplay muted></video>-->
+<!--</div>-->
+
+<div id="main">
+    <div id="left"></div>
+    <div id="center"></div>
+    <div id="right"></div>
+    <div id="loading"></div>
+
+</div>
 
 <script>
-    var videoContainer = document.getElementById('videoContainer'),
-        output = document.getElementById('output'),
-        nextVideo,
-        videoObjects =
-            [
-                document.createElement('video'),
-                document.createElement('video')
-            ],
-        vidSources =
-            [
-                "http://www.w3schools.com/html/mov_bbb.mp4",
-                "http://www.w3schools.com/html/movie.mp4",
-                "http://www.w3schools.com/html/mov_bbb.mp4",
-                "http://www.w3schools.com/html/movie.mp4",
-                "http://www.w3schools.com/html/mov_bbb.mp4",
-                "http://www.w3schools.com/html/movie.mp4"
-                //this list could be additionally filled without any other changing from code
-            ],
-        //random starting point
-        nextActiveVideo = Math.floor((Math.random() * vidSources.length));
-
-    videoObjects[0].inx = 0; //set index
-    videoObjects[1].inx = 1;
-
-    initVideoElement(videoObjects[0]);
-    initVideoElement(videoObjects[1]);
-
-    videoObjects[0].autoplay = true;
-    videoObjects[0].src = vidSources[nextActiveVideo];
-    videoContainer.appendChild(videoObjects[0]);
-
-    videoObjects[1].style.display = 'none';
-    videoContainer.appendChild(videoObjects[1]);
-
-    function initVideoElement(video)
-    {
-        video.playsinline = true;
-        video.muted = false;
-        video.preload = 'auto'; //but do not set autoplay, because it deletes preload
-
-        //loadedmetadata is wrong because if we use it then we get endless loop
-        video.onplaying = function(e)
-        {
-            output.innerHTML = 'Current video source index: ' + nextActiveVideo;
-
-            //select next index. If is equal vidSources.length then it is 0
-            nextActiveVideo = ++nextActiveVideo % vidSources.length;
-
-            //replace the video elements against each other:
-            if(this.inx == 0)
-                nextVideo = videoObjects[1];
-            else
-                nextVideo = videoObjects[0];
-
-            nextVideo.src = vidSources[nextActiveVideo];
-            nextVideo.pause();
-        };
-
-        video.onended = function(e)
-        {
-            this.style.display = 'none';
-            nextVideo.style.display = 'block';
-            nextVideo.play();
-        };
-    }
+    // var videoContainer = document.getElementById('videoContainer'),
+    //     output = document.getElementById('output'),
+    //     nextVideo,
+    //     videoObjects =
+    //         [
+    //             document.createElement('video'),
+    //             document.createElement('video')
+    //         ],
+    //     vidSources =
+    //         [
+    //             "http://www.w3schools.com/html/mov_bbb.mp4",
+    //             "http://www.w3schools.com/html/movie.mp4",
+    //             "http://www.w3schools.com/html/mov_bbb.mp4",
+    //             "http://www.w3schools.com/html/movie.mp4",
+    //             "http://www.w3schools.com/html/mov_bbb.mp4",
+    //             "http://www.w3schools.com/html/movie.mp4"
+    //             //this list could be additionally filled without any other changing from code
+    //         ],
+    //     //random starting point
+    //     nextActiveVideo = Math.floor((Math.random() * vidSources.length));
+    //
+    // videoObjects[0].inx = 0; //set index
+    // videoObjects[1].inx = 1;
+    //
+    // initVideoElement(videoObjects[0]);
+    // initVideoElement(videoObjects[1]);
+    //
+    // videoObjects[0].autoplay = true;
+    // videoObjects[0].src = vidSources[nextActiveVideo];
+    // videoContainer.appendChild(videoObjects[0]);
+    //
+    // videoObjects[1].style.display = 'none';
+    // videoContainer.appendChild(videoObjects[1]);
+    //
+    // function initVideoElement(video)
+    // {
+    //     video.playsinline = true;
+    //     video.muted = false;
+    //     video.preload = 'auto'; //but do not set autoplay, because it deletes preload
+    //
+    //     //loadedmetadata is wrong because if we use it then we get endless loop
+    //     video.onplaying = function(e)
+    //     {
+    //         output.innerHTML = 'Current video source index: ' + nextActiveVideo;
+    //
+    //         //select next index. If is equal vidSources.length then it is 0
+    //         nextActiveVideo = ++nextActiveVideo % vidSources.length;
+    //
+    //         //replace the video elements against each other:
+    //         if(this.inx == 0)
+    //             nextVideo = videoObjects[1];
+    //         else
+    //             nextVideo = videoObjects[0];
+    //
+    //         nextVideo.src = vidSources[nextActiveVideo];
+    //         nextVideo.pause();
+    //     };
+    //
+    //     video.onended = function(e)
+    //     {
+    //         this.style.display = 'none';
+    //         nextVideo.style.display = 'block';
+    //         nextVideo.play();
+    //     };
+    // }
 
     // var vlSpec = {
     //     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',

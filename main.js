@@ -1,8 +1,10 @@
+//Most of this is default stuff from the electron example, although modifed to use electron-window-manager
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron')
-const path = require('path')
+const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
+const windowManager = require('electron-window-manager');
+const path = require('path');
 
 app.setPath("userData", __dirname + "/saved_recordings")
 
@@ -28,7 +30,49 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
     app.allowRendererProcessReuse = false
-    createWindow()
+    // createWindow();
+
+    windowManager.init({
+        'onLoadFailure': function(window){
+            console.log('Cannot load the requested page!');
+        }
+    });
+
+    //Preset all the shareddata that we need for the two windows
+    windowManager.sharedData.set("serial", {"data": 0, "changed": false});
+    windowManager.sharedData.set("codefiles", []);
+    windowManager.sharedData.set("pictures", "");
+    windowManager.sharedData.set("clip", {});
+    windowManager.sharedData.set("clipgrabbed", false);
+
+
+    var win = windowManager.createNew("Main", "Tabletop Time Machine", 'file://' + __dirname + '/index.html', false, {
+        'width': 1400,
+        'height': 800,
+        resizable: true,
+        'webPreferences': {
+            // nodeIntegration: true,
+            // contextIsolation: false,
+            enableRemoteModule: true,
+            preload:path.join(__dirname, 'preload.js')
+        }
+    });
+    win.open();
+
+    var win2 = windowManager.createNew("Touch", "Tabletop Time Machine", 'file://' + __dirname + '/touchscreen.html', false, {
+        'width': 1400,
+        'height': 800,
+        resizable: true,
+        //These webpreferences are needed to allow the windows to use node js modules
+        'webPreferences': {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+            preload:path.join(__dirname, 'touchpreload.js')
+        }
+    });
+    win2.open();
+
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

@@ -9,7 +9,7 @@ SP.currentardata = [];
 SP.visdata = [];
 
 SP.openserial = function(){
-    SP.port = new SerialPort('COM5', {
+    SP.port = new SerialPort('COM3', {
             baudRate: 9600
         },
         (err) => {
@@ -42,4 +42,18 @@ SP.openserial = function(){
 SP.closeserial = function(){
     SP.port.close();
 
+}
+
+SP.serialrand = function(){
+    window.setInterval(function (){
+        var now = new Date();
+        var clunk = {
+            time: now,
+            x: Date.now(),
+            y: Math.random()
+        }
+        // console.log(typeof now);
+        SP.ardata.push(clunk);
+        SP.currentardata.push(clunk);
+    }, 1000)
 }
