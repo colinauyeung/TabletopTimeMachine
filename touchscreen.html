@@ -546,13 +546,13 @@
             if(e.x <= (limit+x) && e.x >= x){
                 if(e.x > startx){
                     select.style.width = (e.x - startx) + "px";
-                    selectstart = customscale(startx + scrollx);
+                    selectstart = customscale((startx-x) + scrollx);
                     selectend = customscale((e.x-x) + scrollx);
                 }
                 else{
                     select.style.left = e.x + "px";
                     select.style.width = (startx - e.x) + "px";
-                    selectend = customscale(startx + scrollx);
+                    selectend = customscale((startx-x) + scrollx);
                     selectstart = customscale((e.x-x) + scrollx);
                 }
             }
