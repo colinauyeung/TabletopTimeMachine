@@ -8,7 +8,6 @@ const {
 
 var fs = require('fs');
 var electron = require('electron');
-// const $ = require( "jquery" )( window );
 const { v4: uuidv4 } = require('uuid');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
@@ -42,7 +41,6 @@ var blobs = [];
 var looprecording = false;
 var recordingtime = 30000;
 var lastchecked = 0;
-var tracktime = 300000;
 
 var previousplay = [];
 var playpolling = {"detect": 0};
@@ -52,8 +50,6 @@ var lastpolled = 0;
 var boxtracking = true;
 var leftplaying = 0;
 var rightplaying = 0;
-
-var registeredmarks = [131, 51, 195, 231];
 
 // SP.serialrand();
 
@@ -219,8 +215,6 @@ function handleStream(stream) {
 
 
 
-var firstfind = false;
-var markerout = {};
 
 window.setInterval(function(){
     takephoto(function (blob) {
@@ -314,25 +308,6 @@ function addCliptoQueue(start, length, name, id){
 }
 
 var clipsToPlay = [];
-
-// function playclip(arucoid){
-//
-//     if(arucoid in clipbinding){
-//         clipPlayID = arucoid;
-//         if(document.getElementById(arucoid + "") === null){
-//             var box = document.createElement("div");
-//             box.id = arucoid;
-//             box.style.maxWidth = "600px";
-//             box.style.maxHeight = "400px";
-//             box.style.position = "absolute";
-//             box.style.top = "0px";
-//             box.style.left = "0px";
-//             document.getElementById("mainbox").appendChild(box);
-//         }
-//         clipToPlay = clipbinding[arucoid];
-//         console.log(clipToPlay);
-//     }
-// }
 
 function playuni(idr, pos){
     if(idr in clipbinding){
@@ -651,31 +626,8 @@ function takephoto(callback){
 
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     var data = canvas.toBlob(function (blob) {
-        // toArrayBuffer(blob, function (ab){
-        //     console.log(ab);
-        //     var buffer = toBuffer(ab);
-        //
-        //     var file = thumbdir + filename + ".png";
-        //     fs.writeFile(file, buffer, function(err) {
-        //         if (err) {
-        //             console.error('Failed to save video ' + err);
-        //         }
-        //     });
-        // })
         callback(blob)
     });
-    //     ('image/jpg');
-    //     var dsplit = data.split(',')
-    //     var byteString = atob(dsplit[1]);
-    //     var mimeString = dsplit[0].split(':')[1].split(';')[0];
-    //     var ab = new ArrayBuffer(byteString.length);
-    //     var buffer = toBuffer(ab);
-    //     var file = thumbdir + filename + ".png"
-    //     fs.writeFile(file, buffer, function(err) {
-    //         if (err) {
-    //             console.error('Failed to save video ' + err);
-    //         }
-    //     });
 }
 
 windowManager.sharedData.watch("StartSerial", function (prop, action, newValue, oldValue) {
@@ -777,26 +729,6 @@ contextBridge.exposeInMainWorld(
                 console.log(blob)
             });
 
-            // if(camera !== null){
-            //     console.log(camera);
-            //     camera.takePhoto().then((blob) => {
-            //         var src = URL.createObjectURL(blob)
-            //         var x = document.createElement("IMG")
-            //         x.src = src;
-            //         x.classList.add("draggable");
-            //         document.getElementById("container").appendChild(x);
-            //
-            //         console.log(blob)
-            //
-            //         // var imageBuffer = blob.arrayBuffer;
-            //         // var imageName = 'out.png';
-            //         //
-            //         // fs.createWriteStream(imageName).write(imageBuffer);
-            //
-            //         // var item = "<img src=\"" + src + "\">"
-            //         // $("#container").append(item);
-            //     })
-            // }
 
         },
 

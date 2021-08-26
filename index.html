@@ -30,6 +30,7 @@
         }
 
 
+
         #main {
             background-color: indianred;
             height: 750px;
@@ -53,7 +54,21 @@
             float: left;
 
         }
-        
+
+        #right {
+            background-color: green;
+            height: 100%;
+            width: 375px;
+            float: left;
+        }
+
+        #rightviz {
+            background-color: grey;
+            opacity: 1;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
 
         #leftviz {
             background-color: grey;
@@ -133,6 +148,11 @@
             <div id="chart"></div>
         </div>
     </div>
+    <!-- <div id="right">
+        <div id="rightviz"></div>
+        <div id="rightvid"></div>
+    </div> -->
+    <!-- <div id="loading"></div> -->
 
 </div>
 
@@ -143,16 +163,14 @@
 //    var mediaPlayer = null;
 
     var recording = false;
-    var progressBar;
+    // var progressBar;
     // var video = '<video id="video" src="videos/example2.webm" autoplay></video>';
 
-    // var videoclip;
     var clips = {};
-    // var clipindex = 0;
-    var playspeed = 1.0;
-    var clipindexes = {};
-    var playingclips = {};
-    var playingclipsv2 = {};
+    // var playspeed = 1.0;
+    // var clipindexes = {};
+    // var playingclips = {};
+    // var playingclipsv2 = {};
 
 
 
